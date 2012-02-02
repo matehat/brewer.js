@@ -8,14 +8,14 @@ util = require './../util'
 @StylesheetsBrewer = class StylesheetsBrewer extends Brewer
   @types = ['css', 'stylesheets']
   constructor: (options) ->
-    _.defaults options, compress: true, compressed_name: "<%= filename %>.min.css"
+    _.defaults options, compress: true, compressedFile: "<%= filename %>.min.css"
     super options
-    {@compressed, @build, @bundles, @compressed_name} = options
-    @compressed_name = _.template @compressed_name
+    {@compress, @build, @bundles, @compressedFile} = options
+    @compressedFile = _.template @compressedFile
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
   
   compressAll: (cb) ->
-    return unless @compressed
+    return unless @compress
     _.each @bundles, (bundle) =>
       @compress bundle, (pkg) =>
         console.log "Finished compressing #{bundle} -> #{pkg}"
@@ -38,6 +38,10 @@ util = require './../util'
     @ext = '.css'
     super @brewer, @file
   
+  sourcePath: (i) ->
+    file = if i < @files.length then @files[i] else @file
+    path.join @brewer.source(file).css_path, util.changeExtension file, '.css'
+  
   bundle: (cb) ->
     super (data) =>
       util.makedirs path.dirname fp = @filepath()
@@ -45,8 +49,9 @@ util = require './../util'
     
   
   compress: (cb) ->
-    fs.readFile @filepath(), 'utf-8', (err, data) =>
-      fs.writeFile @compressed, @ncss(data), 'utf-8', => cb @compressed
+    fs.readFile @buildPath(), 'utf-8', (err, data) =>
+      fs.writeFile @compressedFile, @ncss(data), 'utf-8', => cb @compressedFile
+  
 
 @StylesheetsSource = class StylesheetsSource extends Source
   @types = ['css', 'stylesheets']

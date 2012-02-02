@@ -33,7 +33,7 @@ _     = require 'underscore'
         return @filecache[relpath] = path: fpath, source: src
     throw "File not found: #{relpath}"
   
-  fullpath: (relpath) -> 
+  fullPath: (relpath) -> 
     @findFile(relpath).path
   
   source: (relpath) -> 
@@ -42,12 +42,10 @@ _     = require 'underscore'
   bundle: (relpath) ->
     new (@source(relpath).constructor.Bundle)(@, relpath)
   
-  compressible: (relpath) ->
-    @source(relpath).path
   
   deps: (relpath, cb) ->
     return cb [] if not @shouldFollow relpath
-    fs.readFile @fullpath(relpath), 'utf-8', (err, data) =>
+    fs.readFile @fullPath(relpath), 'utf-8', (err, data) =>
       cb [] if (deps = @source(relpath).deps data).length == 0
       @_recurse_deps deps, (files) ->
         cb files

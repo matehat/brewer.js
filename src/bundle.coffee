@@ -5,15 +5,17 @@ fs    = require 'fs'
 @Bundle = class Bundle
   constructor: (@brewer, @file) ->
     @basepath = path.join @brewer.build, @file
-    @compressed = @brewer.compressed_name filename: util.changeExtension @basepath, ''
+    @compressedFile = @brewer.compressedFile filename: util.changeExtension @basepath, ''
   
-  filepath: ->
-    @_filepath = util.changeExtension @basepath, @ext unless @_filepath?
-    @_filepath
+  buildPath: ->
+    @_buildPath = util.changeExtension @basepath, (@buildext ? @ext) unless @_buildPath?
+    @_buildPath
+  
+  sourcePath: (i) ->
+    @brewer.fullPath if i < @files.length then @files[i] else @file
   
   readFile: (i, cb, mod=((a)->a)) ->
-    file = if i < @files.length then @files[i] else @file
-    rs = fs.readFile path.resolve(@brewer.compressible(file)), {encoding: 'utf-8'}, (err, data) =>
+    rs = fs.readFile @sourcePath(i), {encoding: 'utf-8'}, (err, data) =>
       throw err if err
       @stream += mod(data.toString())
       @nextFile i, cb, mod

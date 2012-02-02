@@ -8,16 +8,11 @@ util = require '../util'
 @JavascriptBrewer = class JavascriptBrewer extends Brewer
   @types = ['js', 'javascript']
   constructor: (options) ->
-    _.defaults options, compress: true, compressed_name: "<%= filename %>.min.js"
+    _.defaults options, compress: true, compressedFile: "<%= filename %>.min.js"
     super options
-    {@compressed, @build, @bundles, @compressed_name} = options
-    @compressed_name = _.template @compressed_name
+    {@compressed, @build, @bundles, @compressedFile} = options
+    @compressedFile = _.template @compressedFile
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
-  
-  
-  shouldFollow: (relpath) -> @source(relpath).follow
-  compressible: (relpath) ->
-    path.join @source(relpath).js_path, util.changeExtension(relpath, '.js')
   
   compressAll: (cb) ->
     return unless @compressed
@@ -47,9 +42,14 @@ util = require '../util'
     @uglify = require 'uglify-js'
     super @brewer, @file
   
+  sourcePath: (i) ->
+    file = if i < @files.length then @files[i] else @file
+    path.join @brewer.source(file).js_path, util.changeExtension file, '.js'
+  
   bundle: (cb) ->
     super (data) =>
-      util.makedirs path.dirname fp = @filepath()
+      util.makedirs path.dirname fp = @buildPath()
+      console.log fp
       fs.writeFile fp, data, 'utf-8', -> 
         cb fp
       
@@ -58,16 +58,11 @@ util = require '../util'
   compress: (cb) ->
     {parser, uglify} = @uglify
     {gen_code, ast_squeeze, ast_mangle} = uglify
-    @brewer.deps @file, (@files) =>
-      @stream = ''
-      @readFile 0, (data) =>
-        util.makedirs path.dirname fp = @compressed
-        fs.writeFile fp, data, 'utf-8', -> 
-          cb(fp)
-        
-      
-      , (data) =>
-        gen_code(ast_squeeze parser.parse(data)) + ';'
+    console.log @compressedFile
+    fs.readFile @buildPath(), 'utf-8', (err, data) =>
+      code = gen_code ast_squeeze parser.parse data
+      fs.writeFile (fp = @compressedFile), code, 'utf-8', ->
+        cb fp
       
     
   
@@ -77,12 +72,10 @@ util = require '../util'
   @Bundle = JavascriptBundle
   
   constructor: (options) ->
-    _.defaults options, follow: true
     super options
-    {@follow} = options
     @ext = '.js'
-    @headerRE = /^\/\/\s*require\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/]+)/
     @js_path = @path
+    @headerRE = /^\/\/\s*require\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/]+)/
   
 
 Source.extend JavascriptSource
