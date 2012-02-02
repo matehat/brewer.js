@@ -15,32 +15,11 @@ util = require '../util'
     @compressedFile = _.template @compressedFile
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
   
-  compressAll: (cb) ->
-    return unless @compressed
-    @compileAll =>
-      _.each @bundles, (bundle) =>
-        @compress bundle, (pkg) =>
-          finished 'Compressed', pkg
-          cb()
-        
-      
-    
-  
-  packageAll: (cb) ->
-    @compileAll =>
-      _.each @bundles, (bundle) =>
-        @package bundle, (pkg) =>
-          finished 'Packaged', pkg
-          cb()
-        
-      
-    
-  
+
 
 @JavascriptBundle = class JavascriptBundle extends Bundle
   constructor: (@brewer, @file) ->
     @ext = '.js'
-    @uglify = require 'uglify-js'
     super @brewer, @file
   
   sourcePath: (i) ->
@@ -56,7 +35,7 @@ util = require '../util'
     
   
   compress: (cb) ->
-    {parser, uglify} = @uglify
+    {parser, uglify} = require 'uglify-js'
     {gen_code, ast_squeeze, ast_mangle} = uglify
     fs.readFile @buildPath(), 'utf-8', (err, data) =>
       code = gen_code ast_squeeze parser.parse data
@@ -68,13 +47,14 @@ util = require '../util'
 
 @JavascriptSource = class JavascriptSource extends Source
   @types = ['js', 'javascript']
+  @ext = JavascriptBundle.ext = '.js'
+  @header = /^\/\/\s*(?:import|require)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
+  
   @Bundle = JavascriptBundle
   
   constructor: (options) ->
     super options
-    @ext = '.js'
     @js_path = @path
-    @headerRE = /^\/\/\s*(?:import|require)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
   
 
 Source.extend JavascriptSource

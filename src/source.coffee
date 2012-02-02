@@ -21,10 +21,10 @@ util  = require './util'
     {@watch, @path, @follow} = @options
   
   deps: (data) -> 
-    parseHeader @headerRE, data
+    parseHeader @constructor.header, data
   
   find: (rel) ->
-    rel = util.changeExtension rel, @ext
+    rel = util.changeExtension rel, @constructor.ext
     fullPath = path.join @path, rel
     if path.existsSync fullPath then fullPath else false
   

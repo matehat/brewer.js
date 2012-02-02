@@ -8,11 +8,17 @@ fs    = require 'fs'
     @compressedFile = @brewer.compressedFile filename: util.changeExtension @basepath, ''
   
   buildPath: ->
-    @_buildPath = util.changeExtension @basepath, (@buildext ? @ext) unless @_buildPath?
+    @_buildPath = util.changeExtension @basepath, (@constructor.buildext ? @constructor.ext) unless @_buildPath?
     @_buildPath
   
   sourcePath: (i) ->
     @brewer.fullPath(if i < @files.length then @files[i] else @file)
+  
+  stat: (cb) ->
+    fs.stat @file, cb
+    
+  compressedStat: (cb) ->
+    fs.stat @compressedFile, cb
   
   readFile: (i, cb, mod=((a)->a)) ->
     rs = fs.readFile @sourcePath(i), {encoding: 'utf-8'}, (err, data) =>
@@ -28,6 +34,7 @@ fs    = require 'fs'
       delete @stream
   
   bundle: (cb) ->
+    util.makedirs path.dirname @buildPath()
     @brewer.deps @file, (@files) =>
       @stream = ''
       @readFile 0, cb

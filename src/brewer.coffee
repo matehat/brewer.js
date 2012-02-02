@@ -63,14 +63,34 @@ _     = require 'underscore'
       
     
   
+  
   compress: (relpath, cb) ->
     @bundle(relpath).compress cb
+  
+  package: (relpath, cb) -> 
+    @bundle(relpath).bundle cb
+  
   
   compileAll: (cb) ->
     srcs = (src for src in @sources when src.compileAll?)
     cnt = srcs.length
     src.compileAll(-> cb() if --cnt == 0) for src in srcs
   
-  package: (relpath, cb) -> 
-    @bundle(relpath).bundle cb
+  compressAll: (cb) ->
+    return unless @compressed
+    @compileAll =>
+      cnt = @bundles.length
+      _.each @bundles, (bundle) =>
+        @compress bundle, (pkg) =>
+          cb() if --cnt == 0
+      
+    
   
+  packageAll: (cb) ->
+    @compileAll =>
+      cnt = @bundles.length
+      _.each @bundles, (bundle) => 
+        @package bundle, (pkg) =>
+          cb() if --cnt == 0
+      
+    

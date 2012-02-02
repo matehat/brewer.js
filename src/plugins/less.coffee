@@ -9,7 +9,6 @@ path = require 'path'
 @LessBundle = class LessBundle extends StylesheetsBundle
   constructor: (@brewer, @file) ->
     super @brewer, @file
-    @ext = @brewer.source(@file).ext
     @buildext = '.css'
     @less = require 'less'
     @parser = new (@less.Parser) 
@@ -19,10 +18,9 @@ path = require 'path'
   
   bundle: (cb) ->
     Bundle::bundle.call @, (data) =>
-      util.makedirs path.dirname fp = @buildPath()
-      @parser.parse data, (err, tree) ->
+      @parser.parse data, (err, tree) =>
         throw err if err
-        fs.writeFile fp, tree.toCSS(), 'utf-8', ->
+        fs.writeFile (fp = @buildPath()), tree.toCSS(), 'utf-8', ->
           finished 'Compiled', fp
           cb fp
       
@@ -30,7 +28,7 @@ path = require 'path'
   
   sourcePath: (i) ->
     file = if i < @files.length then @files[i] else @file
-    path.join (src = @brewer.source(file)).css_path, util.changeExtension file, src.ext
+    path.join (src = @brewer.source(file)).css_path, util.changeExtension file, src.constructor.ext
   
   readFile: (i, cb, mod=((a)->a)) ->
     file = if i < @files.length then @files[i] else @file
@@ -42,20 +40,23 @@ path = require 'path'
   
 
 @LessSource = class LessSource extends StylesheetsSource
-  @Bundle = LessBundle
   @types = ['less']
+  @ext = LessBundle.ext = '.less'
+  @buildext = LessBundle.buildext = '.css'
+  @header = /^\/\/\s*(?:import|require)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
+  
+  @Bundle = LessBundle
   
   constructor: (options, @brewer) ->
     _.defaults options, compileAll: false
     super options
-    @ext = '.less'
     @css_path = @path
-    @headerRE = /^\/\/\s*(?:import|require)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
+    
   
   find: (rel) ->
     return fullPath if (fullPath = super(rel)) != false
     
-    rel = util.changeExtension rel, @ext
+    rel = util.changeExtension rel, @constructor.ext
     fullPath = path.join @path, rel
     if path.existsSync fullPath then fullPath else false
     

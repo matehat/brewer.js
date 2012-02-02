@@ -8,15 +8,16 @@ util = require '../util'
 
 @CoffeescriptSource = class CoffeescriptSource extends Source
   @types = ['coffee-script', 'coffeescript', 'cs']
+  @header = /^#\s*(?:import|require)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
+  @ext = '.coffee'
+  @buildext = '.js'
   @Bundle: JavascriptBundle
   
   constructor: (options) ->
     throw "Coffeescript source needs a 'output' options" unless options.output?
     _.defaults options, follow: true
     {@follow, @output} = options
-    @ext = '.coffee'
     @js_path = @output
-    @headerRE = /^#\s*(?:import|require)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
     super options
   
   test: (path) -> 
