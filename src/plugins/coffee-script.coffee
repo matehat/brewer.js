@@ -24,6 +24,7 @@ util = require '../util'
   
   compileFile: (cfpath, next) ->
     coffee = require 'coffee-script'
+    cfpath = path.join @path, cfpath
     fs.readFile cfpath, 'utf-8', (err, cf) =>
       jspath = cfpath.replace path.join(@path, '.'), path.join(@output, '.')
       jspath = util.changeExtension jspath, '.js'

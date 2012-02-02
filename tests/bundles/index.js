@@ -18,7 +18,7 @@ exports.tests = {
     jsbrewer = Brewer.create(configs[0]);
     jsbrewer2 = Brewer.create(configs[1]);
     cssbrewer = Brewer.create(configs[2]);
-  }, ///*
+  },
   'Packaging Coffeescript': function(cb) {
     jsbrewer.packageAll(function() {
       test = require('./js/build/test');
@@ -69,7 +69,7 @@ exports.tests = {
       });
     });
   },
-  //*/
+  
   'Packaging LESS stylesheets': function(next) {
     cssbrewer.packageAll(function() {
       css = cssom.parse(fs.readFileSync('./css/build/testless1.css', 'utf-8')).cssRules;

@@ -16,19 +16,23 @@ util = require './../util'
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
   
   compressAll: (cb) ->
-    return unless @compress
-    _.each @bundles, (bundle) =>
-      @compress bundle, (pkg) =>
-        console.log '-', require('ansi-color').set('Compressed', 'blue'), pkg
-        cb()
+    return unless @compressed
+    _bundles = 0
+    @compileAll =>
+      _.each @bundles, (bundle) =>
+        _bundles++
+        @compress bundle, (pkg) =>
+          cb() if --_bundles == 0
       
     
   
   packageAll: (cb) ->
-    _.each @bundles, (bundle) => 
-      @package bundle, (pkg) =>
-        finished 'Packaged', pkg
-        cb()
+    @compileAll =>
+      _bundles = 0
+      _.each @bundles, (bundle) => 
+        _bundles++
+        @package bundle, (pkg) =>
+          cb() if --_bundles == 0
       
     
   
@@ -46,12 +50,16 @@ util = require './../util'
   bundle: (cb) ->
     super (data) =>
       util.makedirs path.dirname fp = @buildPath()
-      fs.writeFile fp, data, 'utf-8', -> cb fp
+      fs.writeFile fp, data, 'utf-8', -> 
+        finished 'Packaged', fp
+        cb fp
     
   
   compress: (cb) ->
     fs.readFile @buildPath(), 'utf-8', (err, data) =>
-      fs.writeFile @compressedFile, @ncss(data), 'utf-8', => cb @compressedFile
+      fs.writeFile @compressedFile, @ncss(data), 'utf-8', =>
+        finished 'Compressed', @compressedFile
+        cb @compressedFile
   
 
 @StylesheetsSource = class StylesheetsSource extends Source

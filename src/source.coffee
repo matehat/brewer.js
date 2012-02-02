@@ -11,14 +11,14 @@ util  = require './util'
       for type in (src.types ? [])
         @registry[type] = src
   
-  @create: (options) ->
+  @create: (options, brewer) ->
     throw "Source type #{options.type} not known" unless (typ = @registry[options.type])?
-    new typ options
+    new typ options, brewer
   
   
-  constructor: (options) ->
-    _.defaults options, watch: false, follow: true
-    {@watch, @path, @follow} = options
+  constructor: (@options) ->
+    _.defaults @options, watch: false, follow: true
+    {@watch, @path, @follow} = @options
   
   deps: (data) -> 
     parseHeader @headerRE, data
@@ -32,10 +32,10 @@ util  = require './util'
     return cb() unless @compileFile?
     
     list = []
-    @listFiles (cfpath) =>
-      list.push cfpath
-      @compileFile cfpath, =>
-        list = _.without list, cfpath
+    @listFiles (path) =>
+      list.push path
+      @compileFile path, =>
+        list = _.without list, path
         if list.length == 0 and cb?
           cb()
       
@@ -46,7 +46,7 @@ util  = require './util'
     filelist = []
     walker = new walk @path, followLinks: true
     walker.on 'file', (root, stat) =>
-      fpath = path.join root, stat.name
+      fpath = path.join root[path.join(@path, '').length..], stat.name
       return unless @test fpath
       yield fpath
     

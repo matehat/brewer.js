@@ -20,7 +20,7 @@ _     = require 'underscore'
   
   constructor: (options) ->
     {sources, @name} = options
-    @sources = (Source.create(src) for src in sources)
+    @sources = (Source.create(src, @) for src in sources)
     @filecache = {}
   
   shouldFollow: (relpath) -> 
@@ -67,13 +67,10 @@ _     = require 'underscore'
     @bundle(relpath).compress cb
   
   compileAll: (cb) ->
-    cnt = 0
-    for src in @sources
-      if src.compileAll?
-        ++cnt and src.compileAll =>
-          cb() if --cnt == 0
+    srcs = (src for src in @sources when src.compileAll?)
+    cnt = srcs.length
+    src.compileAll(-> cb() if --cnt == 0) for src in srcs
   
   package: (relpath, cb) -> 
     @bundle(relpath).bundle cb
   
-

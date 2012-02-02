@@ -3,6 +3,7 @@ fs = require 'fs'
 path = require 'path'
 {Source} = require '..'
 {Bundle} = require '../bundle'
+{finished} = require '../command'
 {StylesheetsBrewer, StylesheetsSource, StylesheetsBundle} = require './css'
 
 @LessBundle = class LessBundle extends StylesheetsBundle
@@ -21,7 +22,9 @@ path = require 'path'
       util.makedirs path.dirname fp = @buildPath()
       @parser.parse data, (err, tree) ->
         throw err if err
-        fs.writeFile fp, tree.toCSS(), 'utf-8', -> cb fp
+        fs.writeFile fp, tree.toCSS(), 'utf-8', ->
+          finished 'Compiled', fp
+          cb fp
       
     
   
@@ -42,7 +45,7 @@ path = require 'path'
   @Bundle = LessBundle
   @types = ['less']
   
-  constructor: (options) ->
+  constructor: (options, @brewer) ->
     _.defaults options, compileAll: false
     super options
     @ext = '.less'
@@ -54,11 +57,18 @@ path = require 'path'
     
     rel = util.changeExtension rel, @ext
     fullPath = path.join @path, rel
-    fullPath = path.join path.dirname(fullPath), path.basename fullPath
     if path.existsSync fullPath then fullPath else false
     
-  test: (path) -> 
-    path.extname(path) == '.less'
+  test: (relpath) -> 
+    path.extname(relpath) == '.less'
+  
+  compileAll: (cb) ->
+    return cb() unless @options.compileAll
+    super cb
+  
+  compileFile: (relpath, next) ->
+    (new LessBundle(@brewer, relpath)).bundle ->
+      next()
   
 
 Source.extend LessSource
