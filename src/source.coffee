@@ -17,16 +17,16 @@ util  = require './util'
   
   
   constructor: (options) ->
-    _.defaults options, watch: false
-    {@watch, @path} = options
+    _.defaults options, watch: false, follow: true
+    {@watch, @path, @follow} = options
   
   deps: (data) -> 
     parseHeader @headerRE, data
   
   find: (rel) ->
     rel = util.changeExtension rel, @ext
-    fullpath = path.join @path, rel
-    if path.existsSync fullpath then fullpath else false
+    fullPath = path.join @path, rel
+    if path.existsSync fullPath then fullPath else false
   
   compileAll: (cb) ->
     return cb() unless @compileFile?

@@ -23,6 +23,9 @@ _     = require 'underscore'
     @sources = (Source.create(src) for src in sources)
     @filecache = {}
   
+  shouldFollow: (relpath) -> 
+    @source(relpath).follow
+  
   findFile: (relpath, dep=false) ->
     return loc if (loc = @filecache[relpath])?
     for src in @sources
