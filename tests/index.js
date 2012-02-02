@@ -18,5 +18,5 @@ function runTests(tests, cb) {
 }
 
 runTests([
-  require('./coffeescript').tests
+  require('./bundles').tests
 ]);

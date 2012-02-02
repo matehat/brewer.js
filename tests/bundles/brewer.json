@@ -30,5 +30,16 @@
     "build": "./js/build",
     "bundles": ["test2"],
     "compressed": true
+  },
+  {
+    "name" : "styles1",
+    "type": "css",
+    "sources": [
+      {"path": "./sass", "type": "sass", "output": "./css"},
+      {"path": "./css", "type": "css"}
+    ],
+    "build": "./css/build",
+    "bundles": ["test1"],
+    "compressed": true
   }
 ]

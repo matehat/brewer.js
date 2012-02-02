@@ -14,11 +14,12 @@ exports.tests = {
   setup: function() {
     process.chdir(path.resolve(__dirname));
     var configs = JSON.parse(fs.readFileSync(path.resolve(__dirname, './brewer.json')), 'utf-8');
-    brewer = Brewer.create(configs[0]);
-    brewer2 = Brewer.create(configs[1]);
+    jsbrewer = Brewer.create(configs[0]);
+    jsbrewer2 = Brewer.create(configs[1]);
+    cssbrewer = Brewer.create(configs[2]);
   },
   'Packaging Coffeescript': function(cb) {
-    brewer.packageAll(function() {
+    jsbrewer.packageAll(function() {
       test = require('./js/build/test');
       assert.ok(test.F == 2);
       OK('test.F == 2');
@@ -28,7 +29,7 @@ exports.tests = {
     });
   },
   'Compressing Coffeescript': function(cb) {
-    brewer.compressAll(function() {
+    jsbrewer.compressAll(function() {
       test = require('./js/build/test.min');
       assert.ok(test.F == 2);
       OK('test.F == 2')
@@ -38,7 +39,7 @@ exports.tests = {
     });
   },
   'Packaging Coffeescript + External Libraries': function(next) {
-    brewer2.packageAll(function() {
+    jsbrewer2.packageAll(function() {
       jsdom.env({
         html: '<html><body></body></html>',
         src: [fs.readFileSync('./js/build/test2.js')],
@@ -51,7 +52,7 @@ exports.tests = {
     });
   },
   'Compressing Coffeescript + External Libraries': function(next) {
-    brewer2.compressAll(function() {
+    jsbrewer2.compressAll(function() {
       jsdom.env({
         html: '<html><body></body></html>',
         src: [fs.readFileSync('./js/build/test2.min.js')],
@@ -62,5 +63,12 @@ exports.tests = {
         }
       });
     });
-  }
+  },
+  
+  'Compressing SASS stylesheets': function(next) {
+/*    cssbrewer.packageAll(function() {
+      
+    });*/
+    next()
+  },
 };

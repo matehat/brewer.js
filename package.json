@@ -1,7 +1,7 @@
 {
   "name" : "brewer",
   "version" : "0.1.0",
-  "description" : "Asset packaging/compression utility",
+  "description" : "Asset compilation/packaging/compression utility",
   "keywords": [
     "javascript", "coffeescript", "asset", "compression", 
     "less", "css", "packaging", "bundling"
@@ -23,15 +23,13 @@
   },
   "dependencies": {
     "underscore": ">= 0.0.1",
-    "coffee-script": ">= 1.1.0",
     "js2coffee": ">= 0.1.0",
     "mkdirp": ">= 0.3.0",
     "uglify-js": ">= 1.2.0",
-    "sass": ">= 0.5.0",
     "walker": ">= 1.0.0",
     "ncss": ">= 1.1.0"
   },
   "devDependencies": {
-    
+    "coffee-script": ">= 1.1.0"
   }
 }
