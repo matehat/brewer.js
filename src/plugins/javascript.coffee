@@ -4,6 +4,7 @@ path = require 'path'
 util = require '../util'
 {Brewer, Source} = require '..'
 {Bundle} = require '../bundle'
+{finished} = require '../command'
 
 @JavascriptBrewer = class JavascriptBrewer extends Brewer
   @types = ['js', 'javascript']
@@ -19,7 +20,7 @@ util = require '../util'
     @compileAll =>
       _.each @bundles, (bundle) =>
         @compress bundle, (pkg) =>
-          console.log "Finished compressing #{bundle} -> #{pkg}"
+          finished 'Compressed', pkg
           cb()
         
       
@@ -29,7 +30,7 @@ util = require '../util'
     @compileAll =>
       _.each @bundles, (bundle) =>
         @package bundle, (pkg) =>
-          console.log "Finished packaging #{bundle} -> #{pkg}"
+          finished 'Packaged', pkg
           cb()
         
       
@@ -49,7 +50,6 @@ util = require '../util'
   bundle: (cb) ->
     super (data) =>
       util.makedirs path.dirname fp = @buildPath()
-      console.log fp
       fs.writeFile fp, data, 'utf-8', -> 
         cb fp
       
@@ -58,7 +58,6 @@ util = require '../util'
   compress: (cb) ->
     {parser, uglify} = @uglify
     {gen_code, ast_squeeze, ast_mangle} = uglify
-    console.log @compressedFile
     fs.readFile @buildPath(), 'utf-8', (err, data) =>
       code = gen_code ast_squeeze parser.parse data
       fs.writeFile (fp = @compressedFile), code, 'utf-8', ->
@@ -75,7 +74,7 @@ util = require '../util'
     super options
     @ext = '.js'
     @js_path = @path
-    @headerRE = /^\/\/\s*require\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/]+)/
+    @headerRE = /^\/\/\s*(?:import|require)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
   
 
 Source.extend JavascriptSource

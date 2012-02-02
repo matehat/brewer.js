@@ -1,3 +1,3 @@
-#require ["import2"]
+# require ["import2"]
 @A = 2
 @F = 2

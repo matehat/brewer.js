@@ -46,7 +46,7 @@ util  = require './util'
     filelist = []
     walker = new walk @path, followLinks: true
     walker.on 'file', (root, stat) =>
-      fpath = path.resolve root, stat.name
+      fpath = path.join root, stat.name
       return unless @test fpath
       yield fpath
     

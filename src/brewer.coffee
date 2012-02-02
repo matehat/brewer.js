@@ -33,7 +33,7 @@ _     = require 'underscore'
         return @filecache[relpath] = path: fpath, source: src
     throw "File not found: #{relpath}"
   
-  fullPath: (relpath) -> 
+  fullPath: (relpath) ->
     @findFile(relpath).path
   
   source: (relpath) -> 

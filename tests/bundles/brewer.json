@@ -14,7 +14,7 @@
     "type": "js",
     "sources": [
       {"path": "./coffee", "type": "coffeescript", "output": "./js"},
-      {"path": "./lib", "type": "js", "follow": false}
+      {"path": "./deps", "type": "js", "follow": false}
     ],
     "build": "./js/build",
     "bundles": ["test2"],
@@ -24,11 +24,12 @@
     "name" : "styles1",
     "type": "css",
     "sources": [
-      {"path": "./sass", "type": "sass", "output": "./css"},
-      {"path": "./css", "type": "css"}
+      {"path": "./css", "type": "css"},
+      {"path": "./less", "type": "less", "output": "./css"},
+      {"path": "./less/auto", "type": "less", "output": "./css", "compileAll": true}
     ],
     "build": "./css/build",
-    "bundles": ["test1"],
+    "bundles": ["testless1"],
     "compressed": true
   }
 ]

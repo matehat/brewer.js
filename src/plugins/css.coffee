@@ -3,14 +3,15 @@ fs = require 'fs'
 path = require 'path'
 util = require './../util'
 {Brewer, Source} = require './..'
+{finished} = require '../command'
 {Bundle} = require './../bundle'
 
 @StylesheetsBrewer = class StylesheetsBrewer extends Brewer
   @types = ['css', 'stylesheets']
   constructor: (options) ->
-    _.defaults options, compress: true, compressedFile: "<%= filename %>.min.css"
+    _.defaults options, compressed: true, compressedFile: "<%= filename %>.min.css"
     super options
-    {@compress, @build, @bundles, @compressedFile} = options
+    {@compressed, @build, @bundles, @compressedFile} = options
     @compressedFile = _.template @compressedFile
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
   
@@ -18,7 +19,7 @@ util = require './../util'
     return unless @compress
     _.each @bundles, (bundle) =>
       @compress bundle, (pkg) =>
-        console.log "Finished compressing #{bundle} -> #{pkg}"
+        console.log '-', require('ansi-color').set('Compressed', 'blue'), pkg
         cb()
       
     
@@ -26,7 +27,7 @@ util = require './../util'
   packageAll: (cb) ->
     _.each @bundles, (bundle) => 
       @package bundle, (pkg) =>
-        console.log "Finished packaging #{bundle} -> #{pkg}"
+        finished 'Packaged', pkg
         cb()
       
     
@@ -44,7 +45,7 @@ util = require './../util'
   
   bundle: (cb) ->
     super (data) =>
-      util.makedirs path.dirname fp = @filepath()
+      util.makedirs path.dirname fp = @buildPath()
       fs.writeFile fp, data, 'utf-8', -> cb fp
     
   
@@ -61,7 +62,7 @@ util = require './../util'
     super options
     @ext = '.css'
     @css_path = @path
-    @headerRE = /^\/\*\s*require\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)\*\//
+    @headerRE = /^\/\*\s*(?:require|import)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)\*\//m
   
   test: (path) -> 
     util.hasExtension path, '.css'

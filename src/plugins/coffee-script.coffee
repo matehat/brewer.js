@@ -1,8 +1,9 @@
 _ = require 'underscore'
 fs = require 'fs'
 path = require 'path'
-util = require './../util'
-{Source} = require './../source'
+util = require '../util'
+{Source} = require '../source'
+{finished} = require '../command'
 {JavascriptBundle} = require './javascript'
 
 @CoffeescriptSource = class CoffeescriptSource extends Source
@@ -15,7 +16,7 @@ util = require './../util'
     {@follow, @output} = options
     @ext = '.coffee'
     @js_path = @output
-    @headerRE = /^#\s*require\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/
+    @headerRE = /^#\s*(?:import|require)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
     super options
   
   test: (path) -> 
@@ -24,12 +25,12 @@ util = require './../util'
   compileFile: (cfpath, next) ->
     coffee = require 'coffee-script'
     fs.readFile cfpath, 'utf-8', (err, cf) =>
-      jspath = cfpath.replace path.resolve(@path), path.resolve(@output)
+      jspath = cfpath.replace path.join(@path, '.'), path.join(@output, '.')
       jspath = util.changeExtension jspath, '.js'
       util.makedirs path.dirname jspath
       fs.writeFile jspath, coffee.compile(cf), 'utf-8', (err) =>
         throw err if err
-        console.log "Compiled #{cfpath.replace(@path, '')} -> #{jspath.replace(@output, '')}"
+        finished 'Compiled', cfpath
         next()
       
     

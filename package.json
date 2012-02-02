@@ -28,13 +28,13 @@
     "uglify-js": ">= 1.2.0",
     "ncss": ">= 1.1.0",
     "walker": ">= 1.0.0",
-    "growl": ">= 1.4.0"
+    "growl": ">= 1.4.0",
+    "ansi-color": ">= 0.2.0"
   },
   "devDependencies": {
     "coffee-script": ">= 1.1.0",
     "sass": ">= 0.5.0",
     "less": ">= 1.2.0",
-    "ansi-color": ">= 0.2.0",
     "jsdom": ">= 0.2.10",
     "cssom": ">= 0.2.0",
     "stylus": ">= 0.22.0"

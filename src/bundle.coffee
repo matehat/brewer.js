@@ -12,11 +12,10 @@ fs    = require 'fs'
     @_buildPath
   
   sourcePath: (i) ->
-    @brewer.fullPath if i < @files.length then @files[i] else @file
+    @brewer.fullPath(if i < @files.length then @files[i] else @file)
   
   readFile: (i, cb, mod=((a)->a)) ->
     rs = fs.readFile @sourcePath(i), {encoding: 'utf-8'}, (err, data) =>
-      throw err if err
       @stream += mod(data.toString())
       @nextFile i, cb, mod
     

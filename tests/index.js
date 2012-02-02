@@ -1,4 +1,5 @@
 _ = require('underscore');
+var color = require('ansi-color').set;
 
 function runTests(tests, cb) {
   var i = 0, next;
@@ -12,7 +13,7 @@ function runTests(tests, cb) {
     if (tests.setup !== undefined) tests.setup();
     (next = function() {
       if (i < keys.length)
-        console.log("=== " + (key = keys.shift()) + " ===") || tests[key](next) 
+        console.log("+", color("Testing", "cyan"), color(key = keys.shift(), 'underline')) || tests[key](next) 
     })();
   }
 }

@@ -1,2 +1,2 @@
-#require ["import1"]
 @A = 1
+# import ["import1"]
