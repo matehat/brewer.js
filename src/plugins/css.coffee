@@ -32,21 +32,6 @@ util = require './../util'
     
   
 
-
-@StylesheetsSource = class StylesheetsSource extends Source
-  @types = ['css', 'stylesheets']
-  @Bundle: StylesheetsBundle
-  
-  constructor: (options) ->
-    super options
-    @ext = '.css'
-    @css_path = @path
-    @headerRE = /^\/\*\s*require\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)\*\//
-  
-  test: (path) -> 
-    util.hasExtension path, '.css'
-  
-
 @StylesheetsBundle = class StylesheetsBundle extends Bundle
   constructor: (@brewer, @file) ->
     @ncss = require 'ncss'
@@ -62,6 +47,19 @@ util = require './../util'
   compress: (cb) ->
     fs.readFile @filepath(), 'utf-8', (err, data) =>
       fs.writeFile @compressed, @ncss(data), 'utf-8', => cb @compressed
+
+@StylesheetsSource = class StylesheetsSource extends Source
+  @types = ['css', 'stylesheets']
+  @Bundle: StylesheetsBundle
+  
+  constructor: (options) ->
+    super options
+    @ext = '.css'
+    @css_path = @path
+    @headerRE = /^\/\*\s*require\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)\*\//
+  
+  test: (path) -> 
+    util.hasExtension path, '.css'
   
 
 Source.extend StylesheetsSource
