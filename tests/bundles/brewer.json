@@ -1,0 +1,34 @@
+[
+  {
+    "name" : "scripts1",
+    "type": "js",
+    "sources": [
+      {"path": "./coffee", "type": "coffeescript", "output": "./js"}
+    ],
+    "build": "./js/build",
+    "bundles": "./bundles.json",
+    "compressed": true
+  },
+  {
+    "name" : "scripts2",
+    "type": "js",
+    "sources": [
+      {"path": "./coffee", "type": "coffeescript", "output": "./js"},
+      {"path": "./lib", "type": "js", "follow": false}
+    ],
+    "build": "./js/build",
+    "bundles": ["test2"],
+    "compressed": true
+  },
+  {
+    "name" : "scripts2",
+    "type": "js",
+    "sources": [
+      {"path": "./coffee", "type": "coffeescript", "output": "./js"},
+      {"path": "./lib", "type": "js", "follow": false}
+    ],
+    "build": "./js/build",
+    "bundles": ["test2"],
+    "compressed": true
+  }
+]
