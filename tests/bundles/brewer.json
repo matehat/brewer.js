@@ -21,17 +21,6 @@
     "compressed": true
   },
   {
-    "name" : "scripts2",
-    "type": "js",
-    "sources": [
-      {"path": "./coffee", "type": "coffeescript", "output": "./js"},
-      {"path": "./lib", "type": "js", "follow": false}
-    ],
-    "build": "./js/build",
-    "bundles": ["test2"],
-    "compressed": true
-  },
-  {
     "name" : "styles1",
     "type": "css",
     "sources": [
