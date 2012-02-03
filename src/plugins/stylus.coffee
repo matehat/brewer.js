@@ -10,8 +10,18 @@ path = require 'path'
   stylus: (data) ->
     return @setOptions require('stylus') data
   
+  importPath: (src, file) ->
+    if src instanceof StylusSource
+      path.join src.path, util.changeExtension file, src.constructor.ext
+    else
+      super src, file
+  
+  importPaths: ->
+    for src in @brewer.sources when src instanceof StylusSource
+      src.stylus_path
+  
   setOptions: (styl) ->
-    styl.set 'paths', (src.less_path ? src.css_path) for src in @brewer.sources
+    styl.set 'paths', @importPaths()
     styl.set 'filename', @file
   
   convertFile: (data, cb) ->
@@ -22,7 +32,7 @@ path = require 'path'
 
 @StylusSource = class StylusSource extends StylesheetsSource
   @types = ['stylus', 'styl']
-  @ext = StylusBundle.ext = ['.stylus', '.styl']
+  @ext = StylusBundle.ext = ['.styl']
   @buildext = StylusBundle.buildext = '.css'
   @header = /^\/\/\s*(?:import|require)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
   
@@ -41,7 +51,8 @@ path = require 'path'
     if path.existsSync fullPath then fullPath else false
     
   test: (relpath) -> 
-    path.extname(relpath) == '.less'
+    path.extname(relpath) in @constructor.ext
+
   
   compileAll: (cb) ->  
     if @options.compileAll then super cb else cb()

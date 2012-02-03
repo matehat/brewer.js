@@ -15,6 +15,7 @@ exports.tests = {
     process.chdir(path.resolve(__dirname));
     var configs = JSON.parse(fs.readFileSync(path.resolve(__dirname, './brewer.json')), 'utf-8');
     cssbrewer = Brewer.create(configs[0]);
+    stylbrewer = Brewer.create(configs[1]);
   },
   'Packaging LESS stylesheets': function(next) {
     cssbrewer.packageAll(function() {
@@ -59,6 +60,11 @@ exports.tests = {
       assert.ok(border !== undefined && border.style.margin == '8px' && border.style['border-color'] == '#3bbfce');
       OK("#data -> margin: 8px; border-color: #3bbfce;");
       
+      next();
+    });
+  },
+  'Packaging Stylus stylesheets': function(next) {
+    stylbrewer.packageAll(function() {
       next();
     });
   }

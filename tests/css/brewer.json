@@ -9,4 +9,14 @@
   "build": "./css/build",
   "bundles": ["testless1"],
   "compress": true
+},
+{
+  "name" : "styles2",
+  "type": "css",
+  "sources": [
+    {"path": "./stylus", "type": "stylus"}
+  ],
+  "build": "./css/build2",
+  "bundles": ["test1"],
+  "compress": true
 }]
