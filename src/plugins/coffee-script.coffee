@@ -11,6 +11,7 @@ util = require '../util'
   @header = /^#\s*(?:import|require)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
   @ext = '.coffee'
   @buildext = '.js'
+  
   @Bundle: JavascriptBundle
   
   constructor: (options) ->

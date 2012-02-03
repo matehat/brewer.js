@@ -7,7 +7,7 @@
     ],
     "build": "./js/build",
     "bundles": "./bundles.json",
-    "compressed": true
+    "compress": true
   },
   {
     "name" : "scripts2",
@@ -18,7 +18,7 @@
     ],
     "build": "./js/build",
     "bundles": ["test2"],
-    "compressed": true
+    "compress": true
   },
   {
     "name" : "styles1",
@@ -30,6 +30,6 @@
     ],
     "build": "./css/build",
     "bundles": ["testless1"],
-    "compressed": true
+    "compress": true
   }
 ]

@@ -77,7 +77,7 @@ _     = require 'underscore'
     src.compileAll(-> cb() if --cnt == 0) for src in srcs
   
   compressAll: (cb) ->
-    return unless @compressed
+    return unless @compressedFile
     @compileAll =>
       cnt = @bundles.length
       _.each @bundles, (bundle) =>

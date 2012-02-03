@@ -8,11 +8,12 @@ util = require '../util'
 @StylesheetsBrewer = class StylesheetsBrewer extends Brewer
   @types = ['css', 'stylesheets']
   constructor: (options) ->
-    _.defaults options, compressed: true, compressedFile: "<%= filename %>.min.css"
     super options
-    {@compressed, @build, @bundles, @compressedFile} = options
-    @compressedFile = _.template @compressedFile
+    _.defaults options, compress: true
+    {compress, @build, @bundles} = options
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
+    if compress
+      @compressedFile = _.template if _.isString(compress) then compress else "<%= filename %>.min.css"
   
 
 @StylesheetsBundle = class StylesheetsBundle extends Bundle
