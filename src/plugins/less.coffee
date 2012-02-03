@@ -45,7 +45,6 @@ path = require 'path'
     _.defaults options, compileAll: false
     super options
     @css_path = @path
-    
   
   find: (rel) ->
     return fullPath if (fullPath = super(rel)) != false
