@@ -6,7 +6,7 @@
     {"path": "./less", "type": "less"},
     {"path": "./less/auto", "type": "less", "compileAll": true}
   ],
-  "build": "./css/build",
+  "build": "./css/build-less",
   "bundles": ["testless1"],
   "compress": true
 },
@@ -14,9 +14,10 @@
   "name" : "styles2",
   "type": "css",
   "sources": [
-    {"path": "./stylus", "type": "stylus"}
+    {"path": "./stylus", "type": "stylus"},
+    {"path": "./stylus-nib", "type": "stylus", "modules": "nib"}
   ],
-  "build": "./css/build2",
-  "bundles": ["test1"],
+  "build": "./css/build-stylus",
+  "bundles": ["test1", "test2"],
   "compress": true
 }]
