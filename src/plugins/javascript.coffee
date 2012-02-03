@@ -29,15 +29,6 @@ util = require '../util'
     src = @brewer.source(file)
     path.join (src.js_path ? src.path), util.changeExtension file, '.js'
   
-  bundle: (cb) ->
-    super (data) =>
-      fs.writeFile buildPath = @buildPath(), data, 'utf-8', ->
-        finished 'Packaged', buildPath
-        cb buildPath
-    , =>
-      finished 'Unchanged', buildPath = @buildPath()
-      cb buildPath
-  
   compress: (cb) ->
     {parser, uglify} = require 'uglify-js'
     {gen_code, ast_squeeze, ast_mangle} = uglify

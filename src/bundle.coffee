@@ -1,5 +1,6 @@
 path  = require 'path'
 util  = require './util'
+{finished} = require './command'
 fs    = require 'fs'
 
 @Bundle = class Bundle
@@ -31,13 +32,18 @@ fs    = require 'fs'
       delete @stream
   
   bundle: (cb, unchanged) ->
-    util.makedirs path.dirname @buildPath()
+    util.makedirs path.dirname (buildPath = @buildPath())
     @brewer.deps @file, (@files) =>
-      util.newest @buildPath(), @sourcePaths()..., (newest) =>
+      util.newest buildPath, @sourcePaths()..., (newest) =>
         if newest
-          unchanged()
+          finished 'Unchanged', buildPath
+          cb buildPath
         else
           @stream = ''
-          @readFile 0, cb
+          @readFile 0, (data) =>
+            @convert data, (newdata) =>
+              fs.writeFile buildPath, newdata, 'utf-8', -> 
+                finished 'Packaged', buildPath
+                cb buildPath
   
-
+  convert: (data, cb) -> cb data

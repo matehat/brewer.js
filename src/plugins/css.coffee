@@ -25,15 +25,6 @@ util = require '../util'
     file = if i? and i < @files.length then @files[i] else @file
     path.join @brewer.source(file).css_path, util.changeExtension file, '.css'
   
-  bundle: (cb) ->
-    super (data) =>
-      fs.writeFile fp = @buildPath(), data, 'utf-8', -> 
-        finished 'Packaged', fp
-        cb fp
-    , =>
-      finished 'Unchanged', fp = @buildPath()
-      cb fp
-  
   compress: (cb) ->
     ncss = require 'ncss'
     util.newer (cmpFile = @compressedFile), (buildPath = @buildPath())

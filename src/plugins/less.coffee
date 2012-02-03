@@ -14,19 +14,11 @@ path = require 'path'
     @parser = new (@less.Parser) 
       filename: @file
       paths: (src.less_path ? src.css_path) for src in @brewer.sources
-    
   
-  bundle: (cb) ->
-    Bundle::bundle.call @, (data) =>
-      @parser.parse data, (err, tree) =>
-        throw err if err
-        fs.writeFile fp = @buildPath(), tree.toCSS(), 'utf-8', ->
-          finished 'Compiled', fp
-          cb fp
-    , =>
-      finished 'Unchanged', fp = @buildPath()
-      cb fp
-  
+  convert: (data, cb) ->
+    @parser.parse data, (err, tree) =>
+      throw err if err
+      cb tree.toCSS()
   
   sourcePath: (i) ->
     file = if i? and i < @files.length then @files[i] else @file
