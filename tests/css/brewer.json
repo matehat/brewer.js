@@ -1,0 +1,12 @@
+[{
+  "name" : "styles1",
+  "type": "css",
+  "sources": [
+    {"path": "./css", "type": "css"},
+    {"path": "./less", "type": "less"},
+    {"path": "./less/auto", "type": "less", "compileAll": true}
+  ],
+  "build": "./css/build",
+  "bundles": ["testless1"],
+  "compress": true
+}]

@@ -4,7 +4,7 @@ var color = require('ansi-color').set;
 function runTests(tests, cb) {
   var i = 0, next;
   if (tests instanceof Array) {
-    (next = function() { 
+    (next = function() {
       if (i < tests.length) 
         runTests(tests[i++], next) 
     })();
@@ -13,11 +13,13 @@ function runTests(tests, cb) {
     if (tests.setup !== undefined) tests.setup();
     (next = function() {
       if (i < keys.length)
-        console.log("+", color("Testing", "cyan"), color(key = keys.shift(), 'underline')) || tests[key](next) 
+        console.log("+", color("Testing", "cyan"), color(key = keys.shift(), 'underline')) || tests[key](next);
+      else cb();
     })();
   }
 }
 
 runTests([
-  require('./bundles').tests
+  require('./js').tests,
+  require('./css').tests
 ]);
