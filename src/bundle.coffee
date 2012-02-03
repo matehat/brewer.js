@@ -33,10 +33,14 @@ fs    = require 'fs'
       cb @stream
       delete @stream
   
-  bundle: (cb) ->
+  bundle: (cb, unchanged) ->
     util.makedirs path.dirname @buildPath()
     @brewer.deps @file, (@files) =>
-      @stream = ''
-      @readFile 0, cb
+      util.newest @buildPath(), @files..., (newest) =>
+        if newest
+          unchanged()
+        else
+          @stream = ''
+          @readFile 0, cb
   
 

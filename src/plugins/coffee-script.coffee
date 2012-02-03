@@ -27,14 +27,18 @@ util = require '../util'
   compileFile: (cfpath, next) ->
     coffee = require 'coffee-script'
     cfpath = path.join @path, cfpath
-    fs.readFile cfpath, 'utf-8', (err, cf) =>
-      jspath = cfpath.replace path.join(@path, '.'), path.join(@output, '.')
-      jspath = util.changeExtension jspath, '.js'
-      util.makedirs path.dirname jspath
-      fs.writeFile jspath, coffee.compile(cf), 'utf-8', (err) =>
-        throw err if err
-        finished 'Compiled', cfpath
-        next()
+    jspath = cfpath.replace path.join(@path, '.'), path.join(@output, '.')
+    jspath = util.changeExtension jspath, '.js'
+    util.newer cfpath, jspath, (err, newer) =>
+      unless newer
+        finished 'Unchanged', cfpath
+        return next()
+      fs.readFile cfpath, 'utf-8', (err, cf) =>
+        util.makedirs path.dirname jspath
+        fs.writeFile jspath, coffee.compile(cf), 'utf-8', (err) =>
+          throw err if err
+          finished 'Compiled', cfpath
+          next()
       
     
   

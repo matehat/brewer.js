@@ -14,8 +14,12 @@ util = require '../util'
     _.defaults options, compress: true
     {compress, @build, @bundles} = options
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
+    
     if compress
-      @compressedFile = _.template if _.isString(compress) then compress else "<%= filename %>.min.js"
+      @compressedFile = _.template if _.isString compress 
+        compress
+      else 
+        "<%= filename %>.min.js"
   
 
 
@@ -27,16 +31,27 @@ util = require '../util'
   
   bundle: (cb) ->
     super (data) =>
-      fs.writeFile fp = @buildPath(), data, 'utf-8', -> cb fp
-    
+      fs.writeFile buildPath = @buildPath(), data, 'utf-8', ->
+        finished 'Packaged', buildPath
+        cb buildPath
+    , =>
+      finished 'Unchanged', buildPath = @buildPath()
+      cb buildPath
   
   compress: (cb) ->
     {parser, uglify} = require 'uglify-js'
     {gen_code, ast_squeeze, ast_mangle} = uglify
-    fs.readFile @buildPath(), 'utf-8', (err, data) =>
-      code = gen_code ast_squeeze parser.parse data
-      fs.writeFile (fp = @compressedFile), code, 'utf-8', ->
-        cb fp
+    util.newer (cmpFile = @compressedFile), (buildPath = @buildPath())
+    , (err, newer) =>
+      if newer
+        finished 'Unchanged', cmpFile
+        return cb(cmpFile)
+      fs.readFile buildPath, 'utf-8', (err, data) =>
+        code = gen_code ast_squeeze parser.parse data
+        fs.writeFile cmpFile, code, 'utf-8', ->
+          finished 'Compressed', cmpFile
+          cb cmpFile
+      
       
     
   

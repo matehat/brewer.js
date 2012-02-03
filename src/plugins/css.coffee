@@ -27,11 +27,12 @@ util = require '../util'
   
   bundle: (cb) ->
     super (data) =>
-      util.makedirs path.dirname fp = @buildPath()
-      fs.writeFile fp, data, 'utf-8', -> 
+      fs.writeFile fp = @buildPath(), data, 'utf-8', -> 
         finished 'Packaged', fp
         cb fp
-    
+    , =>
+      finished 'Unchanged', fp = @buildPath()
+      cb fp
   
   compress: (cb) ->
     ncss = require 'ncss'
