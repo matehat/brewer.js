@@ -1,6 +1,6 @@
 path  = require 'path'
 util  = require './util'
-{finished} = require './command'
+{finished, debug} = require './command'
 fs    = require 'fs'
 
 @Bundle = class Bundle
@@ -46,4 +46,17 @@ fs    = require 'fs'
                 finished 'Packaged', buildPath
                 cb buildPath
   
-  convert: (data, cb) -> cb data
+  compress: (cb) ->
+    util.newer (cmpFile = @compressedFile), (buildPath = @buildPath())
+    , (err, newer) =>
+      if newer
+        finished 'Unchanged', cmpFile
+        return cb cmpFile
+      fs.readFile buildPath, 'utf-8', (err, data) =>
+        @compressFile data, (code) =>
+          fs.writeFile cmpFile, code, 'utf-8', ->
+            finished 'Compressed', cmpFile
+            cb cmpFile
+      
+  convertFile: (data, cb) -> cb data
+  compressFile: @::convertFile

@@ -29,22 +29,11 @@ util = require '../util'
     src = @brewer.source(file)
     path.join (src.js_path ? src.path), util.changeExtension file, '.js'
   
-  compress: (cb) ->
+  compressFile: (data, cb) ->
     {parser, uglify} = require 'uglify-js'
     {gen_code, ast_squeeze, ast_mangle} = uglify
-    util.newer (cmpFile = @compressedFile), (buildPath = @buildPath())
-    , (err, newer) =>
-      if newer
-        finished 'Unchanged', cmpFile
-        return cb(cmpFile)
-      fs.readFile buildPath, 'utf-8', (err, data) =>
-        code = gen_code ast_squeeze parser.parse data
-        fs.writeFile cmpFile, code, 'utf-8', ->
-          finished 'Compressed', cmpFile
-          cb cmpFile
-      
-      
-    
+    cb gen_code ast_squeeze parser.parse data
+  
   
 
 @JavascriptSource = class JavascriptSource extends Source

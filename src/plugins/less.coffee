@@ -15,7 +15,7 @@ path = require 'path'
       filename: @file
       paths: (src.less_path ? src.css_path) for src in @brewer.sources
   
-  convert: (data, cb) ->
+  convertFile: (data, cb) ->
     @parser.parse data, (err, tree) =>
       throw err if err
       cb tree.toCSS()

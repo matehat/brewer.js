@@ -23,19 +23,11 @@ util = require '../util'
   
   sourcePath: (i) ->
     file = if i? and i < @files.length then @files[i] else @file
-    path.join @brewer.source(file).css_path, util.changeExtension file, '.css'
+    src = @brewer.source(file)
+    path.join (src.css_path ? src.path), util.changeExtension file, '.css'
   
-  compress: (cb) ->
-    ncss = require 'ncss'
-    util.newer (cmpFile = @compressedFile), (buildPath = @buildPath())
-    , (err, newer) =>
-      if newer
-        finished 'Unchanged', cmpFile
-        return cb(cmpFile)
-      fs.readFile buildPath, 'utf-8', (err, data) =>
-        fs.writeFile cmpFile, ncss(data), 'utf-8', =>
-          finished 'Compressed', cmpFile
-          cb cmpFile
+  compressFile: (data, cb) ->
+    cb (require 'ncss') data
   
 
 @StylesheetsSource = class StylesheetsSource extends Source
@@ -47,7 +39,6 @@ util = require '../util'
   
   constructor: (options) ->
     super options
-    @css_path = @path
   
   test: (path) -> 
     util.hasExtension path, '.css'
