@@ -14,11 +14,8 @@ fs    = require 'fs'
   sourcePath: (i) ->
     @brewer.fullPath(if i < @files.length then @files[i] else @file)
   
-  stat: (cb) ->
-    fs.stat @file, cb
-    
-  compressedStat: (cb) ->
-    fs.stat @compressedFile, cb
+  sourcePaths: ->
+    @sourcePath(i) for i in [0..@files.length]
   
   readFile: (i, cb, mod=((a)->a)) ->
     rs = fs.readFile @sourcePath(i), {encoding: 'utf-8'}, (err, data) =>
@@ -36,7 +33,7 @@ fs    = require 'fs'
   bundle: (cb, unchanged) ->
     util.makedirs path.dirname @buildPath()
     @brewer.deps @file, (@files) =>
-      util.newest @buildPath(), @file, @files..., (newest) =>
+      util.newest @buildPath(), @sourcePaths()..., (newest) =>
         if newest
           unchanged()
         else

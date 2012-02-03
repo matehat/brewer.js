@@ -36,10 +36,15 @@ util = require '../util'
   
   compress: (cb) ->
     ncss = require 'ncss'
-    fs.readFile @buildPath(), 'utf-8', (err, data) =>
-      fs.writeFile @compressedFile, ncss(data), 'utf-8', =>
-        finished 'Compressed', @compressedFile
-        cb @compressedFile
+    util.newer (cmpFile = @compressedFile), (buildPath = @buildPath())
+    , (err, newer) =>
+      if newer
+        finished 'Unchanged', cmpFile
+        return cb(cmpFile)
+      fs.readFile buildPath, 'utf-8', (err, data) =>
+        fs.writeFile cmpFile, ncss(data), 'utf-8', =>
+          finished 'Compressed', cmpFile
+          cb cmpFile
   
 
 @StylesheetsSource = class StylesheetsSource extends Source

@@ -1,6 +1,7 @@
 _ = require 'underscore'
 fs = require 'fs'
 path = require 'path'
+{debug} = require './command'
 
 @makedirs = makedirs = (fpath) ->
   fpath = path.resolve fpath
@@ -30,7 +31,8 @@ path = require 'path'
         time1 = stats.mtime.getTime()
         fs.stat file2, (err, stats) ->
           return cb err if err
-          cb null, time1 > stats.mtime.getTime()
+          time2 = stats.mtime.getTime()
+          cb null, time1 > time2
 
 
 @newest = (file, others..., cb) =>

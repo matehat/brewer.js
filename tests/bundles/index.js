@@ -9,7 +9,7 @@ var brewer = require('../..'),
     color = require('ansi-color').set,
     Brewer = brewer.Brewer;
 
-var OK = function(msg) { console.log(color("OK:", "green"), msg); };
+var OK = function(msg) { console.log('!', color("OK", "green"), msg); };
 
 exports.tests = {
   setup: function() {
