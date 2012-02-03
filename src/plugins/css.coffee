@@ -22,7 +22,7 @@ util = require '../util'
     super @brewer, @file
   
   sourcePath: (i) ->
-    file = if i < @files.length then @files[i] else @file
+    file = if i? and i < @files.length then @files[i] else @file
     path.join @brewer.source(file).css_path, util.changeExtension file, '.css'
   
   bundle: (cb) ->

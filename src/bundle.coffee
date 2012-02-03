@@ -36,7 +36,7 @@ fs    = require 'fs'
   bundle: (cb, unchanged) ->
     util.makedirs path.dirname @buildPath()
     @brewer.deps @file, (@files) =>
-      util.newest @buildPath(), @files..., (newest) =>
+      util.newest @buildPath(), @file, @files..., (newest) =>
         if newest
           unchanged()
         else

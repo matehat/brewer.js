@@ -73,7 +73,7 @@ _     = require 'underscore'
   
   compileAll: (cb) ->
     srcs = (src for src in @sources when src.compileAll?)
-    cnt = srcs.length
+    cb() if (cnt = srcs.length) == 0
     src.compileAll(-> cb() if --cnt == 0) for src in srcs
   
   compressAll: (cb) ->

@@ -30,7 +30,6 @@ util  = require './util'
   
   compileAll: (cb) ->
     return cb() unless @compileFile?
-    
     list = []
     @listFiles (path) =>
       list.push path

@@ -29,7 +29,7 @@ path = require 'path'
   
   
   sourcePath: (i) ->
-    file = if i < @files.length then @files[i] else @file
+    file = if i? and i < @files.length then @files[i] else @file
     path.join (src = @brewer.source(file)).css_path, util.changeExtension file, src.constructor.ext
   
   readFile: (i, cb, mod=((a)->a)) ->
@@ -65,7 +65,7 @@ path = require 'path'
   test: (relpath) -> 
     path.extname(relpath) == '.less'
   
-  compileAll: (cb) ->
+  compileAll: (cb) ->  
     return cb() unless @options.compileAll
     super cb
   
