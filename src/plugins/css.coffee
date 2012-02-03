@@ -3,7 +3,7 @@ fs = require 'fs'
 path = require 'path'
 util = require '../util'
 {Brewer, Source, Bundle} = require '..'
-{finished} = require '../command'
+{finished, debug} = require '../command'
 
 @StylesheetsBrewer = class StylesheetsBrewer extends Brewer
   @types = ['css', 'stylesheets']
@@ -17,14 +17,15 @@ util = require '../util'
   
 
 @StylesheetsBundle = class StylesheetsBundle extends Bundle
-  constructor: (@brewer, @file) ->
-    @ext = '.css'
-    super @brewer, @file
+  @ext = '.css'
+  
+  importPath: (src, file) ->
+    path.join (src.output ? src.path), util.changeExtension file, 
+    ((ctor = src.constructor).buildext ? ctor.ext)
   
   sourcePath: (i) ->
     file = if i? and i < @files.length then @files[i] else @file
-    src = @brewer.source(file)
-    path.join (src.css_path ? src.path), util.changeExtension file, '.css'
+    @importPath @brewer.source(file), file
   
   compressFile: (data, cb) ->
     cb (require 'ncss') data
@@ -36,9 +37,6 @@ util = require '../util'
   @header = /^\/\*\s*(?:require|import)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)\*\//m
 
   @Bundle: StylesheetsBundle
-  
-  constructor: (options) ->
-    super options
   
   test: (path) -> 
     util.hasExtension path, '.css'

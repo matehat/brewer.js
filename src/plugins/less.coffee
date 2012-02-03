@@ -3,35 +3,32 @@ fs = require 'fs'
 path = require 'path'
 {Source} = require '..'
 {Bundle} = require '../bundle'
-{finished} = require '../command'
+{finished, debug} = require '../command'
 {StylesheetsBrewer, StylesheetsSource, StylesheetsBundle} = require './css'
 
 @LessBundle = class LessBundle extends StylesheetsBundle
+  @buildext = '.css'
   constructor: (@brewer, @file) ->
     super @brewer, @file
-    @buildext = '.css'
-    @less = require 'less'
-    @parser = new (@less.Parser) 
+  
+  importPath: (src, file) ->
+    if src instanceof LessSource
+      path.join src.path, util.changeExtension file, src.constructor.ext
+    else
+      super src, file
+  
+  less: ->
+    paths = ((src.less_path ? src.css_path) for src in @brewer.sources)
+    new (require('less').Parser)
       filename: @file
-      paths: (src.less_path ? src.css_path) for src in @brewer.sources
+      paths: paths
   
   convertFile: (data, cb) ->
-    @parser.parse data, (err, tree) =>
+    @less().parse data, (err, tree) =>
       throw err if err
       cb tree.toCSS()
   
-  sourcePath: (i) ->
-    file = if i? and i < @files.length then @files[i] else @file
-    path.join (src = @brewer.source(file)).css_path, util.changeExtension file, src.constructor.ext
-  
-  readFile: (i, cb, mod=((a)->a)) ->
-    file = if i < @files.length then @files[i] else @file
-    rs = fs.readFile @sourcePath(i), {encoding: 'utf-8'}, (err, data) =>
-      throw err if err
-      @stream += mod(data.toString()) + '\n'
-      @nextFile i, cb, mod
-    
-  
+
 
 @LessSource = class LessSource extends StylesheetsSource
   @types = ['less']
@@ -43,8 +40,10 @@ path = require 'path'
   
   constructor: (options, @brewer) ->
     _.defaults options, compileAll: false
+    {@output} = options
     super options
-    @css_path = @path
+    @less_path = @path
+    @css_path = @output
   
   find: (rel) ->
     return fullPath if (fullPath = super(rel)) != false
@@ -57,12 +56,10 @@ path = require 'path'
     path.extname(relpath) == '.less'
   
   compileAll: (cb) ->  
-    return cb() unless @options.compileAll
-    super cb
+    if @options.compileAll then super cb else cb()
   
   compileFile: (relpath, next) ->
-    (new LessBundle(@brewer, relpath)).bundle ->
-      next()
+    (new LessBundle(@brewer, relpath)).bundle -> next()
   
 
 Source.extend LessSource

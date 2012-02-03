@@ -20,6 +20,7 @@ fs    = require 'fs'
   
   readFile: (i, cb, mod=((a)->a)) ->
     rs = fs.readFile @sourcePath(i), {encoding: 'utf-8'}, (err, data) =>
+      throw err if err?
       @stream += mod(data.toString())
       @nextFile i, cb, mod
     
@@ -41,7 +42,7 @@ fs    = require 'fs'
         else
           @stream = ''
           @readFile 0, (data) =>
-            @convert data, (newdata) =>
+            @convertFile data, (newdata) =>
               fs.writeFile buildPath, newdata, 'utf-8', -> 
                 finished 'Packaged', buildPath
                 cb buildPath
