@@ -31,7 +31,7 @@ util = require '../util'
     jspath = util.changeExtension jspath, '.js'
     util.newer cfpath, jspath, (err, newer) =>
       unless newer
-        finished 'Unchanged', cfpath
+        # finished 'Unchanged', cfpath
         return next()
       fs.readFile cfpath, 'utf-8', (err, cf) =>
         util.makedirs path.dirname jspath

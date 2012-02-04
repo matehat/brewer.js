@@ -37,7 +37,7 @@ fs    = require 'fs'
     @brewer.deps @file, (@files) =>
       util.newest buildPath, @sourcePaths()..., (newest) =>
         if newest
-          finished 'Unchanged', buildPath
+          # finished 'Unchanged', buildPath
           cb buildPath
         else
           @stream = ''
@@ -51,7 +51,7 @@ fs    = require 'fs'
     util.newer (cmpFile = @compressedFile), (buildPath = @buildPath())
     , (err, newer) =>
       if newer
-        finished 'Unchanged', cmpFile
+        # finished 'Unchanged', cmpFile
         return cb cmpFile
       fs.readFile buildPath, 'utf-8', (err, data) =>
         @compressFile data, (code) =>
