@@ -7,7 +7,7 @@
     {"path": "./less/auto", "type": "less", "compileAll": true}
   ],
   "build": "./css/build-less",
-  "bundles": ["testless1"],
+  "bundles": ["testcss1", "testless1"],
   "compress": true
 },
 {
