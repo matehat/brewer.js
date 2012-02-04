@@ -23,20 +23,20 @@
   },
   "dependencies": {
     "underscore": ">= 0.0.1",
-    "js2coffee": ">= 0.1.0",
     "mkdirp": ">= 0.3.0",
     "uglify-js": ">= 1.2.0",
-    "ncss": ">= 1.1.0",
     "walker": ">= 1.0.0",
     "growl": ">= 1.4.0",
     "ansi-color": ">= 0.2.0"
   },
   "devDependencies": {
     "coffee-script": ">= 1.1.0",
-    "sass": ">= 0.5.0",
     "less": ">= 1.2.0",
     "jsdom": ">= 0.2.10",
     "cssom": ">= 0.2.0",
-    "stylus": ">= 0.22.0"
+    "ncss": ">= 1.1.0",
+    "stylus": ">= 0.22.0",
+    "vows": ">= 0.6.0",
+    "nib": ">= 0.3.0"
   }
 }
