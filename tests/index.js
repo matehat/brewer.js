@@ -20,6 +20,6 @@ function runTests(tests, cb) {
 }
 
 runTests([
-//  require('./js').tests,
+  require('./js').tests,
   require('./css').tests
 ]);
