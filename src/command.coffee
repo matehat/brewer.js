@@ -18,11 +18,15 @@ clr = require('ansi-color').set
     .command('init')
     .description("Initialize #{clr('Brewer', 'green')} in the current directory")
       
-  
   program
     .command('watch')
     .description("""Watch for modifications on source files, automatically
     compiling/compressing/packaging when they occur.""")
   
+  program
+    .command('server [port]')
+    .description("Start the #{clr('Brewer', 'green')} server")
+    .action (port) ->
+      (require './web').run port ? 3000
   
   program.parse argv
