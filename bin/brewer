@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-(require('../lib/command')).parse(process.argv);
+(require('../lib/command')).run(process.argv);
