@@ -5,7 +5,7 @@ _ = require 'underscore'
 {Source} = require '..'
 {Bundle} = require '../bundle'
 {finished, debug} = require '../command'
-{StylesheetsBrewer, StylesheetsSource, StylesheetsBundle} = require './css'
+{StylesheetsPackage, StylesheetsSource, StylesheetsBundle} = require './css'
 
 @StylusBundle = class StylusBundle extends StylesheetsBundle
   stylus: (data) ->
@@ -18,14 +18,14 @@ _ = require 'underscore'
       super src, file
   
   importPaths: ->
-    for src in @brewer.sources when src instanceof StylusSource
+    for src in @package.sources when src instanceof StylusSource
       path.join src.stylus_path
   
   setOptions: (styl) ->
     styl.set 'paths', @importPaths()
     styl.set 'filename', @file
     
-    opts = @brewer.source(@file).options
+    opts = @package.source(@file).options
     if (mods = opts.modules)?
       mods = [mods] if _.isString mods
       for mod in mods
@@ -48,7 +48,7 @@ _ = require 'underscore'
   
   @Bundle = StylusBundle
   
-  constructor: (options, @brewer) ->
+  constructor: (options, @package) ->
     _.defaults options, compileAll: false
     super options
     @css_path = @output
@@ -68,7 +68,7 @@ _ = require 'underscore'
     if @options.compileAll then super cb else cb()
   
   compileFile: (relpath, next) ->
-    (new StylusBundle(@brewer, relpath)).bundle -> next()
+    (new StylusBundle(@package, relpath)).bundle -> next()
   
 
 Source.extend StylusSource

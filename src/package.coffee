@@ -6,15 +6,15 @@ _     = require 'underscore'
 
 {Source} = require './source'
 
-@Brewer = class Brewer
+@Package = class Package
   @registry = {}
-  @extend: (brewers...) ->
-    for brewer in brewers
-      for type in (brewer.types ? [])
-        @registry[type] = brewer
+  @extend: (packages...) ->
+    for package in packages
+      for type in (package.types ? [])
+        @registry[type] = package
   
   @create: (options) ->
-    throw "Brewer type #{options.type} not known" unless (typ = @registry[options.type])?
+    throw "Package type #{options.type} not known" unless (typ = @registry[options.type])?
     new typ options
   
   

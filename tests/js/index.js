@@ -7,19 +7,18 @@ var brewer = require('../..'),
     jsdom = require('jsdom'),
     cssom = require('cssom'),
     color = require('ansi-color').set,
-    Brewer = brewer.Brewer;
-
-var OK = function(msg) { console.log('!', color("OK", "green"), msg); };
+    Package = brewer.Package,
+    OK = require('..').OK;
 
 exports.tests = {
   setup: function() {
     process.chdir(path.resolve(__dirname));
     var configs = JSON.parse(fs.readFileSync(path.resolve(__dirname, './brewer.json')), 'utf-8');
-    jsbrewer = Brewer.create(configs[0]);
-    jsbrewer2 = Brewer.create(configs[1]);
+    jspackage = Package.create(configs[0]);
+    jspackage2 = Package.create(configs[1]);
   },
   'Packaging Coffeescript': function(cb) {
-    jsbrewer.packageAll(function() {
+    jspackage.packageAll(function() {
       test = require('./js/build/test');
       assert.ok(test.F == 2);
       OK('test.F == 2');
@@ -29,7 +28,7 @@ exports.tests = {
     });
   },
   'Compressing Coffeescript': function(cb) {
-    jsbrewer.compressAll(function() {
+    jspackage.compressAll(function() {
       test = require('./js/build/test.min');
       assert.ok(test.F == 2);
       OK('test.F == 2')
@@ -39,7 +38,7 @@ exports.tests = {
     });
   },
   'Packaging Coffeescript + External Libraries': function(next) {
-    jsbrewer2.packageAll(function() {
+    jspackage2.packageAll(function() {
       jsdom.env({
         html: '<html><body></body></html>',
         src: [fs.readFileSync('./js/build/test2.js')],
@@ -54,7 +53,7 @@ exports.tests = {
     });
   },
   'Compressing Coffeescript + External Libraries': function(next) {
-    jsbrewer2.compressAll(function() {
+    jspackage2.compressAll(function() {
       jsdom.env({
         html: '<html><body></body></html>',
         src: [fs.readFileSync('./js/build/test2.min.js')],

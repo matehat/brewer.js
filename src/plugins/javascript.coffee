@@ -2,13 +2,15 @@ _ = require 'underscore'
 fs = require 'fs'
 path = require 'path'
 
-{Brewer, Source} = require '..'
+{Package, Source} = require '..'
 util = require '../util'
 {Bundle} = require '../bundle'
 {finished} = require '../command'
 
-@JavascriptBrewer = class JavascriptBrewer extends Brewer
+@JavascriptPackage = class JavascriptPackage extends Package
   @types = ['js', 'javascript']
+  @default = 'javascript'
+  
   constructor: (options) ->
     super options
     _.defaults options, compress: true
@@ -26,7 +28,7 @@ util = require '../util'
 @JavascriptBundle = class JavascriptBundle extends Bundle
   sourcePath: (i) ->
     file = if i < @files.length then @files[i] else @file
-    src = @brewer.source(file)
+    src = @package.source(file)
     path.join (src.js_path ? src.path), util.changeExtension file, '.js'
   
   compressFile: (data, cb) ->
@@ -44,4 +46,4 @@ util = require '../util'
 
 
 Source.extend JavascriptSource
-Brewer.extend JavascriptBrewer
+Package.extend JavascriptPackage

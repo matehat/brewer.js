@@ -11,9 +11,9 @@ util  = require './util'
       for type in (src.types ? [])
         @registry[type] = src
   
-  @create: (options, brewer) ->
+  @create: (options, package) ->
     throw "Source type #{options.type} not known" unless (typ = @registry[options.type])?
-    new typ options, brewer
+    new typ options, package
   
   
   constructor: (@options) ->

@@ -6,20 +6,20 @@ var brewer = require('../..'),
     _ = require('underscore'),
     cssom = require('cssom'),
     color = require('ansi-color').set,
-    Brewer = brewer.Brewer;
+    Package = brewer.Package,
+    OK = require('..').OK,
 
-var OK = function(msg) { console.log('!', color("OK", "green"), msg); },
-    select = function(css, sel) { return _.find(css, function(item, key) {return item.selectorText == sel}); }
+    select = function(css, sel) { return _.find(css, function(item, key) {return item.selectorText == sel}); };
 
 exports.tests = {
   setup: function() {
     process.chdir(path.resolve(__dirname));
     var configs = JSON.parse(fs.readFileSync(path.resolve(__dirname, './brewer.json')), 'utf-8');
-    cssbrewer = Brewer.create(configs[0]);
-    stylbrewer = Brewer.create(configs[1]);
+    csspackage = Package.create(configs[0]);
+    stylpackage = Package.create(configs[1]);
   },
   'Packaging LESS stylesheets': function(next) {
-    cssbrewer.packageAll(function() {
+    csspackage.packageAll(function() {
       css = cssom.parse(fs.readFileSync('./css/build-less/testless1.css', 'utf-8')).cssRules;
       bodyp = select(css,'body p');
       assert.ok(bodyp !== undefined && bodyp.style.color == 'white');
@@ -41,7 +41,7 @@ exports.tests = {
     });
   },
   'Compressing LESS stylesheets': function(next) {
-    cssbrewer.compressAll(function() {
+    csspackage.compressAll(function() {
       css = cssom.parse(fs.readFileSync('./css/build-less/testless1.min.css', 'utf-8')).cssRules;
       bodyp = select(css,'body p');
       assert.ok(bodyp !== undefined && bodyp.style.color == 'white');
@@ -63,7 +63,7 @@ exports.tests = {
     });
   },
   'Packaging Stylus stylesheets': function(next) {
-    stylbrewer.packageAll(function() {
+    stylpackage.packageAll(function() {
       css = cssom.parse(fs.readFileSync('./css/build-stylus/test1.css', 'utf-8')).cssRules;
       
       bodylogo = select(css, "body #logo");
@@ -83,7 +83,7 @@ exports.tests = {
     });
   },
   'Compressing Stylus stylesheets': function(next) {
-    stylbrewer.compressAll(function() {
+    stylpackage.compressAll(function() {
       css = cssom.parse(fs.readFileSync('./css/build-stylus/test1.min.css', 'utf-8')).cssRules;
       
       bodylogo = select(css, "body #logo");

@@ -4,16 +4,16 @@ util  = require './util'
 fs    = require 'fs'
 
 @Bundle = class Bundle
-  constructor: (@brewer, @file) ->
-    @basepath = path.join @brewer.build, @file
-    @compressedFile = @brewer.compressedFile filename: util.changeExtension @basepath, ''
+  constructor: (@package, @file) ->
+    @basepath = path.join @package.build, @file
+    @compressedFile = @package.compressedFile filename: util.changeExtension @basepath, ''
   
   buildPath: ->
     @_buildPath = util.changeExtension @basepath, (@constructor.buildext ? @constructor.ext) unless @_buildPath?
     @_buildPath
   
   sourcePath: (i) ->
-    @brewer.fullPath(if i < @files.length then @files[i] else @file)
+    @package.fullPath(if i < @files.length then @files[i] else @file)
   
   sourcePaths: ->
     @sourcePath(i) for i in [0..@files.length]
@@ -34,7 +34,7 @@ fs    = require 'fs'
   
   bundle: (cb, unchanged) ->
     util.makedirs path.dirname (buildPath = @buildPath())
-    @brewer.deps @file, (@files) =>
+    @package.deps @file, (@files) =>
       util.newest buildPath, @sourcePaths()..., (newest) =>
         if newest
           # finished 'Unchanged', buildPath

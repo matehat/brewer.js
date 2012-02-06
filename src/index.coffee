@@ -1,4 +1,4 @@
-{@Brewer} = require './brewer'
+{@Package} = require './package'
 {@Source} = require './source'
 {@Bundle} = require './bundle'
 

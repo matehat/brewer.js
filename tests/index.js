@@ -13,11 +13,13 @@ function runTests(tests, cb) {
     if (tests.setup !== undefined) tests.setup();
     (next = function() {
       if (i < keys.length)
-        console.log("+", color("Testing", "cyan"), color(key = keys.shift(), 'underline')) || tests[key](next);
+        console.log(color("Testing", "green"), color(key = keys.shift(), 'underline')) || tests[key](next);
       else cb();
     })();
   }
 }
+
+exports.OK = function(msg) { console.log(color("  ✔", "green"), msg); };
 
 runTests([
   require('./js').tests,

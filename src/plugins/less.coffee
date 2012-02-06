@@ -4,12 +4,12 @@ path = require 'path'
 {Source} = require '..'
 {Bundle} = require '../bundle'
 {finished, debug} = require '../command'
-{StylesheetsBrewer, StylesheetsSource, StylesheetsBundle} = require './css'
+{StylesheetsPackage, StylesheetsSource, StylesheetsBundle} = require './css'
 
 @LessBundle = class LessBundle extends StylesheetsBundle
   @buildext = '.css'
-  constructor: (@brewer, @file) ->
-    super @brewer, @file
+  constructor: (@package, @file) ->
+    super @package, @file
   
   importPath: (src, file) ->
     if src instanceof LessSource
@@ -18,7 +18,7 @@ path = require 'path'
       super src, file
   
   less: ->
-    paths = ((src.less_path ? src.css_path) for src in @brewer.sources)
+    paths = ((src.less_path ? src.css_path) for src in @package.sources)
     new (require('less').Parser)
       filename: @file
       paths: paths
@@ -38,7 +38,7 @@ path = require 'path'
   
   @Bundle = LessBundle
   
-  constructor: (options, @brewer) ->
+  constructor: (options, @package) ->
     _.defaults options, compileAll: false
     {@output} = options
     super options
@@ -59,7 +59,7 @@ path = require 'path'
     if @options.compileAll then super cb else cb()
   
   compileFile: (relpath, next) ->
-    (new LessBundle(@brewer, relpath)).bundle -> next()
+    (new LessBundle(@package, relpath)).bundle -> next()
   
 
 Source.extend LessSource

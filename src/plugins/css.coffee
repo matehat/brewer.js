@@ -2,11 +2,13 @@ _ = require 'underscore'
 fs = require 'fs'
 path = require 'path'
 util = require '../util'
-{Brewer, Source, Bundle} = require '..'
+{Package, Source, Bundle} = require '..'
 {finished, debug} = require '../command'
 
-@StylesheetsBrewer = class StylesheetsBrewer extends Brewer
+@StylesheetsPackage = class StylesheetsPackage extends Package
   @types = ['css', 'stylesheets']
+  @default = 'css'
+  
   constructor: (options) ->
     super options
     _.defaults options, compress: true
@@ -25,7 +27,7 @@ util = require '../util'
   
   sourcePath: (i) ->
     file = if i? and i < @files.length then @files[i] else @file
-    @importPath @brewer.source(file), file
+    @importPath @package.source(file), file
   
   compressFile: (data, cb) ->
     cb (require 'ncss') data
@@ -43,4 +45,4 @@ util = require '../util'
   
 
 Source.extend StylesheetsSource
-Brewer.extend StylesheetsBrewer
+Package.extend StylesheetsPackage
