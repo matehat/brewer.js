@@ -23,5 +23,6 @@ exports.OK = function(msg) { console.log(color("  ✔", "green"), msg); };
 
 runTests([
   require('./js').tests,
-  require('./css').tests
+  require('./css').tests,
+  require('./brewfile').tests
 ]);

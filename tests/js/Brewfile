@@ -1,0 +1,21 @@
+javascript "script1", ->
+  @options
+    build: "./js/build"
+    bundles: "./bundles.json"
+    compress: true
+  
+  @coffeescript "./coffee",
+    output: "./js"
+
+javascript "script2", ->
+  @options
+    type: "js"
+    build: "./js/build"
+    bundles: ["test2"]
+    compress: true
+  
+  @coffeescript "./coffee", 
+    output: "./js"
+    
+  @source "./deps", 
+    follow: false

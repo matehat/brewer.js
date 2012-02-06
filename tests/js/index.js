@@ -13,9 +13,9 @@ var brewer = require('../..'),
 exports.tests = {
   setup: function() {
     process.chdir(path.resolve(__dirname));
-    var configs = JSON.parse(fs.readFileSync(path.resolve(__dirname, './brewer.json')), 'utf-8');
-    jspackage = Package.create(configs[0]);
-    jspackage2 = Package.create(configs[1]);
+    packages = brewer.brewfile(path.resolve(__dirname, './Brewfile'))
+    jspackage = packages[0];
+    jspackage2 = packages[1];
   },
   'Packaging Coffeescript': function(cb) {
     jspackage.bundleAll(function() {

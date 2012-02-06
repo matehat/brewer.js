@@ -8,15 +8,15 @@ var brewer = require('../..'),
     color = require('ansi-color').set,
     Package = brewer.Package,
     OK = require('..').OK,
-
+    
     select = function(css, sel) { return _.find(css, function(item, key) {return item.selectorText == sel}); };
 
 exports.tests = {
   setup: function() {
     process.chdir(path.resolve(__dirname));
-    var configs = JSON.parse(fs.readFileSync(path.resolve(__dirname, './brewer.json')), 'utf-8');
-    csspackage = Package.create(configs[0]);
-    stylpackage = Package.create(configs[1]);
+    packages = brewer.brewfile(path.resolve(__dirname, './Brewfile'));
+    csspackage = packages[0];
+    stylpackage = packages[1];
   },
   'Packaging LESS stylesheets': function(next) {
     csspackage.bundleAll(function() {

@@ -2,6 +2,7 @@ path  = require 'path'
 fs    = require 'fs'
 _     = require 'underscore'
 util  = require './util'
+{debug} = require './command'
 {EventEmitter} = require 'events'
 
 @Source = class Source
@@ -12,8 +13,8 @@ util  = require './util'
         @registry[type] = src
   
   @create: (options, package) ->
-    throw "Source type #{options.type} not known" unless (typ = @registry[options.type])?
-    new typ options, package
+    throw "Source type #{options.type} not known" unless (typ = @registry[options.opts.type])?
+    new typ options.opts, package
   
   
   constructor: (@options) ->

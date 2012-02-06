@@ -11,8 +11,8 @@ util = require '../util'
   @types = ['js', 'javascript']
   @default = 'javascript'
   
-  constructor: (options) ->
-    super options
+  constructor: (options, sources) ->
+    super options, sources
     _.defaults options, compress: true
     {compress, @build, @bundles} = options
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
