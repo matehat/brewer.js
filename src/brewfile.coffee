@@ -70,7 +70,7 @@ newContext = ->
   return ctx.configs.packages
 
 @packages = (file) ->
-  _Package = (require '../lib').Package
+  Pkg = (require '../lib').Package
   _.map configs(file), (pkg) ->
-    _Package.create pkg.opts, pkg.srcs
+    Pkg.create pkg.opts, pkg.srcs
   
