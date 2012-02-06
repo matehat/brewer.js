@@ -19,7 +19,7 @@ exports.tests = {
     stylpackage = Package.create(configs[1]);
   },
   'Packaging LESS stylesheets': function(next) {
-    csspackage.packageAll(function() {
+    csspackage.bundleAll(function() {
       css = cssom.parse(fs.readFileSync('./css/build-less/testless1.css', 'utf-8')).cssRules;
       bodyp = select(css,'body p');
       assert.ok(bodyp !== undefined && bodyp.style.color == 'white');
@@ -63,7 +63,7 @@ exports.tests = {
     });
   },
   'Packaging Stylus stylesheets': function(next) {
-    stylpackage.packageAll(function() {
+    stylpackage.bundleAll(function() {
       css = cssom.parse(fs.readFileSync('./css/build-stylus/test1.css', 'utf-8')).cssRules;
       
       bodylogo = select(css, "body #logo");

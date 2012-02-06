@@ -39,7 +39,7 @@ _     = require 'underscore'
   source: (relpath) -> 
     @findFile(relpath).source
   
-  bundle: (relpath) ->
+  bundleObj: (relpath) ->
     new (@source(relpath).constructor.Bundle)(@, relpath)
   
   
@@ -65,10 +65,10 @@ _     = require 'underscore'
   
   
   compress: (relpath, cb) ->
-    @bundle(relpath).compress cb
+    @bundleObj(relpath).compress cb
   
-  package: (relpath, cb) -> 
-    @bundle(relpath).bundle cb
+  bundle: (relpath, cb) -> 
+    @bundleObj(relpath).bundle cb
   
   
   compileAll: (cb) ->
@@ -83,14 +83,16 @@ _     = require 'underscore'
       _.each @bundles, (bundle) =>
         @compress bundle, (pkg) =>
           cb() if --cnt == 0
+        
       
     
   
-  packageAll: (cb) ->
+  bundleAll: (cb) ->
     @compileAll =>
       cnt = @bundles.length
       _.each @bundles, (bundle) => 
-        @package bundle, (pkg) =>
+        @bundle bundle, (pkg) =>
           cb() if --cnt == 0
       
     
+  

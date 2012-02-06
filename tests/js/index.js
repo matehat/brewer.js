@@ -18,7 +18,7 @@ exports.tests = {
     jspackage2 = Package.create(configs[1]);
   },
   'Packaging Coffeescript': function(cb) {
-    jspackage.packageAll(function() {
+    jspackage.bundleAll(function() {
       test = require('./js/build/test');
       assert.ok(test.F == 2);
       OK('test.F == 2');
@@ -38,7 +38,7 @@ exports.tests = {
     });
   },
   'Packaging Coffeescript + External Libraries': function(next) {
-    jspackage2.packageAll(function() {
+    jspackage2.bundleAll(function() {
       jsdom.env({
         html: '<html><body></body></html>',
         src: [fs.readFileSync('./js/build/test2.js')],
