@@ -12,9 +12,9 @@ stylesheets "styles1",
 css "styles2", ->
   @options
     build: "./css/build-stylus"
-    bundles: ["test1", "test2"]
     compress: true
   
+  @bundles 'test1', 'test2'
   @stylus "./stylus"
   @stylus "./stylus-nib",
     modules: "nib"

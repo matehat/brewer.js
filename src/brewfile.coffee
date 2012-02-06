@@ -31,6 +31,11 @@ Package =
   options: (opts) -> 
     _.extend @opts, opts
   
+  # Method used to define bundles within a package
+  bundles: (bundles...) ->
+    @opts.bundles ?= []
+    @opts = _.union @.bundles, bundles
+  
   # Method used to define a source in a package.
   # The type of the source here is inferred by the
   # default source type of the parent package
