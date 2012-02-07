@@ -1,2 +1,2 @@
-#require ["jquery", "underscore", "backbone"]
+#import ["jquery", "underscore", "backbone"]
 window.$('body').data('id', 'hello')

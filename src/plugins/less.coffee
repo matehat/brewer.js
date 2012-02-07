@@ -34,7 +34,7 @@ path = require 'path'
   @types = ['less']
   @ext = LessBundle.ext = '.less'
   @buildext = LessBundle.buildext = '.css'
-  @header = /^\/\/\s*(?:import|require)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
+  @header = /^\/\/\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
   
   @Bundle = LessBundle
   

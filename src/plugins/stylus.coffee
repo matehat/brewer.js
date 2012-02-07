@@ -44,7 +44,7 @@ _ = require 'underscore'
   @types = ['stylus', 'styl']
   @ext = StylusBundle.ext = '.styl'
   @buildext = StylusBundle.buildext = '.css'
-  @header = /^\/\/\s*(?:import|require)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
+  @header = /^\/\/\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
   
   @Bundle = StylusBundle
   

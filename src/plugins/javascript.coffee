@@ -42,7 +42,7 @@ util = require '../util'
   @Bundle = JavascriptBundle
   @types = ['js', 'javascript']
   @ext = JavascriptBundle.ext = '.js'
-  @header = /^\/\/\s*(?:import|require)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
+  @header = /^\/\/\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
 
 
 Source.extend JavascriptSource

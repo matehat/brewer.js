@@ -36,7 +36,7 @@ util = require '../util'
 @StylesheetsSource = class StylesheetsSource extends Source
   @types = ['css', 'stylesheets']
   @ext = StylesheetsBundle.ext = '.css'
-  @header = /^\/\*\s*(?:require|import)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)\*\//m
+  @header = /^\/\*\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)\*\//m
 
   @Bundle: StylesheetsBundle
   

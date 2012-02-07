@@ -8,7 +8,7 @@ util = require '../util'
 
 @CoffeescriptSource = class CoffeescriptSource extends Source
   @types = ['coffee-script', 'coffeescript', 'cs']
-  @header = /^#\s*(?:import|require)\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
+  @header = /^#\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
   @ext = '.coffee'
   @buildext = '.js'
   
