@@ -13,11 +13,11 @@ util  = require './util'
         @registry[type] = src
   
   @create: (options, package) ->
-    throw "Source type #{options.type} not known" unless (typ = @registry[options.opts.type])?
-    new typ options.opts, package
+    throw "Source type #{options.type} not known" unless (typ = @registry[options.type])?
+    new typ options, package
   
   
-  constructor: (@options) ->
+  constructor: (@options, @package) ->
     _.defaults @options, watch: false, follow: true
     {@watch, @path, @follow} = @options
   

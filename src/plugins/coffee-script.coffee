@@ -14,12 +14,12 @@ util = require '../util'
   
   @Bundle: JavascriptBundle
   
-  constructor: (options) ->
+  constructor: (options, package) ->
     throw "Coffeescript source needs a 'output' options" unless options.output?
     _.defaults options, follow: true
     {@follow, @output} = options
     @js_path = @output
-    super options
+    super
   
   test: (path) -> 
     util.hasExtension path, '.coffee'

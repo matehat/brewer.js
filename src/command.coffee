@@ -13,6 +13,10 @@ clr = require('ansi-color').set
 @debug = (msgs...) ->
   console.log clr('DEBUG', 'red'), msgs...
 
+@warning = (msgs...) ->
+  console.log clr('Warning', 'yellow'), msgs...
+
+
 @run = (argv) ->
   (program = new Command).version(getVersion())
     .command('init')

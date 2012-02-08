@@ -26,11 +26,9 @@ _ = require 'underscore'
     styl.set 'filename', @file
     
     opts = @package.source(@file).options
-    if (mods = opts.modules)?
-      mods = [mods] if _.isString mods
-      for mod in mods
-        module = require mod
-        styl.use(module()) if _.isFunction module
+    for mod in @package.vendor.dirs 'stylus'
+      module = require path.resolve mod
+      styl.use(module()) if _.isFunction module
     
     styl
   
@@ -48,9 +46,9 @@ _ = require 'underscore'
   
   @Bundle = StylusBundle
   
-  constructor: (options, @package) ->
+  constructor: (options, package) ->
     _.defaults options, compileAll: false
-    super options
+    super
     @css_path = @output
     @stylus_path = @path
   

@@ -19,5 +19,4 @@ css "styles2", ->
   
   @bundles 'test1', 'test2'
   @stylus "./stylus"
-  @stylus "./stylus-nib",
-    modules: "nib"
+  @stylus "./stylus-nib"

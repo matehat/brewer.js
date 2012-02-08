@@ -9,13 +9,16 @@ util = require '../util'
   @types = ['css', 'stylesheets']
   @default = 'css'
   
-  constructor: (options, sources) ->
-    super options, sources
+  constructor: (options, sources, vendor) ->
+    super
     _.defaults options, compress: true
     {compress, @build, @bundles} = options
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
     if compress
       @compressedFile = _.template if _.isString(compress) then compress else "<%= filename %>.min.css"
+    
+    for lib in @vendor.dirs 'css'
+      @sources.push Source.create {path: lib, type: 'css'}, @
   
 
 @StylesheetsBundle = class StylesheetsBundle extends Bundle

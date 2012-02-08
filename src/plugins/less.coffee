@@ -38,10 +38,10 @@ path = require 'path'
   
   @Bundle = LessBundle
   
-  constructor: (options, @package) ->
+  constructor: (options, package) ->
     _.defaults options, compileAll: false
     {@output} = options
-    super options
+    super
     @less_path = @path
     @css_path = @output
   

@@ -14,12 +14,12 @@ _     = require 'underscore'
       for type in (package.types ? [])
         @registry[type] = package
   
-  @create: (options, sources) ->
+  @create: (options, sources, vendor) ->
     throw "Package type #{options.type} not known" unless (typ = @registry[options.type])?
-    new typ options, sources
+    new typ options, sources, vendor
   
   
-  constructor: (@options, sources) ->
+  constructor: (@options, sources, @vendor) ->
     {@name} = @options
     @sources = (Source.create(src, @) for src in sources)
     @filecache = {}

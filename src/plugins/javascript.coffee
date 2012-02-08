@@ -11,8 +11,8 @@ util = require '../util'
   @types = ['js', 'javascript']
   @default = 'javascript'
   
-  constructor: (options, sources) ->
-    super options, sources
+  constructor: (options, sources, vendor) ->
+    super
     _.defaults options, compress: true
     {compress, @build, @bundles} = options
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
@@ -22,6 +22,9 @@ util = require '../util'
         compress
       else 
         "<%= filename %>.min.js"
+    
+    for lib in @vendor.dirs 'js'
+      @sources.push Source.create {path: lib, type: 'js'}, @
   
 
 

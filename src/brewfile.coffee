@@ -51,7 +51,6 @@ Package =
     # with the Source prototype above, then
     # we add it to parent package.
     src = Object.create Source
-    @srcs.push src
     
     # The options object is initialized then
     # put in the source object.
@@ -63,6 +62,7 @@ Package =
     opts.type ?= type
     opts.path = path
     src.opts = opts
+    @srcs.push src.opts
     
     # Finally we call the trailing function, if present
     # with `this` set to the source object
@@ -108,7 +108,7 @@ newContext = ->
     project: prj =
       root: '.'
       packages: []
-      libs: {}
+      reqs: {}
       vendorDir: './vendor'
   
   # Iterate through all package types, using their
@@ -126,16 +126,16 @@ newContext = ->
   # included in the project. This function can be called any number
   # of times in a Brewfile. All dependencies are stored in an object
   # in the form of `<library name>: <semantic version>`.
-  ctx.require = (libs) ->
-    if _.isArray libs
-      for lib in libs when lib not of prj.libs
-        prj.libs[lib] = 'latest'
-    else if _.isString libs
-      if libs not in prj.libs
-        prj.libs[libs] = 'latest'
-    else if _.isObject libs
-      for key, value of libs
-        prj.libs[key] = value
+  ctx.require = (reqs) ->
+    if _.isArray reqs
+      for req in reqs when req not of prj.reqs
+        prj.reqs[lib] = 'latest'
+    else if _.isString reqs
+      if reqs not in prj.reqs
+        prj.reqs[reqs] = 'latest'
+    else if _.isObject reqs
+      for key, value of reqs
+        prj.reqs[key] = value
   
   # Return a V8 context, using the container above as
   # a seed.
