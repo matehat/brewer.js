@@ -8,9 +8,6 @@ path = require 'path'
 
 @LessBundle = class LessBundle extends StylesheetsBundle
   @buildext = '.css'
-  constructor: (@package, @file) ->
-    super @package, @file
-  
   importPath: (src, file) ->
     if src instanceof LessSource
       path.join src.path, util.changeExtension file, src.constructor.ext
@@ -19,6 +16,8 @@ path = require 'path'
   
   less: ->
     paths = ((src.less_path ? src.css_path) for src in @package.sources)
+    paths.push lib for lib in @package.vendor.dirs 'less'
+    
     new (require('less').Parser)
       filename: @file
       paths: paths
