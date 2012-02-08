@@ -1,3 +1,6 @@
+require
+  nib: '0.3.X'
+
 stylesheets "styles1",
   build: "./css/build-less"
   bundles: ["testcss1", "testless1"]

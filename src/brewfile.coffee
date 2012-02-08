@@ -2,6 +2,7 @@ _ = require 'underscore'
 vm = require 'vm'
 coffeescript = require 'coffee-script'
 fs = require 'fs'
+{debug} = require './command'
 {Package, Source} = require '../lib'
 
 # Alias the two registries so that the names don't collide 
@@ -34,7 +35,7 @@ Package =
   # Method used to define bundles within a package
   bundles: (bundles...) ->
     @opts.bundles ?= []
-    @opts = _.union @.bundles, bundles
+    @opts.bundles = _.union @opts.bundles, bundles
   
   # Method used to define a source in a package.
   # The type of the source here is inferred by the
@@ -103,14 +104,38 @@ package = (type, name, opts, cb) ->
 # Brewfile and all the DSL functions.
 newContext = ->
   # Initialize a container object
-  ctx = configs: {packages: []}
+  ctx = 
+    project: prj =
+      root: '.'
+      packages: []
+      libs: {}
+      vendorDir: './vendor'
   
   # Iterate through all package types, using their
   # type name to proxy the `package` definition function
   # above.
   _.each _.keys(PackageRegistry), (key) ->
     ctx[key] = (name, opts, cb) ->
-      package.call ctx.configs, key, name, opts, cb
+      package.call ctx.project, key, name, opts, cb
+    
+  # Define DSL functions to specify properties of the project
+  ctx.root = (newRoot) -> prj.root = newRoot
+  ctx.vendor = (newVendorDir) -> prj.vendorDir = newVendorDir
+  
+  # Define the DSL `require` function that adds libraries to be the
+  # included in the project. This function can be called any number
+  # of times in a Brewfile. All dependencies are stored in an object
+  # in the form of `<library name>: <semantic version>`.
+  ctx.require = (libs) ->
+    if _.isArray libs
+      for lib in libs when lib not of prj.libs
+        prj.libs[lib] = 'latest'
+    else if _.isString libs
+      if libs not in prj.libs
+        prj.libs[libs] = 'latest'
+    else if _.isObject libs
+      for key, value of libs
+        prj.libs[key] = value
   
   # Return a V8 context, using the container above as
   # a seed.
@@ -118,7 +143,7 @@ newContext = ->
 
 # An exported function that takes a path to a Brewfile as argument
 # and returns a configuration object containing all the packages
-@configs = configs = (file) ->
+configs = (file) ->
   # Use Coffee-script's `eval` function to execute the file content
   coffeescript.eval fs.readFileSync(file, 'utf-8'), 
     # using the above function to get a context appropriate for the DSL
@@ -126,12 +151,12 @@ newContext = ->
     # and setting the filename to ease debugging
     filename: file
   
-  return ctx.configs.packages
+  # Once the file was executed, `ctx.project` holds the set of
+  # configurations for a project object, which is returned.
+  return ctx.project
 
 # An exported function that takes a path to a Brewfile as argument
-# and returns a list of Package object.
-@packages = (file) ->
-  Pkg = (require '../lib').Package
-  _.map configs(file), (pkg) ->
-    Pkg.create pkg.opts, pkg.srcs
-  
+# and returns a Project object, containing all packages and specific 
+# configurations.
+@readBrewfile = (file) ->
+  new (require '../lib').Project configs(file)

@@ -5,6 +5,7 @@ fs    = require 'fs'
 _     = require 'underscore'
 
 {Source} = require './source'
+{debug} = require './command'
 
 @Package = class Package
   @registry = {}

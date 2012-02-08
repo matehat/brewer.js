@@ -9,7 +9,7 @@ function runTests(tests, cb) {
         runTests(tests[i++], next) 
     })();
   } else {
-    var keys = _.without(_.keys(tests), 'setup');
+    var keys = _.without(_.keys(tests), 'setup', 'clean');
     if (tests.setup !== undefined) tests.setup();
     (next = function() {
       if (i < keys.length)
@@ -22,7 +22,7 @@ function runTests(tests, cb) {
 exports.OK = function(msg) { console.log(color("  ✔", "green"), msg); };
 
 runTests([
+  require('./brewfile').tests,
   require('./js').tests,
-  require('./css').tests,
-  require('./brewfile').tests
+  require('./css').tests
 ]);

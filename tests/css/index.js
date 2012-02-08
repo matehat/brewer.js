@@ -6,7 +6,7 @@ var brewer = require('../..'),
     _ = require('underscore'),
     cssom = require('cssom'),
     color = require('ansi-color').set,
-    Package = brewer.Package,
+    Project = brewer.Project,
     OK = require('..').OK,
     
     select = function(css, sel) { return _.find(css, function(item, key) {return item.selectorText == sel}); };
@@ -14,10 +14,14 @@ var brewer = require('../..'),
 exports.tests = {
   setup: function() {
     process.chdir(path.resolve(__dirname));
-    packages = brewer.brewfile(path.resolve(__dirname, './Brewfile'));
-    csspackage = packages[0];
-    stylpackage = packages[1];
+    project = Project.fromBrewfile(path.resolve(__dirname, './Brewfile'));
+    csspackage = project[0];
+    stylpackage = project[1];
   },
+  clean: function() {
+    project.clean();
+  },
+  
   'Packaging LESS stylesheets': function(next) {
     csspackage.bundleAll(function() {
       css = cssom.parse(fs.readFileSync('./css/build-less/testless1.css', 'utf-8')).cssRules;

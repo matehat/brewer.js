@@ -7,15 +7,18 @@ var brewer = require('../..'),
     jsdom = require('jsdom'),
     cssom = require('cssom'),
     color = require('ansi-color').set,
-    Package = brewer.Package,
+    Project = brewer.Project,
     OK = require('..').OK;
 
 exports.tests = {
   setup: function() {
     process.chdir(path.resolve(__dirname));
-    packages = brewer.brewfile(path.resolve(__dirname, './Brewfile'))
-    jspackage = packages[0];
-    jspackage2 = packages[1];
+    project = Project.fromBrewfile(path.resolve(__dirname, './Brewfile'))
+    jspackage = project[0];
+    jspackage2 = project[1];
+  },
+  clean: function() {
+    project.clean();
   },
   'Packaging Coffeescript': function(cb) {
     jspackage.bundleAll(function() {
