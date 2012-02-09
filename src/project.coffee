@@ -5,7 +5,7 @@ fs = require 'fs'
 {debug, warning} = require './command'
 util = require './util'
 
-@Project = class Project
+class Project
   @fromBrewfile: (file) ->
     (require './brewfile').readBrewfile file
   
@@ -46,3 +46,5 @@ class VendorLibraries
         dirs.push path.join @root, modname, dir
     
     dirs
+
+exports.Project = Project

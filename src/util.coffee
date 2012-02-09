@@ -9,14 +9,14 @@ path = require 'path'
   makedirs dir unless path.existsSync dir
   fs.mkdirSync fpath unless path.existsSync fpath
 
-@hasExtension = hasext = (filename, ext) ->
+@hasext = hasext = (filename, ext) ->
   path.extname(filename) == ext
 
-@changeExtension = changeext = (filename, ext) ->
+@changeext = changeext = (filename, ext) ->
   return filename if hasext filename, ext
   return "#{splitext(filename)[0]}#{ext}"
 
-@splitExtension = splitext = (filename) ->
+@splitext = splitext = (filename) ->
   ext = path.extname filename
   len = filename.length
   return [filename[0...len-ext.length], ext]
@@ -49,3 +49,15 @@ path = require 'path'
         cb(newest) if --cnt == 0
       
     
+@newerSync = (file1, file2) ->
+  return cb(null, false) unless path.existsSync file1
+  return cb(null, true) unless path.existsSync file2
+  time1 = fs.statSync(file1).mtime.getTime()
+  time2 = fs.statSync(file2).mtime.getTime()
+  return time1 > time2
+
+@newestSync = (file, others...) =>
+  newest = true
+  for otherFile in others
+    newest &&= @newer(file, otherFile)
+  newest

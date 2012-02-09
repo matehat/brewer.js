@@ -7,46 +7,47 @@ util = require '../util'
 {Bundle} = require '../bundle'
 {finished} = require '../command'
 
-@JavascriptPackage = class JavascriptPackage extends Package
-  @types = ['js', 'javascript']
+class JavascriptPackage extends Package
+  @types = ['javascript', 'js']
   @default = 'javascript'
   
   constructor: (options, sources, vendor) ->
     super
     _.defaults options, compress: true
-    {compress, @build, @bundles} = options
+    {@compress, @build, @bundles} = options
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
     
-    if compress
-      @compressedFile = _.template if _.isString compress 
-        compress
-      else 
-        "<%= filename %>.min.js"
-    
     for lib in @vendor.dirs 'js'
-      @sources.push Source.create {path: lib, type: 'js'}, @
+      @registerSource Source.create {path: lib, type: 'js'}, @
+  
+  bundlePath: (file) -> 
+    path.join @build, util.changeext file.relpath, '.js'
+  
+  compressedPath: (file) ->
+    path.join @build, if compress is true
+      util.changeext file.relpath, '.min.js'
+    else
+      _.template(compress) filename: file.relpath
+  
+  compress: (original, dest, cb) ->
+    compress: (data, cb) -> 
+      {parser, uglify} = require 'uglify-js'
+      {gen_code, ast_squeeze, ast_mangle} = uglify
+      cb null, gen_code ast_squeeze parser.parse data
+    
+    original.transformInto dest, compress, (err) ->
+      cb err if err
+      finished 'Compressed', original.fullpath
+      cb()
   
 
 
-@JavascriptBundle = class JavascriptBundle extends Bundle
-  sourcePath: (i) ->
-    file = if i < @files.length then @files[i] else @file
-    src = @package.source(file)
-    path.join (src.js_path ? src.path), util.changeExtension file, '.js'
-  
-  compressFile: (data, cb) ->
-    {parser, uglify} = require 'uglify-js'
-    {gen_code, ast_squeeze, ast_mangle} = uglify
-    cb gen_code ast_squeeze parser.parse data
-  
-  
-
-@JavascriptSource = class JavascriptSource extends Source
-  @Bundle = JavascriptBundle
+class JavascriptSource extends Source
   @types = ['js', 'javascript']
-  @ext = JavascriptBundle.ext = '.js'
+  @ext = '.js'
   @header = /^\/\/\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
 
 
 Source.extend JavascriptSource
 Package.extend JavascriptPackage
+_.extend exports, {JavascriptSource, JavascriptPackage}

@@ -1,13 +1,14 @@
-path  = require 'path'
-sys   = require 'util'
-util  = require './util'
-fs    = require 'fs'
-_     = require 'underscore'
+path = require 'path'
+sys = require 'util'
+util = require './util'
+fs = require 'fs'
+_ = require 'underscore'
 
 {Source} = require './source'
-{debug} = require './command'
+{File} = require './file'
+{debug, info} = require './command'
 
-@Package = class Package
+class Package
   @registry = {}
   @extend: (packages...) ->
     for package in packages
@@ -21,79 +22,58 @@ _     = require 'underscore'
   
   constructor: (@options, sources, @vendor) ->
     {@name} = @options
-    @sources = (Source.create(src, @) for src in sources)
-    @filecache = {}
-  
-  shouldFollow: (relpath) -> 
-    @source(relpath).follow
-  
-  findFile: (relpath, dep=false) ->
-    return loc if (loc = @filecache[relpath])?
-    for src in @sources
-      if fpath = src.find relpath
-        return @filecache[relpath] = path: fpath, source: src
-    throw "File not found: #{relpath}"
-  
-  fullPath: (relpath) ->
-    @findFile(relpath).path
-  
-  source: (relpath) -> 
-    @findFile(relpath).source
-  
-  bundleObj: (relpath) ->
-    new (@source(relpath).constructor.Bundle)(@, relpath)
+    (@registerSource Source.create(src, @) for src in sources)
+    @files = {}
+    @sources = {}
+    @bundlePaths = if _.isString bundles
+      JSON.parse fs.readFileSync bundles
+    else bundles
   
   
-  deps: (relpath, cb) ->
-    return cb [] if not @shouldFollow relpath
-    fs.readFile @fullPath(relpath), 'utf-8', (err, data) =>
-      cb [] if (deps = @source(relpath).deps data).length == 0
-      @_recurse_deps deps, (files) ->
-        cb files
-      
-    
+  file: (relpath, type, fullpath, src) ->
+    _files = @files[file.type] ?= {}
+    return file if (file = _files[relpath])?
+    file = _files[relpath] = new File relpath, type, @
+    file.attach fullpath, src if fullpath?
+    return file
   
-  _recurse_deps: (filelist, cb) ->
+  actualize: (cb) ->
+    allFiles = _.flatten (files for type, files of @files), true
+    leaves = _.filter allFiles, (file) -> file.liabilities.length == 0
     i = 0
-    filelist = _.uniq filelist
-    files = filelist[0..]
-    _.each filelist, (file) =>
-      @deps file, (deps) ->
-        files.unshift(deps...) if deps.length > 0
-        cb(_.uniq files) if ++i == filelist.length
+    (iter = ->
+      leaves[i].actualize -> 
+        if ++i < leaves.length then iter() else cb()
+    )()
+  
+  bundle: (imported, bundle, cb) ->
+    output = ''
+    for file in bundle.tsortedImports()
+      output += file.readSync()
+      bundle.write output, cb
+  
+  registerSource: (src) ->
+    for type in ['all', src.types...]
+      (@sources[type] ?= []).push src
+      src.files()
+  
+  registerFile: (file) ->
+    type = @constructor.types[0]
+    # If the registered file is of the same type as the package and it has
+    # the same relative path as a listed bundle, make a corresponding bundled 
+    # file and register it
+    if (path = file.relpath) in @bundlePaths and file.type is type
+      bundle = @file path, "#{type}-bundle", @bundlePath(file)
+      bundle.dependOnImports file, _.bind @bundle, @
+      bundle.register()
       
-    
+      # If the package is configured to compress its bundles, make a corresponding
+      # compressed file and register it
+      if @compressed
+        compressed = @file path, "#{type}-bundle-minified", 
+          path.join(@build, @compressedPath(file))
+        compressed.dependOn bundle, _.bind @compress, @
+        compressed.register()
   
-  
-  compress: (relpath, cb) ->
-    @bundleObj(relpath).compress cb
-  
-  bundle: (relpath, cb) -> 
-    @bundleObj(relpath).bundle cb
-  
-  
-  compileAll: (cb) ->
-    srcs = (src for src in @sources when src.compileAll?)
-    cb() if (cnt = srcs.length) == 0
-    src.compileAll(-> cb() if --cnt == 0) for src in srcs
-  
-  compressAll: (cb) ->
-    return unless @compressedFile
-    @compileAll =>
-      cnt = @bundles.length
-      _.each @bundles, (bundle) =>
-        @compress bundle, (pkg) =>
-          cb() if --cnt == 0
-        
-      
-    
-  
-  bundleAll: (cb) ->
-    @compileAll =>
-      cnt = @bundles.length
-      _.each @bundles, (bundle) => 
-        @bundle bundle, (pkg) =>
-          cb() if --cnt == 0
-      
-    
-  
+
+exports.Package = Package

@@ -3,70 +3,52 @@ fs = require 'fs'
 path = require 'path'
 _ = require 'underscore'
 {Source} = require '..'
-{Bundle} = require '../bundle'
 {finished, debug} = require '../command'
-{StylesheetsPackage, StylesheetsSource, StylesheetsBundle} = require './css'
+{StylesheetsPackage, StylesheetsSource} = require './css'
 
-@StylusBundle = class StylusBundle extends StylesheetsBundle
-  stylus: (data) ->
-    return @setOptions require('stylus') data
+class StylusSource extends StylesheetsSource
+  @types = ['stylus', 'styl']
+  @ext = '.styl'
+  @header = /^\/\/\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
   
-  importPath: (src, file) ->
-    if src instanceof StylusSource
-      path.join src.path, util.changeExtension file, src.constructor.ext
-    else
-      super src, file
+  constructor: (options) ->
+    {@output} = options
+    super
   
-  importPaths: ->
-    for src in @package.sources when src instanceof StylusSource
-      path.join src.stylus_path
+  createFile: (path) ->
+    # As soon as we create the original file, create the compiled counterpart
+    # returning the original
+    @createCompiledFile original = super
+    original
   
-  setOptions: (styl) ->
-    styl.set 'paths', @importPaths()
-    styl.set 'filename', @file
+  createCompiledFile: (original) ->
+    cpath = util.changeext (path = original.relpath), '.css'
+    compiled = new File path, path.join(@output, cpath), 'stylesheets', @
+    compiled.dependOn original, _.bind @compile, @
+    compiled.setImportedPaths original.readImportedPaths
+    @package.registerFile compiled
+    compiled
+  
+  compile: (original, compiled, cb) ->
+    parser = require('stylus')
+    parser.set 'filename', @file
+    parser.set 'paths', (src.path for src in @package.sources.stylus)
     
-    opts = @package.source(@file).options
     for mod in @package.vendor.dirs 'stylus'
       module = require path.resolve mod
       styl.use(module()) if _.isFunction module
     
-    styl
-  
-  convertFile: (data, cb) ->
-    @stylus(data).render (err, css) =>
-      throw err if err
-      cb css
-  
-
-@StylusSource = class StylusSource extends StylesheetsSource
-  @types = ['stylus', 'styl']
-  @ext = StylusBundle.ext = '.styl'
-  @buildext = StylusBundle.buildext = '.css'
-  @header = /^\/\/\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
-  
-  @Bundle = StylusBundle
-  
-  constructor: (options, package) ->
-    _.defaults options, compileAll: false
-    super
-    @css_path = @output
-    @stylus_path = @path
-  
-  find: (rel) ->
-    return fullPath if (fullPath = super(rel)) != false
+    compile: (data, cb) ->
+      parser(data).render (err, css) ->
+        cb err if err?
+        cb null, css
     
-    rel = util.changeExtension rel, @constructor.ext
-    fullPath = path.join @path, rel
-    if path.existsSync fullPath then fullPath else false
-  
-  test: (relpath) -> 
-    path.extname(relpath) in @constructor.ext
-  
-  compileAll: (cb) ->  
-    if @options.compileAll then super cb else cb()
-  
-  compileFile: (relpath, next) ->
-    (new StylusBundle(@package, relpath)).bundle -> next()
+    original.transformTo compiled, compile, (err) ->
+      cb err if err
+      finished 'Compiled', original.fullpath
+      cb()
+    
   
 
-Source.extend StylusSource
+
+Source.extend exports.StylusSource = StylusSource

@@ -5,47 +5,43 @@ util = require '../util'
 {Package, Source, Bundle} = require '..'
 {finished, debug} = require '../command'
 
-@StylesheetsPackage = class StylesheetsPackage extends Package
-  @types = ['css', 'stylesheets']
+class StylesheetsPackage extends Package
+  @types = ['stylesheets', 'css']
   @default = 'css'
   
   constructor: (options, sources, vendor) ->
     super
     _.defaults options, compress: true
-    {compress, @build, @bundles} = options
-    @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
-    if compress
-      @compressedFile = _.template if _.isString(compress) then compress else "<%= filename %>.min.css"
+    {@compress, @build, bundles} = options
     
     for lib in @vendor.dirs 'css'
-      @sources.push Source.create {path: lib, type: 'css'}, @
+      @registerSource Source.create {path: lib, type: 'css'}, @
+  
+  bundlePath: (file) -> 
+    path.join @build, util.changeext file.relpath, '.css'
+  
+  compressedPath: (file) ->
+    path.join @build, if compress is true
+      util.changeext file.relpath, '.min.css'
+    else
+      _.template(compress) filename: file.relpath
+  
+  compress: (original, dest, cb) ->
+    compress: (data, cb) -> cb null, (require 'ncss') data
+    original.transformInto dest, compress, (err) ->
+      cb err if err
+      finished 'Compressed', original.fullpath
+      cb()
+  
   
 
-@StylesheetsBundle = class StylesheetsBundle extends Bundle
-  @ext = '.css'
   
-  importPath: (src, file) ->
-    path.join (src.output ? src.path), util.changeExtension file, 
-    ((ctor = src.constructor).buildext ? ctor.ext)
-  
-  sourcePath: (i) ->
-    file = if i? and i < @files.length then @files[i] else @file
-    @importPath @package.source(file), file
-  
-  compressFile: (data, cb) ->
-    cb (require 'ncss') data
-  
-
-@StylesheetsSource = class StylesheetsSource extends Source
+class StylesheetsSource extends Source
   @types = ['css', 'stylesheets']
-  @ext = StylesheetsBundle.ext = '.css'
+  @ext = '.css'
   @header = /^\/\*\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)\*\//m
 
-  @Bundle: StylesheetsBundle
-  
-  test: (path) -> 
-    util.hasExtension path, '.css'
-  
 
 Source.extend StylesheetsSource
 Package.extend StylesheetsPackage
+_.extend exports, {StylesheetsPackage, StylesheetsSource}

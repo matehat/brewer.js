@@ -4,61 +4,49 @@ path = require 'path'
 {Source} = require '..'
 {Bundle} = require '../bundle'
 {finished, debug} = require '../command'
-{StylesheetsPackage, StylesheetsSource, StylesheetsBundle} = require './css'
+{StylesheetsPackage, StylesheetsSource} = require './css'
 
-@LessBundle = class LessBundle extends StylesheetsBundle
-  @buildext = '.css'
-  importPath: (src, file) ->
-    if src instanceof LessSource
-      path.join src.path, util.changeExtension file, src.constructor.ext
-    else
-      super src, file
-  
-  less: ->
-    paths = ((src.less_path ? src.css_path) for src in @package.sources)
-    paths.push lib for lib in @package.vendor.dirs 'less'
-    
-    new (require('less').Parser)
-      filename: @file
-      paths: paths
-  
-  convertFile: (data, cb) ->
-    @less().parse data, (err, tree) =>
-      throw err if err
-      cb tree.toCSS()
-  
-
-
-@LessSource = class LessSource extends StylesheetsSource
+class LessSource extends StylesheetsSource
   @types = ['less']
-  @ext = LessBundle.ext = '.less'
-  @buildext = LessBundle.buildext = '.css'
+  @ext = '.less'
   @header = /^\/\/\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
   
-  @Bundle = LessBundle
-  
   constructor: (options, package) ->
-    _.defaults options, compileAll: false
     {@output} = options
     super
-    @less_path = @path
-    @css_path = @output
   
-  find: (rel) ->
-    return fullPath if (fullPath = super(rel)) != false
+  createFile: (path) ->
+    # As soon as we create the original file, create the compiled counterpart
+    # returning the original
+    @createCompiledFile original = super
+    original
+  
+  createCompiledFile: (original) ->
+    cpath = util.changeext (path = original.relpath), '.css'
+    compiled = new File path, path.join(@output, cpath), 'stylesheets', @
+    compiled.dependOn original, _.bind @compile, @
+    compiled.setImportedPaths original.readImportedPaths
+    @package.registerFile compiled
+    compiled
+  
+  compile: (original, compiled, cb) ->
+    paths = (src.path for src in @package.sources.less)
+    paths.push lib for lib in @package.vendor.dirs 'less'
     
-    rel = util.changeExtension rel, @constructor.ext
-    fullPath = path.join @path, rel
-    if path.existsSync fullPath then fullPath else false
+    parser = new (require('less').Parser)
+      filename: @file
+      paths: paths
     
-  test: (relpath) -> 
-    path.extname(relpath) == '.less'
-  
-  compileAll: (cb) ->  
-    if @options.compileAll then super cb else cb()
-  
-  compileFile: (relpath, next) ->
-    (new LessBundle(@package, relpath)).bundle -> next()
+    compile: (data, cb) ->
+      parser.parse data, (err, tree) ->
+        cb err if err?
+        cb null, tree.toCSS()
+    
+    original.transformTo compiled, compile, (err) ->
+      cb err if err
+      finished 'Compiled', original.fullpath
+      cb()
+    
   
 
-Source.extend LessSource
+Source.extend exports.LessSource = LessSource

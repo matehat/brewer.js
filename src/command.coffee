@@ -1,22 +1,28 @@
 {Command} = require 'commander'
 clr = require('ansi-color').set
+_ = require 'underscore'
 
-@version = getVersion = ->
+exports.version = getVersion = ->
   fs = require 'fs'
   path = require 'path'
   pkg = JSON.parse fs.readFileSync path.resolve __dirname, '../package.json'
   pkg.version
 
-@finished = (action, target) ->
-  console.log clr(action, 'blue'), target
+# ### A few message display functions
+_.extend exports, 
+  finished: (action, target) ->
+    console.log clr(action, 'blue'), target
 
-@debug = (msgs...) ->
-  console.log clr('DEBUG', 'red'), msgs...
+  debug: (msgs...) ->
+    console.log clr('DEBUG', 'red'), msgs...
 
-@warning = (msgs...) ->
-  console.log clr('Warning', 'yellow'), msgs...
+  warning: (msgs...) ->
+    console.log clr('Warning', 'yellow'), msgs...
 
+  info: (msgs...) ->
+    console.log clr('Info', 'green'), msgs...
 
+# ### The command-line interface
 @run = (argv) ->
   (program = new Command).version(getVersion())
     .command('init')

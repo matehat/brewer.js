@@ -4,15 +4,16 @@ _     = require 'underscore'
 util  = require './util'
 {debug} = require './command'
 {EventEmitter} = require 'events'
+{File} = require './file'
 
-@Source = class Source
+class Source
   @registry = {}
   @extend: (sources...) ->
     for src in sources
       for type in (src.types ? [])
         @registry[type] = src
   
-  @create: (options, package) ->
+  @create: (options) ->
     throw "Source type #{options.type} not known" unless (typ = @registry[options.type])?
     new typ options, package
   
@@ -21,27 +22,27 @@ util  = require './util'
     _.defaults @options, watch: false, follow: true
     {@watch, @path, @follow} = @options
   
-  deps: (data) -> 
-    parseHeader @constructor.header, data
+  createFile: (path) -> 
+    ctor = @constructor
+    file = new File path, path.join(@path, path), ctor.types[0], @
+    @package.registerFile file
+    file
   
-  find: (rel) ->
-    rel = util.changeExtension rel, @constructor.ext
-    fullPath = path.join @path, rel
-    if path.existsSync fullPath then fullPath else false
+  test: (path) -> util.hasext path, @constructor.ext
   
-  compileAll: (cb) ->
-    return cb() unless @compileFile?
-    list = []
-    @listFiles (path) =>
-      list.push path
-      @compileFile path, =>
-        list = _.without list, path
-        if list.length == 0 and cb?
-          cb()
-      
-    
+  files: (yield, end) ->
+    if @filelist?
+      _.each @filelist, yield if yield?
+      end @filelist if end?
+    else
+      @filelist = []
+      each = (path) =>
+        file = @createFile path
+        yield file if yield?
+        @filelist.push file
+      @list each, => end @filelist if end?
   
-  listFiles: (yield) ->
+  list: (yield, end) ->
     walk = require 'walker'
     filelist = []
     walker = new walk @path, followLinks: true
@@ -50,13 +51,6 @@ util  = require './util'
       return unless @test fpath
       yield fpath
     
+    walker.on 'end', end
   
-
-
-parseHeader = (regexp, data) ->
-  recurse = (_data) ->
-    return '' unless (match = _data.match regexp)?
-    match[1] + recurse _data[match[0].length+match.index ...]
-  
-  if (json = recurse data).length > 0 then JSON.parse json else []
-
+exports.Source = Source
