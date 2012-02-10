@@ -23,7 +23,7 @@ exports.tests = {
     project.clean();
   },
   'Packaging Coffeescript': function(next) {
-    jspackage.ready(function() { jspackage.actualize(function() {
+    jspackage.actualize(function() {
       test = require('./js/build/test');
       assert.ok(test.F == 2);
       OK('test.F == 2');
@@ -36,11 +36,10 @@ exports.tests = {
       assert.ok(test.A == 1);
       OK('test.A == 1')
       next();
-    }) });
+    });
   },
   'Packaging Coffeescript + External Libraries': function(next3) {
-    jspackage2.ready(function() { 
-      jspackage2.actualize(function(next) {
+    jspackage2.actualize(function(next) {
       jsdom.env({
         html: '<html><body></body></html>',
         src: [fs.readFileSync('./js/build/test2.js')],
@@ -65,7 +64,6 @@ exports.tests = {
           }
         });
       }
-    }) 
     });
   },
 };

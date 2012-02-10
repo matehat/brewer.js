@@ -45,22 +45,20 @@ class Package extends EventEmitter
       file = _files[relpath] = new File relpath, type, @
     
     file.attach fullpath, src if fullpath?
-    debug '%%%','file:', @name, file.fullpath, file.relpath, file.type
     return file
   
   actualize: (cb) ->
-    debug 'Actualizing', @name
-    allFiles = []
-    for type, files of @files
-      for relpath, file of files
-        allFiles.push file
-    leaves = _.filter allFiles, (file) -> file.liabilities.length == 0
-    debug f.fullpath for f in leaves
-    i = 0
-    (iter = ->
-      leaves[i].actualize ->
-        if ++i < leaves.length then iter() else cb()
-    )()
+    @ready =>
+      allFiles = []
+      for type, files of @files
+        for relpath, file of files
+          allFiles.push file
+      leaves = _.filter allFiles, (file) -> file.liabilities.length == 0
+      i = 0
+      (iter = ->
+        leaves[i].actualize ->
+          if ++i < leaves.length then iter() else cb()
+      )()
   
   bundle: (imported, bundle, cb) ->
     output = ''
