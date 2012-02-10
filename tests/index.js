@@ -6,7 +6,7 @@ function runTests(tests, cb) {
   if (tests instanceof Array) {
     (next = function() {
       if (i < tests.length) 
-        runTests(tests[i++], next) 
+        runTests(tests[i++], next)
     })();
   } else {
     var keys = _.without(_.keys(tests), 'setup', 'clean');
@@ -14,7 +14,10 @@ function runTests(tests, cb) {
     (next = function() {
       if (i < keys.length)
         console.log(color("Testing", "green"), color(key = keys.shift(), 'underline')) || tests[key](next);
-      else cb();
+      else{
+        if (tests.clean !== undefined) tests.clean();
+        cb();
+      }
     })();
   }
 }

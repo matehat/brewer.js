@@ -18,9 +18,12 @@ class Project
     
     {@root, reqs, packages, vendorDir} = opts
     @vendorlibs = new VendorLibraries @, vendorDir, reqs
+    @length = packages.length
     _.each packages, (pkg, i) =>
       @[i] = Package.create pkg.opts, pkg.srcs, @vendorlibs
     
+  clean: ->
+    pkg.clean?() for pkg in @
   
 
 class VendorLibraries

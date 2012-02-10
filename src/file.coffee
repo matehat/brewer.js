@@ -164,6 +164,10 @@ class File extends EventEmitter
     @makedirs()
     fs.writeFileSync @fullpath, data, 'utf-8'
   
+  unlinkSync: ->
+    return unless @exists()
+    fs.unlinkSync @fullpath
+  
   
   project: (dest, morph, cb) ->  
     @read (err, data) ->

@@ -76,7 +76,18 @@ class Package extends EventEmitter
     
     src.files null, (files) =>
       @emit 'ready' if --@_pendingSources == 0
-      
+    
+  
+  clean: ->
+    for file in @impermanents()
+      file.unlinkSync()
+  
+  impermanents: ->
+    acc = []
+    for type, files of @files
+      for file in _.values(files) when file.impermanent is true
+        acc.push file
+    acc
   
   registerFile: (file) ->
     type = @constructor.type
@@ -86,6 +97,7 @@ class Package extends EventEmitter
     if (fpath = file.relpath) in @bundlePaths and file.type is type
       bundle = @file fpath, "#{type}-bundle", @bundlePath(file)
       bundle.dependOnImports file, _.bind @bundle, @
+      bundle.impermanent = true
       bundle.parent = file
       bundle.register()
       
@@ -94,6 +106,7 @@ class Package extends EventEmitter
       if @compress
         compressed = @file fpath, "#{type}-bundle-minified", @compressedPath(file)
         compressed.dependOn bundle, _.bind @compressFile, @
+        compressed.impermanent = true
         compressed.register()
   
 

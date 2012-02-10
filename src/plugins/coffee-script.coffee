@@ -31,6 +31,7 @@ class CoffeescriptSource extends Source
     compiled = @package.file fpath, 'javascript', path.join(@output, cpath), @
     compiled.dependOn original, _.bind(@compile, @)
     compiled.setImportedPaths original.readImportedPaths()
+    compiled.impermanent = true
     compiled.register()
     compiled
   
