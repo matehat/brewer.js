@@ -7,10 +7,11 @@ var path = require('path'),
 
 exports.tests = {
   'Parsing a Brewfile': function(next) {
+    process.chdir(path.resolve(__dirname, 'js'));
     project = Project.fromBrewfile(path.resolve(__dirname, 'js/Brewfile'));
     OK('js/Brewfile parsed.');
     
-    assert.ok((js = project[0]).options.type == 'javascript' && js.sources[0].options.output == './js');
+    assert.ok((js = project[0]).options.type == 'javascript' && js.sources.coffeescript[0].options.output == './js');
     OK('js/Brewfile correctly parsed.');
     next()
   }

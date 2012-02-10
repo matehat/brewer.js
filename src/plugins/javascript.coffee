@@ -4,8 +4,7 @@ path = require 'path'
 
 {Package, Source} = require '..'
 util = require '../util'
-{Bundle} = require '../bundle'
-{finished} = require '../command'
+{finished, debug} = require '../command'
 
 class JavascriptPackage extends Package
   @types = ['javascript', 'js']
@@ -17,25 +16,26 @@ class JavascriptPackage extends Package
     {@compress, @build, @bundles} = options
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
     
-    for lib in @vendor.dirs 'js'
-      @registerSource Source.create {path: lib, type: 'js'}, @
+    for lib in @vendor.dirs 'javascript'
+      debug '+ vendors', lib
+      @registerSource Source.create {path: lib, type: 'javascript'}, @
   
   bundlePath: (file) -> 
     path.join @build, util.changeext file.relpath, '.js'
   
   compressedPath: (file) ->
-    path.join @build, if compress is true
+    path.join @build, if @compress is true
       util.changeext file.relpath, '.min.js'
     else
       _.template(compress) filename: file.relpath
   
-  compress: (original, dest, cb) ->
-    compress: (data, cb) -> 
+  compressFile: (original, dest, cb) ->
+    compress = (data, cb) -> 
       {parser, uglify} = require 'uglify-js'
       {gen_code, ast_squeeze, ast_mangle} = uglify
       cb null, gen_code ast_squeeze parser.parse data
     
-    original.transformInto dest, compress, (err) ->
+    original.project dest, compress, (err) ->
       cb err if err
       finished 'Compressed', original.fullpath
       cb()
@@ -43,7 +43,7 @@ class JavascriptPackage extends Package
 
 
 class JavascriptSource extends Source
-  @types = ['js', 'javascript']
+  @types = ['javascript', 'js']
   @ext = '.js'
   @header = /^\/\/\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
 

@@ -50,8 +50,8 @@ path = require 'path'
       
     
 @newerSync = (file1, file2) ->
-  return cb(null, false) unless path.existsSync file1
-  return cb(null, true) unless path.existsSync file2
+  return false unless path.existsSync file1
+  return true unless path.existsSync file2
   time1 = fs.statSync(file1).mtime.getTime()
   time2 = fs.statSync(file2).mtime.getTime()
   return time1 > time2
@@ -59,5 +59,5 @@ path = require 'path'
 @newestSync = (file, others...) =>
   newest = true
   for otherFile in others
-    newest &&= @newer(file, otherFile)
+    newest &&= @newer file, otherFile
   newest

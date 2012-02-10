@@ -23,7 +23,7 @@ exports.tests = {
   },
   
   'Packaging LESS stylesheets': function(next) {
-    csspackage.bundleAll(function() {
+    csspackage.ready(function() { stylpackage.actualize(function() {
       css = cssom.parse(fs.readFileSync('./css/build-less/testless1.css', 'utf-8')).cssRules;
       bodyp = select(css,'body p');
       assert.ok(bodyp !== undefined && bodyp.style.color == 'white');
@@ -41,11 +41,6 @@ exports.tests = {
       assert.ok(border !== undefined && border.style.margin == '8px' && border.style['border-color'] == '#3bbfce');
       OK("#data -> margin: 8px; border-color: #3bbfce;");
       
-      next();
-    });
-  },
-  'Compressing LESS stylesheets': function(next) {
-    csspackage.compressAll(function() {
       css = cssom.parse(fs.readFileSync('./css/build-less/testless1.min.css', 'utf-8')).cssRules;
       bodyp = select(css,'body p');
       assert.ok(bodyp !== undefined && bodyp.style.color == 'white');
@@ -64,10 +59,10 @@ exports.tests = {
       OK("#data -> margin: 8px; border-color: #3bbfce;");
       
       next();
-    });
+    }) });
   },
   'Packaging Stylus stylesheets': function(next) {
-    stylpackage.bundleAll(function() {
+    stylpackage.ready(function() { stylpackage.actualize(function() {
       css = cssom.parse(fs.readFileSync('./css/build-stylus/test1.css', 'utf-8')).cssRules;
       
       bodylogo = select(css, "body #logo");
@@ -83,11 +78,7 @@ exports.tests = {
       assert.ok(body !== undefined && body.style.position == 'fixed');
       assert.ok(body !== undefined && body.style.right == '0');
       OK("body -> position: fixed; right: 0;");
-      next();
-    });
-  },
-  'Compressing Stylus stylesheets': function(next) {
-    stylpackage.compressAll(function() {
+      
       css = cssom.parse(fs.readFileSync('./css/build-stylus/test1.min.css', 'utf-8')).cssRules;
       
       bodylogo = select(css, "body #logo");
@@ -104,6 +95,6 @@ exports.tests = {
       assert.ok(body !== undefined && body.style.right == '0');
       OK("body -> position: fixed; right: 0;");
       next();
-    });
+    }) });
   }
 };

@@ -21,14 +21,14 @@ class StylesheetsPackage extends Package
     path.join @build, util.changeext file.relpath, '.css'
   
   compressedPath: (file) ->
-    path.join @build, if compress is true
+    path.join @build, if @compress is true
       util.changeext file.relpath, '.min.css'
     else
       _.template(compress) filename: file.relpath
   
-  compress: (original, dest, cb) ->
-    compress: (data, cb) -> cb null, (require 'ncss') data
-    original.transformInto dest, compress, (err) ->
+  compressFile: (original, dest, cb) ->
+    compress = (data, cb) -> cb null, (require 'ncss') data
+    original.project dest, compress, (err) ->
       cb err if err
       finished 'Compressed', original.fullpath
       cb()

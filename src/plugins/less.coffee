@@ -2,7 +2,6 @@ util = require '../util'
 fs = require 'fs'
 path = require 'path'
 {Source} = require '..'
-{Bundle} = require '../bundle'
 {finished, debug} = require '../command'
 {StylesheetsPackage, StylesheetsSource} = require './css'
 
@@ -23,7 +22,7 @@ class LessSource extends StylesheetsSource
   
   createCompiledFile: (original) ->
     cpath = util.changeext (path = original.relpath), '.css'
-    compiled = new File path, path.join(@output, cpath), 'stylesheets', @
+    compiled = @package.file path, 'stylesheets', path.join(@output, cpath), @
     compiled.dependOn original, _.bind @compile, @
     compiled.setImportedPaths original.readImportedPaths
     @package.registerFile compiled
@@ -42,7 +41,7 @@ class LessSource extends StylesheetsSource
         cb err if err?
         cb null, tree.toCSS()
     
-    original.transformTo compiled, compile, (err) ->
+    original.project compiled, compile, (err) ->
       cb err if err
       finished 'Compiled', original.fullpath
       cb()

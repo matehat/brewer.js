@@ -2,6 +2,7 @@ path  = require 'path'
 util  = require './util'
 {finished, debug} = require './command'
 {EventEmitter} = require 'events'
+{debug} = require './command'
 fs    = require 'fs'
 _ = require 'underscore'
 
@@ -21,6 +22,7 @@ class File extends EventEmitter
   register: -> @package.registerFile @
   dependOn: (other, actualize) ->
     @dependencies.push [other, actualize]
+    other.dependedBy @
   
   dependedBy: (other) ->
     @liabilities.push other
@@ -33,32 +35,42 @@ class File extends EventEmitter
         dep.actualize -> iter(cb2)
       else cb2()
     )( =>
-      for [dep, act] in @dependencies
-        unless dep.newest()
-          act dep, @, (err) => throw new Error err if err
-          break
+      if @dependencies.length > 0
+        newest = true
+        for [dep, act] in @dependencies
+          unless @newer dep
+            act dep, @, (err) =>
+              throw new Error err if err
+              cb()
+            newest = false
+            break
+        cb() if newest
+      else cb()
     )
   
   
   readImportedPaths: ->
-    regexp = @source.constructor.header
-    recurse = (_data) ->
-      return '' unless (match = _data.match regexp)?
-      match[1] + recurse _data[match[0].length+match.index ...]
+    if @source?
+      regexp = @source.constructor.header
+      recurse = (_data) ->
+        return '' unless (match = _data.match regexp)?
+        match[1] + recurse _data[match[0].length+match.index ...]
     
-    if (json = recurse @readSync()).length > 0 then JSON.parse json else []
+      if (json = recurse @readSync()).length > 0 then JSON.parse json else []
+    else
+      []
   
   setImportedPaths: (paths) -> 
     @_importedPaths = paths
   
   importedPaths: ->
     unless @_importedPaths?
-      @_importedPaths = @readImportedPaths
+      @_importedPaths = @readImportedPaths()
     @_importedPaths
   
   imports: ->
     unless @_imports?
-      @_imports = @package.file(path, @type) for path in @importedPaths()
+      @_imports = (@package.file(path, @type) for path in @importedPaths())
     @_imports
   
   dependOnImports: (other, actualize) ->
@@ -122,22 +134,19 @@ class File extends EventEmitter
     topoSortedFiles.reverse()
   
   
-  newest: ->
-    util.newestSync @fullpath, (other.fullpath for other in @dependencies)...
-  
-  valid: ->
-    return true unless @dependencies.length == 0
-    return false unless _.all @dependencies, (dep) -> dep.valid()
-    return false unless @newest()
+  newer: (other) ->
+    util.newerSync @fullpath, other.fullpath
   
   attached: -> @fullpath?
   exists: -> @attached() and path.existsSync @fullpath
   makedirs: -> util.makedirs path.dirname @fullpath
-  read: (cb) -> 
+  read: (cb) ->
     return unless @exists()
-    fs.readFile @fullpath, 'utf-8', cb
+    fs.readFile @fullpath, 'utf-8', (err, data) ->
+      cb(err, data)
   
   readSync: -> 
+    debug '$', @exists(), @fullpath, @relpath, @type
     return unless @exists()
     fs.readFileSync @fullpath, 'utf-8'
   
@@ -152,10 +161,10 @@ class File extends EventEmitter
     fs.writeFileSync @fullpath, data, 'utf-8'
   
   
-  transformInto: (dest, morph, cb) ->
+  project: (dest, morph, cb) ->  
     @read (err, data) ->
       cb err if err
-      morph data, (newdata) ->
+      morph data, (error, newdata) ->
         dest.write newdata, cb
   
 

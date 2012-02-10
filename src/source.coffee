@@ -13,7 +13,7 @@ class Source
       for type in (src.types ? [])
         @registry[type] = src
   
-  @create: (options) ->
+  @create: (options, package) ->
     throw "Source type #{options.type} not known" unless (typ = @registry[options.type])?
     new typ options, package
   
@@ -22,10 +22,11 @@ class Source
     _.defaults @options, watch: false, follow: true
     {@watch, @path, @follow} = @options
   
-  createFile: (path) -> 
+  createFile: (fpath) -> 
     ctor = @constructor
-    file = new File path, path.join(@path, path), ctor.types[0], @
-    @package.registerFile file
+    fullpath = util.changeext path.join(@path, fpath), @constructor.ext
+    file = @package.file fpath, ctor.types[0], fullpath, @
+    file.register()
     file
   
   test: (path) -> util.hasext path, @constructor.ext
@@ -36,8 +37,8 @@ class Source
       end @filelist if end?
     else
       @filelist = []
-      each = (path) =>
-        file = @createFile path
+      each = (fpath) =>
+        file = @createFile util.changeext fpath, ''
         yield file if yield?
         @filelist.push file
       @list each, => end @filelist if end?
@@ -45,9 +46,9 @@ class Source
   list: (yield, end) ->
     walk = require 'walker'
     filelist = []
-    walker = new walk @path, followLinks: true
+    walker = new walk (rpath = path.join @path, ''), followLinks: true
     walker.on 'file', (root, stat) =>
-      fpath = path.join root[path.join(@path, '').length..], stat.name
+      fpath = path.join root[rpath.length+1..], stat.name
       return unless @test fpath
       yield fpath
     

@@ -1,4 +1,5 @@
 var brewer = require('../..'),
+    debug = require('../../lib/command').debug,
     fs = require('fs'),
     path = require('path'),
     sys = require('util'),
@@ -8,7 +9,8 @@ var brewer = require('../..'),
     cssom = require('cssom'),
     color = require('ansi-color').set,
     Project = brewer.Project,
-    OK = require('..').OK;
+    OK = require('..').OK,
+    jspackage, jspackage2;
 
 exports.tests = {
   setup: function() {
@@ -20,28 +22,25 @@ exports.tests = {
   clean: function() {
     project.clean();
   },
-  'Packaging Coffeescript': function(cb) {
-    jspackage.bundleAll(function() {
+  'Packaging Coffeescript': function(next) {
+    jspackage.ready(function() { jspackage.actualize(function() {
       test = require('./js/build/test');
       assert.ok(test.F == 2);
       OK('test.F == 2');
       assert.ok(test.A == 1);
       OK('test.A == 1');
-      cb();
-    });
-  },
-  'Compressing Coffeescript': function(cb) {
-    jspackage.compressAll(function() {
+      
       test = require('./js/build/test.min');
       assert.ok(test.F == 2);
       OK('test.F == 2')
       assert.ok(test.A == 1);
       OK('test.A == 1')
-      cb();
-    });
+      next();
+    }) });
   },
-  'Packaging Coffeescript + External Libraries': function(next) {
-    jspackage2.bundleAll(function() {
+  'Packaging Coffeescript + External Libraries': function(next3) {
+    jspackage2.ready(function() { 
+      jspackage2.actualize(function(next) {
       jsdom.env({
         html: '<html><body></body></html>',
         src: [fs.readFileSync('./js/build/test2.js')],
@@ -50,24 +49,23 @@ exports.tests = {
           OK('window.Backbone.VERSION == "0.9.0"');
           assert.ok(window.$('body').data('id') == 'hello');
           OK('window.$("body").data("id") == "hello"');
-          next();
+          next2();
         }
       });
+      function next2() {
+        jsdom.env({
+          html: '<html><body></body></html>',
+          src: [fs.readFileSync('./js/build/test2.min.js')],
+          done: function(errors, window) {
+            assert.ok(window.Backbone.VERSION == '0.9.0');
+            OK('window.Backbone.VERSION == "0.9.0"');
+            assert.ok(window.$('body').data('id') == 'hello');
+            OK('window.$("body").data("id") == "hello"');
+            next3();
+          }
+        });
+      }
+    }) 
     });
   },
-  'Compressing Coffeescript + External Libraries': function(next) {
-    jspackage2.compressAll(function() {
-      jsdom.env({
-        html: '<html><body></body></html>',
-        src: [fs.readFileSync('./js/build/test2.min.js')],
-        done: function(errors, window) {
-          assert.ok(window.Backbone.VERSION == '0.9.0');
-          OK('window.Backbone.VERSION == "0.9.0"');
-          assert.ok(window.$('body').data('id') == 'hello');
-          OK('window.$("body").data("id") == "hello"');
-          next();
-        }
-      });
-    });
-  }
 };
