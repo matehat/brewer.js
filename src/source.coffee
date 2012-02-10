@@ -10,8 +10,9 @@ class Source
   @registry = {}
   @extend: (sources...) ->
     for src in sources
-      for type in (src.types ? [])
-        @registry[type] = src
+      @registry[src.type] = src
+      for alias in (src.aliases ? [])
+        @registry[alias] = src
   
   @create: (options, package) ->
     throw "Source type #{options.type} not known" unless (typ = @registry[options.type])?
@@ -25,7 +26,7 @@ class Source
   createFile: (fpath) -> 
     ctor = @constructor
     fullpath = util.changeext path.join(@path, fpath), @constructor.ext
-    file = @package.file fpath, ctor.types[0], fullpath, @
+    file = @package.file fpath, ctor.type, fullpath, @
     file.register()
     file
   

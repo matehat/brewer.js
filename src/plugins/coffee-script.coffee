@@ -9,7 +9,8 @@ util = require '../util'
 {JavascriptFile} = require './javascript'
 
 class CoffeescriptSource extends Source
-  @types = ['coffeescript', 'coffee-script', 'cs']
+  @type = 'coffeescript'
+  @aliases = ['coffee-script', 'cs']
   @header = /^#\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
   @ext = '.coffee'
   

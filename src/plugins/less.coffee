@@ -6,7 +6,7 @@ path = require 'path'
 {StylesheetsPackage, StylesheetsSource} = require './css'
 
 class LessSource extends StylesheetsSource
-  @types = ['less']
+  @type = 'less'
   @ext = '.less'
   @header = /^\/\/\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
   

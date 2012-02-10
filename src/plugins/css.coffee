@@ -6,15 +6,16 @@ util = require '../util'
 {finished, debug} = require '../command'
 
 class StylesheetsPackage extends Package
-  @types = ['stylesheets', 'css']
+  @type = 'stylesheets'
+  @aliases = ['css']
   @default = 'css'
   
-  constructor: (options, sources, vendor) ->
+  constructor: (options) ->
     super
     _.defaults options, compress: true
     {@compress, @build, bundles} = options
     
-    for lib in @vendor.dirs 'css'
+    for lib in @vendorlibs.dirs 'css'
       @registerSource Source.create {path: lib, type: 'css'}, @
   
   bundlePath: (file) -> 
@@ -37,7 +38,8 @@ class StylesheetsPackage extends Package
 
   
 class StylesheetsSource extends Source
-  @types = ['css', 'stylesheets']
+  @type = 'stylesheets'
+  @aliases = ['css']
   @ext = '.css'
   @header = /^\/\*\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)\*\//m
 

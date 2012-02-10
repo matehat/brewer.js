@@ -74,7 +74,7 @@ Package =
 # proxies to the Package._source method
 _.each _.keys(SourceRegistry), (key) ->
   Package[key] = (path, options, cb) ->
-    Package._source.call this, key, path, options, cb
+    Package._source.call this, SourceRegistry[key].type, path, options, cb
   
 
 # The function used to define a package object in a Brewfile.
@@ -116,7 +116,7 @@ newContext = ->
   # above.
   _.each _.keys(PackageRegistry), (key) ->
     ctx[key] = (name, opts, cb) ->
-      package.call ctx.project, key, name, opts, cb
+      package.call ctx.project, PackageRegistry[key].type, name, opts, cb
     
   # Define DSL functions to specify properties of the project
   ctx.root = (newRoot) -> prj.root = newRoot

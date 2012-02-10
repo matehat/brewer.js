@@ -13,15 +13,16 @@ class Package extends EventEmitter
   @registry = {}
   @extend: (packages...) ->
     for package in packages
-      for type in (package.types ? [])
-        @registry[type] = package
+      @registry[package.type] = package
+      for alias in (package.aliases ? [])
+        @registry[alias] = package
   
   @create: (options, sources, vendor) ->
     throw "Package type #{options.type} not known" unless (typ = @registry[options.type])?
     new typ options, sources, vendor
   
   
-  constructor: (@options, sources, @vendor) ->
+  constructor: (@options, sources, @vendorlibs) ->
     {@name, bundles} = @options
     @files = {}
     @sources = {}
@@ -35,7 +36,7 @@ class Package extends EventEmitter
       JSON.parse fs.readFileSync bundles
     else bundles
   
-  ready: (cb) ->
+  ready: (cb) -> 
     if @_ready then cb() else @on 'ready', cb
   
   file: (relpath, type, fullpath, src) ->
@@ -68,8 +69,7 @@ class Package extends EventEmitter
     bundle.write output, cb
   
   registerSource: (src) ->
-    for type in ['all', src.constructor.types...]
-      (@sources[type] ?= []).push src
+    (@sources[src.constructor.type] ?= []).push src
     @_pendingSources++
     
     src.files null, (files) =>
@@ -77,7 +77,7 @@ class Package extends EventEmitter
       
   
   registerFile: (file) ->
-    type = @constructor.types[0]
+    type = @constructor.type
     # If the registered file is of the same type as the package and it has
     # the same relative path as a listed bundle, make a corresponding bundled 
     # file and register it

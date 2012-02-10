@@ -7,10 +7,11 @@ util = require '../util'
 {finished, debug} = require '../command'
 
 class JavascriptPackage extends Package
-  @types = ['javascript', 'js']
+  @type = 'javascript'
+  @aliases = ['js']
   @default = 'javascript'
   
-  constructor: (options, sources, vendor) ->
+  constructor: (options) ->
     super
     _.defaults options, compress: true
     {@compress, @build, @bundles} = options
@@ -43,7 +44,8 @@ class JavascriptPackage extends Package
 
 
 class JavascriptSource extends Source
-  @types = ['javascript', 'js']
+  @type = 'javascript'
+  @aliases = ['js']
   @ext = '.js'
   @header = /^\/\/\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
 

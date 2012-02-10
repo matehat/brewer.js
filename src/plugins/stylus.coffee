@@ -7,7 +7,8 @@ _ = require 'underscore'
 {StylesheetsPackage, StylesheetsSource} = require './css'
 
 class StylusSource extends StylesheetsSource
-  @types = ['stylus', 'styl']
+  @type = 'stylus'
+  @aliases = ['styl']
   @ext = '.styl'
   @header = /^\/\/\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
   
