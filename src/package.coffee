@@ -26,6 +26,9 @@ class Package extends EventEmitter
     @files = {}
     @sources = {}
     @_ready = false
+    @_pendingSources = 0
+    
+    @on 'ready', => @_ready = true
     
     (@registerSource Source.create(src, @) for src in sources)
     @bundlePaths = if _.isString bundles
@@ -33,10 +36,7 @@ class Package extends EventEmitter
     else bundles
   
   ready: (cb) ->
-    return cb() if @_ready
-    @on 'ready', ->
-      @_ready = true
-      cb()
+    if @_ready then cb() else @on 'ready', cb
   
   file: (relpath, type, fullpath, src) ->
     @files[type] ?= {}
@@ -68,13 +68,13 @@ class Package extends EventEmitter
     bundle.write output, cb
   
   registerSource: (src) ->
-    for type in ['all', 'loading', src.constructor.types...]
+    for type in ['all', src.constructor.types...]
       (@sources[type] ?= []).push src
+    @_pendingSources++
     
     src.files null, (files) =>
-      @sources.loading = _.without @sources.loading, src
-      if @sources.loading.length == 0
-        @emit 'ready'
+      @emit 'ready' if --@_pendingSources == 0
+      
   
   registerFile: (file) ->
     type = @constructor.types[0]
