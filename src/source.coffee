@@ -25,7 +25,7 @@ class Source
   
   createFile: (fpath) -> 
     ctor = @constructor
-    fullpath = util.changeext path.join(@path, fpath), @constructor.ext
+    fullpath = util.changeext path.join(@path, fpath), ctor.ext
     file = @package.file fpath, ctor.type, fullpath, @
     file.register()
     file

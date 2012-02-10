@@ -29,12 +29,14 @@ class File extends EventEmitter
   
   actualize: (cb) ->
     i = 0
-    (iter = (cb2) =>
+    
+    iter = () =>
       if i < @dependencies.length
         [dep, act] = @dependencies[i++]
-        dep.actualize -> iter(cb2)
-      else cb2()
-    )( =>
+        dep.actualize -> iter()
+      else end()
+    
+    end = () =>
       if @dependencies.length > 0
         newest = true
         for [dep, act] in @dependencies
@@ -46,7 +48,8 @@ class File extends EventEmitter
             break
         cb() if newest
       else cb()
-    )
+    
+    iter()
   
   
   readImportedPaths: ->
@@ -56,7 +59,10 @@ class File extends EventEmitter
         return '' unless (match = _data.match regexp)?
         match[1] + recurse _data[match[0].length+match.index ...]
     
-      if (json = recurse @readSync()).length > 0 then JSON.parse json else []
+      paths = if (json = recurse @readSync()).length > 0
+        JSON.parse json 
+      else []
+      paths = (util.changeext(p, '') for p in paths)
     else
       []
   

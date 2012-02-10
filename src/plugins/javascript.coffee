@@ -9,7 +9,6 @@ util = require '../util'
 class JavascriptPackage extends Package
   @type = 'javascript'
   @aliases = ['js']
-  @default = 'javascript'
   
   constructor: (options) ->
     super

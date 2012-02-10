@@ -3,4 +3,5 @@ node_modules/
 tests/js/js/
 tests/css/css/build*
 tests/css/vendor/
+tests/css/cache
 *.log

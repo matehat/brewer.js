@@ -1,4 +1,5 @@
 util = require '../util'
+temp = require 'temp'
 fs = require 'fs'
 path = require 'path'
 {Source} = require '..'
@@ -21,22 +22,22 @@ class LessSource extends StylesheetsSource
     original
   
   createCompiledFile: (original) ->
-    cpath = util.changeext (path = original.relpath), '.css'
-    compiled = @package.file path, 'stylesheets', path.join(@output, cpath), @
-    compiled.dependOn original, _.bind @compile, @
-    compiled.setImportedPaths original.readImportedPaths
+    cpath = util.changeext (opath = original.relpath), '.css'
+    compiled = @package.file opath, 'stylesheets', path.join(@output ? "./cache", cpath), @
+    compiled.dependOn original, _.bind(@compile, @)
+    compiled.setImportedPaths original.readImportedPaths()
     @package.registerFile compiled
     compiled
   
   compile: (original, compiled, cb) ->
-    paths = (src.path for src in @package.sources.less)
-    paths.push lib for lib in @package.vendor.dirs 'less'
+    paths = (path.resolve(src.path) for src in @package.sources.less)
+    paths.push(path.resolve(lib.path)) for lib in @package.vendorlibs.libraries 'less'
     
     parser = new (require('less').Parser)
       filename: @file
       paths: paths
     
-    compile: (data, cb) ->
+    compile = (data, cb) ->
       parser.parse data, (err, tree) ->
         cb err if err?
         cb null, tree.toCSS()

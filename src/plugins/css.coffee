@@ -8,15 +8,15 @@ util = require '../util'
 class StylesheetsPackage extends Package
   @type = 'stylesheets'
   @aliases = ['css']
-  @default = 'css'
   
   constructor: (options) ->
     super
     _.defaults options, compress: true
-    {@compress, @build, bundles} = options
+    {@compress, @build, @bundles} = options
+    @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
     
-    for lib in @vendorlibs.dirs 'css'
-      @registerSource Source.create {path: lib, type: 'css'}, @
+    for lib in @vendorlibs.libraries 'stylesheets'
+      @registerSource Source.create lib, @
   
   bundlePath: (file) -> 
     path.join @build, util.changeext file.relpath, '.css'

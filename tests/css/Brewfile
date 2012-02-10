@@ -10,8 +10,7 @@ stylesheets "styles1",
   ->
     @source "./css"
     @less "./less"
-    @less "./less/auto", 
-      compileAll: true
+    @less "./less/auto", output: "./css/build-less"
 
 css "styles2", ->
   @options

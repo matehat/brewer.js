@@ -41,8 +41,7 @@ Package =
   # The type of the source here is inferred by the
   # default source type of the parent package
   source: (path, opts, cb) ->
-    src = PackageRegistry[@opts.type].default
-    @_source.call this, src, path, opts, cb
+    @_source.call this, @opts.type, path, opts, cb
   
   # A common method used to define any type of 
   # source in a package.
