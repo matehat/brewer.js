@@ -25,6 +25,7 @@ function runTests(tests, cb) {
 exports.OK = function(msg) { console.log(color("  ✔", "green"), msg); };
 
 runTests([
+  require('./formula').tests,
   require('./brewfile').tests,
   require('./js').tests,
   require('./css').tests
