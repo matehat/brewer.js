@@ -62,6 +62,7 @@ class File extends EventEmitter
   
   setImportedPaths: (paths) -> 
     @_importedPaths = paths
+    @_imports = null
   
   importedPaths: ->
     unless @_importedPaths?
@@ -75,7 +76,6 @@ class File extends EventEmitter
   
   dependOnImports: (other, actualize) ->
     imported = []
-    @pre = other
     crawl = (file) ->
       depend _file for _file in file.imports()
     
@@ -94,10 +94,10 @@ class File extends EventEmitter
   tsortedImports: ->
     
     # ### Topological sorting algorithm
-    #
+    # 
     # It returns a list of files, the order of which preserves
     # the precedence specified as 'imports'.
-    #
+    # 
     # This is used to get one of the solution to
     # topologically sorting a directed acyclic graph.
     # It is garanteed to find _a_ solution, given the graph
@@ -106,7 +106,7 @@ class File extends EventEmitter
     # in an order that will meet precedence requirements. If cycles
     # are present, the method will silently fail, yielding a 
     # non-ordered list.
-    #
+    # 
     # Taken from http://en.wikipedia.org/wiki/Topological_sort#Algorithms
     
     topoSortedFiles = []
@@ -121,14 +121,13 @@ class File extends EventEmitter
       visited.push file.relpath
     
     buildDAG @
-    S = [@pre]
+    S = [@]
     while S.length > 0
       n = S.shift()
       topoSortedFiles.push n
       for m in n.imports()
-        edges = DAG[m.relpath]
-        edges = _.without edges, n.relpath
-        if edges.length is 0
+        DAG[m.relpath] = _.without DAG[m.relpath], n.relpath
+        if DAG[m.relpath].length is 0
           S.push m
     
     topoSortedFiles.reverse()
@@ -146,7 +145,6 @@ class File extends EventEmitter
       cb(err, data)
   
   readSync: -> 
-    debug '$', @exists(), @fullpath, @relpath, @type
     return unless @exists()
     fs.readFileSync @fullpath, 'utf-8'
   

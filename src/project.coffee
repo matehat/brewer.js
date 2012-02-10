@@ -17,9 +17,9 @@ class Project
       vendorDir: './vendor'
     
     {@root, reqs, packages, vendorDir} = opts
-    @vendor = new VendorLibraries @, vendorDir, reqs
+    @vendorlibs = new VendorLibraries @, vendorDir, reqs
     _.each packages, (pkg, i) =>
-      @[i] = Package.create pkg.opts, pkg.srcs, @vendor
+      @[i] = Package.create pkg.opts, pkg.srcs, @vendorlibs
     
   
 
@@ -27,9 +27,11 @@ class VendorLibraries
   constructor: (@project, vendorDir, @requirements) ->
     @root = path.join @project.root, vendorDir
     util.makedirs @root
-    @libraries = @read()
+    @libs = @read()
   
-  stateFile: -> path.join @root, 'libraries.json'
+  stateFile: -> 
+    path.join @root, 'libraries.json'
+  
   read: ->
     if path.existsSync(stateFile = @stateFile())
       JSON.parse fs.readFileSync stateFile, 'utf-8'
@@ -37,14 +39,16 @@ class VendorLibraries
       {}
   
   write: ->
-    fs.writeFileSync @stateFile(), JSON.stringify(@libraries), 'utf-8'
+    fs.writeFileSync @stateFile(), JSON.stringify(@libs), 'utf-8'
   
-  dirs: (type) ->
-    dirs = []
-    for modname, info of @libraries
-      for dir in (info.dirs[type] ? [])
-        dirs.push path.join @root, modname, dir
+  libraries: (type) ->
+    libs = []
+    for name, lib of @libs
+      for dpath, dir of lib.content when dir.type is type
+        _lib = {path: path.join(@root, name, dpath)}
+        _.extend _lib, dir
+        libs.push _lib
     
-    dirs
+    libs
 
 exports.Project = Project

@@ -21,7 +21,7 @@ class Source
   
   constructor: (@options, @package) ->
     _.defaults @options, watch: false, follow: true
-    {@watch, @path, @follow} = @options
+    {@watch, @path, @follow, @requirements} = @options
   
   createFile: (fpath) -> 
     ctor = @constructor
@@ -40,6 +40,9 @@ class Source
       @filelist = []
       each = (fpath) =>
         file = @createFile util.changeext fpath, ''
+        if (imports = @requirements?[file.relpath])?
+          file.setImportedPaths imports
+        
         yield file if yield?
         @filelist.push file
       @list each, => end @filelist if end?

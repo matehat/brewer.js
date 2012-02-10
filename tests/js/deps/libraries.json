@@ -1,20 +1,22 @@
 {
   "backbone": {
     "version": "0.9.0",
-    "dirs": {
-      "javascript": ["."]
+    "content": {
+      ".": {  
+        "type": "javascript",
+        "requirements": {
+          "backbone": ["jquery", "underscore"]
+        }
+      }
     }
+    
   },
   "jquery": {
     "version": "1.7.1",
-    "dirs": {
-      "javascript": ["."]
-    }
+    "content": { ".": { "type": "javascript" } }
   },
   "underscore": {
     "version": "1.3.1",
-    "dirs": {
-      "javascript": ["."]
-    }
+    "content": { ".": { "type": "javascript" } }
   }
 }

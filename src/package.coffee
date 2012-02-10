@@ -63,9 +63,11 @@ class Package extends EventEmitter
   
   bundle: (imported, bundle, cb) ->
     output = ''
-    for file in bundle.tsortedImports()
+    parent = bundle.parent
+    for file in parent.tsortedImports()
       output += file.readSync()
     
+    output += parent.readSync()
     bundle.write output, cb
   
   registerSource: (src) ->
@@ -84,6 +86,7 @@ class Package extends EventEmitter
     if (fpath = file.relpath) in @bundlePaths and file.type is type
       bundle = @file fpath, "#{type}-bundle", @bundlePath(file)
       bundle.dependOnImports file, _.bind @bundle, @
+      bundle.parent = file
       bundle.register()
       
       # If the package is configured to compress its bundles, make a corresponding

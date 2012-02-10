@@ -17,9 +17,8 @@ class JavascriptPackage extends Package
     {@compress, @build, @bundles} = options
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
     
-    for lib in @vendor.dirs 'javascript'
-      debug '+ vendors', lib
-      @registerSource Source.create {path: lib, type: 'javascript'}, @
+    for lib in @vendorlibs.libraries 'javascript'
+      @registerSource Source.create lib, @
   
   bundlePath: (file) -> 
     path.join @build, util.changeext file.relpath, '.js'
