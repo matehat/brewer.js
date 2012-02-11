@@ -23,14 +23,15 @@ validVersionSpec = (vsn) ->
 
 
 class Installer extends EventEmitter
-  constructor: (@formula, @root, @version="latest") ->
+  constructor: (@formula, @project, @version="latest") ->
   
   # ### Methods that are accessible in the installer body
   
   include: (src, opts, cb) ->
     [cb, opts] = [opts, {}] if _.isFunction opts
     info "Moving #{src} into vendor folder"
-    (spawn 'cp', ['-fpLR', src, (root = @root)]).on 'end', ->
+    root = @project.vendorlibs.root
+    (spawn 'cp', ['-fpLR', src, root]).on 'end', ->
       if (dest = opts.rename)?
         move (join(root, d) for d in [basename(src), dest])...
       cb.call @
@@ -147,7 +148,8 @@ class Formula
   
 
 
-@formulae = (file) ->
+exports.Installer = Installer
+exports.formulae = (file) ->
   ctx = _.clone global
   ctx.formulae = []
   
