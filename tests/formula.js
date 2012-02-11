@@ -1,10 +1,14 @@
-var formula = require('../lib/formula'),
-    path = require('path');
+var formulae = require('../lib/formula').formulae,
+    path = require('path'),
+    OK = require('../tests').OK,
+    assert = require('assert');
 
 exports.tests = {
   'Parsing a formula file': function(next) {
-    formula.formulae(path.resolve(__dirname, '../formula/jquery.cf'));
-    OK('formula/jquery.cf parsed.');
+    var formula = formulae(path.resolve(__dirname, '../formula/jquery.cf'));
+    OK('formula/jquery parsed.');
+    assert.ok(formula[0].valid());
+    OK('formula/jquery valid.')
     next()
   }
 }

@@ -14,6 +14,14 @@ coffeescript = require 'coffee-script'
 {info, debug} = require './command'
 move = fs.renameSync
 
+validVersionSpec = (vsn) ->
+  return (
+    semver.valid(vsn) or 
+    semver.validRange(vsn) or 
+    vsn is 'latest'
+  )
+
+
 class Installer extends EventEmitter
   constructor: (@formula, @root, @version="latest") ->
   
@@ -61,26 +69,50 @@ class Installer extends EventEmitter
       throw new Error "The supplied version is not correctly formatted: '#{vsn}'"
   
   _getUrl: ->
-    if _.isFunction (urls = @formula.urlGetter)
-      if vsn is 'latest'
+    # Proxy the list of available versions and the
+    # defined urlGetter
+    versions = @formula.availableVersions
+    urlGetter = @formula.urlGetter
+    
+    if _.isFunction urlGetter
+      # If urlGetter is a function, we match 'latest'
+      # to the latest available version and pass it over
+      vsn = 'X.X.X' if vsn is 'latest'
+      urls @_formattedVersion semver.maxSatisfying versions, vsn
+    else
+      # urlGetter can also be a hash, mapping semantic versions
+      # or version ranges to either a string or a function
+      version = if vsn is 'latest' then 'X.X.X' else vsn
+      version = semver.maxSatisfying versions, version
+      if vsn is 'latest' and 'latest' of urlGetter
+        match = urlGetter.latest
       else
-        vsn = semver.maxSatisfying(versions, vsn) if (versions = @formula.availableVersions)?
-      urls(if vsn isnt 'latest' then @_formattedVersion vsn else vsn)
-    else 
-      vsn = 'X.X.X' if vsn is 'latest' and 'latest' not of urls
-      vsn = semver.maxSatisfying(versions, vsn) if (versions = @formula.availableVersions)?
-      vsn = semver.maxSatisfying((_.without _.keys(urls), 'latest'), vsn) if vsn isnt 'latest'
-      if _.isFunction (match = urls[vsn]) then match(@_formattedVersion vsn) else match
+        match = _.find urlGetter, (url, ver) ->
+          return false if ver is 'latest'
+          semver.satisfies version, ver
+        return false unless match?
+      
+      if _.isFunction match
+        match = match @_formattedVersion version
+      match
   
-  _fetch: ->
+  _fetch: (cb) ->
     formula = @formula
+    vsn = @version
     temp.mkdir (err, @temp) =>
       throw new Error err if err
       chdir tempdir
-      req = request(url = @_getUrl vsn)
-      info "Downloading #{url}"
-      req.pipe fs.createWriteStream (download = join tempdir, vsn)
-      req.on 'end', => @formula.installer.call @, download
+      url = @_getUrl vsn
+      download = join tempdir, vsn
+      info "Downloading #{url} to #{download}"
+      req = request url
+      req.pipe fs.createWriteStream download
+      req.on 'end', cb
+    
+  
+  _install: (cb) ->
+    @_fetch =>
+      @formula.installer.call @, download, cb
     
   
 
@@ -92,6 +124,9 @@ class Formula
   install: (cb) -> @installer = cb
   latest: (vsn) -> @latestVersion = vsn
   
+  valid: ->
+    @availableVersions? and @urlGetter? and @installer?
+  
   versions: (versions...) ->
     @availableVersions ?= []
     @availableVersions.push versions...
@@ -102,9 +137,10 @@ class Formula
     else if _.isObject map
       for version, value of map
         debug map
-        unless version == 'latest' or semver.valid version
+        unless validVersionSpec(version)
           throw new Error("Invalid version specifier")
-        @urlGetter = {} if !@urlGetter? or _.isFunction @urlGetter
+        if !@urlGetter? or _.isFunction @urlGetter
+          @urlGetter = {}
         @urlGetter[version] = value
   
   require: (formulae...) ->
@@ -124,3 +160,4 @@ class Formula
     sandbox: vm.createContext(ctx)
     filename: file
   
+  ctx.formulae
