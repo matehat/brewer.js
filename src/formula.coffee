@@ -59,7 +59,7 @@ class Installer extends EventEmitter
   
   # ### Private methods
   
-  _formattedVersion = ->
+  _formattedVersion = (vsn) ->
     return vsn if vsn == 'latest'
     unless (version = semver.clean vsn)?
       [v, tag] = version.split '-'
@@ -136,7 +136,6 @@ class Formula
       @urlGetter = map
     else if _.isObject map
       for version, value of map
-        debug map
         unless validVersionSpec(version)
           throw new Error("Invalid version specifier")
         if !@urlGetter? or _.isFunction @urlGetter
