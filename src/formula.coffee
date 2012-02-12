@@ -60,9 +60,9 @@ class Installer extends EventEmitter
   
   # ### Private methods
   
-  _formattedVersion = (vsn) ->
+  _formattedVersion: (vsn) ->
     return vsn if vsn == 'latest'
-    unless (version = semver.clean vsn)?
+    if (version = semver.clean vsn)?
       [v, tag] = version.split '-'
       [major, minor, patch] = v.split '.'
       {tag, major, minor, patch, version, toString: -> version}
@@ -74,6 +74,7 @@ class Installer extends EventEmitter
     # defined urlGetter
     versions = @formula.availableVersions
     urlGetter = @formula.urlGetter
+    vsn = @version
     
     if _.isFunction urlGetter
       # If urlGetter is a function, we match 'latest'
@@ -151,10 +152,10 @@ class Formula
 exports.Installer = Installer
 exports.formulae = (file) ->
   ctx = _.clone global
-  ctx.formulae = []
+  ctx.formulae = {}
   
   ctx.formula = (name, body) ->
-    ctx.formulae.push (formula = new Formula(name))
+    ctx.formulae[name] = formula = new Formula(name)
     body.call formula
   
   coffeescript.eval fs.readFileSync(file, 'utf-8'), 
