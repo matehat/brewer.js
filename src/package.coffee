@@ -7,7 +7,7 @@ _ = require 'underscore'
 
 {Source} = require './source'
 {File} = require './file'
-{debug, info} = require './command'
+{debug, info, finished} = require './command'
 
 class Package extends EventEmitter
   @registry = {}
@@ -67,8 +67,8 @@ class Package extends EventEmitter
     for file in parent.tsortedImports()
       output += file.readSync()
     
-    output += parent.readSync()
     bundle.write output, cb
+    finished 'Packaged', bundle.fullpath
   
   registerSource: (src) ->
     (@sources[src.constructor.type] ?= []).push src

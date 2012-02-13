@@ -6,7 +6,6 @@ stylesheets "styles1",
   build: "./css/build-less"
   bundles: ["testcss1", "testless1"]
   compress: true
-  
   ->
     @source "./css"
     @less "./less"
