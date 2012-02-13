@@ -109,6 +109,7 @@ class Formula
     @requirements = []
     @optionals = []
   
+  
   valid: -> @urlGetter? and @installer?
   url: (vsn) ->
     # Proxy the list of available versions and the
@@ -168,6 +169,22 @@ class Formula
     
   
 
+class Catalog
+  constructor: (@dirpath=resolve(__dirname, '..', 'formula')) ->
+    @path = join dirpath, 'catalog.json'
+  
+  
+  readFile: ->
+    @formulae = JSON.parse fs.readFileSync @path, 'utf-8'
+  
+  writeFile: ->
+    fs.writeFileSync @path, JSON.stringify(@formulae, null, 4), 'utf-8'
+  
+  exists: -> path.exists @path
+  
+  parsedir: (cb) ->
+    
+  
 
 _.extend exports,
 
