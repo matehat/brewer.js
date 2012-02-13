@@ -110,27 +110,29 @@ class Formula
     @optionals = []
   
   
-  valid: -> @urlGetter? and @installer?
+  valid: -> @urls? and @installer?
   url: (vsn) ->
     # Proxy the list of available versions and the
-    # defined urlGetter
-    versions = @availableVersions
-    urlGetter = @urlGetter
+    # defined urls getter
+    versions = @versions
+    urls = @urls
+    vsn = @latest if @latest and vsn is 'latest'
     
-    if _.isFunction urlGetter
+    if _.isFunction urls
       # If urlGetter is a function, we match 'latest'
       # to the latest available version and pass it over
+      
       vsn = 'X.X.X' if vsn is 'latest'
-      urls @_formattedVersion semver.maxSatisfying versions, vsn
+      urls Formula.formattedVersion semver.maxSatisfying versions, vsn
     else
       # urlGetter can also be a hash, mapping semantic versions
       # or version ranges to either a string or a function
       version = if vsn is 'latest' then 'X.X.X' else vsn
       version = semver.maxSatisfying versions, version
-      if vsn is 'latest' and 'latest' of urlGetter
-        match = urlGetter.latest
+      if vsn is 'latest' and 'latest' of urls
+        match = urls.latest
       else
-        match = _.find urlGetter, (url, ver) ->
+        match = _.find urls, (url, ver) ->
           return false if ver is 'latest'
           semver.satisfies version, ver
         return false unless match?
@@ -139,27 +141,28 @@ class Formula
         match = match Formula.formattedVersion version
       match
   
+  
   context: ->
-    homepage: (@homepageURL) =>
-    doc: (@docURL) =>
+    homepage: (@homepage) =>
+    doc: (@doc) =>
     install: (@installer) =>
-    latest: (@latestVersion) =>
+    latest: (@latest) =>
     md5: (@checksum) =>
     
     versions: (versions...) =>
-      @availableVersions ?= []
-      @availableVersions.push versions...
+      @versions ?= []
+      @versions.push versions...
     
     urls: (map) =>
       if _.isFunction map
-        @urlGetter = map
+        @urls = map
       else if _.isObject map
         for version, value of map
           unless validVersionSpec(version)
             throw new Error("Invalid version specifier")
-          if !@urlGetter? or _.isFunction @urlGetter
-            @urlGetter = {}
-          @urlGetter[version] = value
+          if !@urls? or _.isFunction @urls
+            @urls = {}
+          @urls[version] = value
     
     require: (formulae...) =>
       @requirements.push(formula) for formula in formulae when not _.include(@requirements, formula)
