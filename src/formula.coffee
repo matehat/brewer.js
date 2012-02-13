@@ -25,59 +25,62 @@ validVersionSpec = (vsn) ->
 class Installer extends EventEmitter
   constructor: (@formula, @project, @version="latest") ->
   
-  # ### Methods that are accessible in the installer body
   
-  include: (src, opts, cb) ->
-    [cb, opts] = [opts, {}] if _.isFunction opts
-    info "Moving #{src} into vendor folder"
-    root = @project.vendorlibs.root
-    (spawn 'cp', ['-fpLR', src, root]).on 'end', ->
-      if (dest = opts.rename)?
-        move (join(root, d) for d in [basename(src), dest])...
-      cb.call @
+  context: ->
+    include: (src, opts, cb) =>
+      [cb, opts] = [opts, {}] if _.isFunction opts
+      info "Moving #{src} into vendor folder"
+      root = @project.vendorlibs.root
+      (spawn 'cp', ['-fpLR', src, root]).on 'end', ->
+        if (dest = opts.rename)?
+          move (join(root, d) for d in [basename(src), dest])...
+        cb.call @
+      
     
-  
-  deflate: (file, ext, cb) ->
-    flags = _.reject ext.split('.'), (f) -> f is ''
-    
-    if flags[0] is 'tar'
-      flag = {'bz2': 'j', 'gz': 'z'}[flags[1]] ? ''
-      child = spawn 'tar', ['-xvf'+flag, file]
-    else if flags[0] is 'zip'
-      child = spawn 'unzip', [file]
-    else return cb
-    
-    info "Deflating #{file}"
-    child.on 'end', =>
-      fs.unlink file, =>
-        fs.readdir '.', (err, files) =>
-          if files.length == 1 and fs.statSync(files[0]).isDirectory()
-            chdir files[0]
-          cb.call @
+    deflate: (file, ext, cb) =>
+      flags = _.reject ext.split('.'), (f) -> f is ''
+      
+      if flags[0] is 'tar'
+        flag = {'bz2': 'j', 'gz': 'z'}[flags[1]] ? ''
+        child = spawn 'tar', ['-xvf'+flag, file]
+      else if flags[0] is 'zip'
+        child = spawn 'unzip', [file]
+      else return cb
+      
+      info "Deflating #{file}"
+      child.on 'end', =>
+        fs.unlink file, =>
+          fs.readdir '.', (err, files) =>
+            if files.length == 1 and fs.statSync(files[0]).isDirectory()
+              chdir files[0]
+            cb.call @
       
     
   
-  
-  # ### Private methods
-  
-  _fetch: (cb) ->
+  fetch: (cb) ->
     formula = @formula
     vsn = @version
     temp.mkdir (err, @temp) =>
-      throw new Error err if err
+      cb new Error err if err
       chdir tempdir
       url = @formula.url vsn
       download = join tempdir, vsn
       info "Downloading #{url} to #{download}"
       req = request url
-      req.pipe fs.createWriteStream download
-      req.on 'end', cb
+      ws = fs.createWriteStream download
+      req.on 'error', (err) -> cb(err)
+      ws.on 'error', (err) -> cb(err)
+      req.pipe ws
+      
+      
+      req.on 'end', ->
+        else cb(null, download)
     
   
-  _install: (cb) ->
-    @_fetch =>
-      @formula.installer.call @, download, cb
-    
+  install: (cb) ->
+    @fetch (err, download) =>
+      if err? then cb(err)
+      else @formula.installer.call @context(), download, cb
   
 
 class Formula
@@ -156,7 +159,9 @@ class Formula
 
 
 _.extend exports,
+
   Installer: Installer
+  Formula: Formula
   formulae: (file) ->
     ctx = _.clone global
     ctx.formulae = {}
@@ -171,10 +176,3 @@ _.extend exports,
     
     ctx.formulae
   
-  makeCatalog: ->
-    formulaDir = 
-    formulaDir
-  
-
-
-
