@@ -24,7 +24,7 @@ validVersionSpec = (vsn) ->
 
 
 class InvalidChecksum extends Error
-  constructor: (@formula, @url) ->
+  constructor: (@formula, @version, @url) ->
     @message = "Invalid checksum for #{formula.name} (#{version}), downloaded from #{url}"
     @name = 'InvalidChecksum'
   
@@ -69,33 +69,8 @@ class Installer extends EventEmitter
       
     
   
-  fetch: (cb) ->
-    formula = @formula
-    vsn = @version
-    temp.mkdir (err, @temp) =>
-      cb new Error err if err
-      chdir tempdir
-      url = @formula.url vsn
-      download = join tempdir, vsn
-      info "Downloading #{url} to #{download}"
-      req = request url
-      ws = fs.createWriteStream download
-      req.on 'error', (err) -> cb(err)
-      ws.on 'error', (err) -> cb(err)
-      req.pipe ws
-      
-      if (checksum = @formula.checksum)?
-        md5 = crypto.createHash 'md5'
-        req.on 'data', (data) -> md5.update data
-      
-      req.on 'end', ->
-        if checksum? and checksum isnt md5.digest 'hex'
-          cb new InvalidChecksum formula, url
-        else cb(null, download)
-    
-  
   install: (cb) ->
-    @fetch (err, download) =>
+    @formula.fetch @version, (err, download) =>
       if err? then cb(err)
       else @formula.installer.call @context(), download, cb
   
@@ -114,13 +89,14 @@ class Formula
   constructor: (@name) ->
     @requirements = []
     @optionals = []
+    @versions = {}
   
   
   valid: -> @urls? and @installer?
   url: (vsn) ->
     # Proxy the list of available versions and the
     # defined urls getter
-    versions = @versions
+    versions = _.keys @versions
     urls = @urls
     vsn = @latest if @latest and vsn is 'latest'
     
@@ -129,7 +105,10 @@ class Formula
       # to the latest available version and pass it over
       
       vsn = 'X.X.X' if vsn is 'latest'
-      urls Formula.formattedVersion semver.maxSatisfying versions, vsn
+      vsn = if vsn? and versions.length > 0 
+        Formula.formattedVersion semver.maxSatisfying versions, vsn
+      
+      urls vsn
     else
       # urlGetter can also be a hash, mapping semantic versions
       # or version ranges to either a string or a function
@@ -147,23 +126,64 @@ class Formula
         match = match Formula.formattedVersion version
       match
   
+  checksum: (vsn) ->
+    if @versions? and (chksum = @versions[vsn])? then chksum else @md5
+  
+  fetch: (vsn, cb) ->
+    tempdir = temp.mkdirSync()
+    chdir tempdir
+    url = @url vsn
+    dlfile = join tempdir, vsn
+    info "Downloading #{url} to #{dlfile}"
+    req = request url
+    ws = fs.createWriteStream dlfile
+    req.on 'error', (err) -> cb(err)
+    ws.on 'error', (err) -> cb(err)
+    req.pipe ws
+    
+    if (checksum = @checksum(vsn))?
+      md5 = crypto.createHash 'md5'
+      req.on 'data', (data) -> md5.update data
+    
+    req.on 'end', =>
+      if checksum? and checksum isnt md5.digest 'hex'
+        cb new InvalidChecksum @, vsn, url
+      else cb(null, dlfile)
+    
+    req
+  
+  calcsum: (vsn, cb) ->
+    md5 = crypto.createHash 'md5'
+    dl = @fetch vsn, (err) -> 
+      return cb(err) if err?
+      cb null, md5.digest 'hex'
+    
+    dl.on 'data', (data) -> md5.update data
+    null
+  
   
   context: ->
     homepage: (@homepage) =>
     doc: (@doc) =>
     install: (@installer) =>
     latest: (@latest) =>
-    md5: (@checksum) =>
+    md5: (@md5) =>
     
     versions: (versions...) =>
-      @versions ?= []
-      @versions.push versions...
+      if versions.length is 1
+        @versions ?= {}
+        if _.isObject versions
+          _.extend @versions, versions[0]
+        if _.isString versions
+          @versions[versions] = null
+      else if versions.length > 1
+        for vsn in versions
+          @versions[vsn] = null
     
     urls: (map) =>
       if _.isFunction map
         @urls = map
       else if _.isObject map
-        debug map
         for version, value of map
           unless validVersionSpec version
             throw new NonSemanticVersion version
@@ -206,6 +226,12 @@ class Catalog
   
   exists: -> existsSync @path
   
+  get: (name) ->
+    if (formula = @formulae[name])?
+      @formulaFromFile name, formula.file
+    else
+      throw new Error("Formula (#{formula}) not available")
+  
   formulaFiles: ->
     filelist = []
     walk = (dpath) ->
@@ -213,25 +239,25 @@ class Catalog
         fpath = join dpath, p
         stats = fs.statSync fpath
         if stats.isFile() and util.hasext fpath, '.coffee'
-          [fpath] 
+          [fpath]
         else if stats.isDirectory()
           walk fpath
       
       _.flatten _.filter files, (file) -> file?
       
     files = walk @dirpath
-    debug files
     files
   
   
   entriesFromFile: (file) ->
     entries = {}
-    _.each @formulaeFromFile(file), (formula, name) ->
+    file = file.replace(@dirpath, '')[1...]
+    _.each @formulaeFromFile(join @dirpath, file), (formula, name) =>
       entry = entries[name] = {file}
       entry[p] = formula[p] for p in [
         'name', 'homepage', 'doc'
-        'latest', 'checksum', 'urls'
-        'versions', 'requirements', 'optionals']
+        'latest', 'md5', 'versions', 
+        'requirements', 'optionals']
       null
     entries
   
@@ -248,6 +274,21 @@ class Catalog
       filename: file
     
     ctx.formulae
+  
+  formulaFromFile: (name, file) ->
+    ctx = _.clone global
+    formula = null
+    
+    ctx.formula = (_name, body) ->
+      if name is _name
+        formula = new Formula(name)
+        body.call formula.context()
+    
+    coffeescript.eval fs.readFileSync(join(@dirpath, file), 'utf-8'), 
+      sandbox: vm.createContext(ctx)
+      filename: file
+    
+    formula
   
   reload: (cb) ->
     formulae = {}
