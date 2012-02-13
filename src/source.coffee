@@ -22,6 +22,7 @@ class Source
   constructor: (@options, @package) ->
     _.defaults @options, watch: false, follow: true
     {@watch, @path, @follow, @requirements} = @options
+    util.makedirs @path
   
   createFile: (fpath) -> 
     ctor = @constructor

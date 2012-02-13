@@ -25,6 +25,9 @@ class Project
   clean: ->
     pkg.clean?() for pkg in @
   
+  prepare: ->
+    pkg.prepare?() for pkg in @
+  
 
 class VendorLibraries
   constructor: (@project, vendorDir, @requirements) ->

@@ -34,7 +34,7 @@ class Package extends EventEmitter
     (@registerSource Source.create(src, @) for src in sources)
     @bundlePaths = if _.isString bundles
       JSON.parse fs.readFileSync bundles
-    else bundles
+    else (bundles ?= [])
   
   ready: (cb) -> 
     if @_ready then cb() else @on 'ready', cb
@@ -57,8 +57,8 @@ class Package extends EventEmitter
       leaves = _.filter allFiles, (file) -> file.liabilities.length == 0
       i = 0
       (iter = ->
-        leaves[i].actualize ->
-          if ++i < leaves.length then iter() else cb()
+        return process.nextTick(cb) if i is leaves.length
+        leaves[i++].actualize iter
       )()
   
   bundle: (imported, bundle, cb) ->
@@ -81,6 +81,9 @@ class Package extends EventEmitter
   clean: ->
     for file in @impermanents()
       file.unlinkSync()
+  
+  allSources: ->
+    return _.flatten _.values @sources
   
   impermanents: ->
     acc = []

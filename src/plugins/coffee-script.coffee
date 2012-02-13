@@ -2,10 +2,9 @@ _ = require 'underscore'
 fs = require 'fs'
 path = require 'path'
 util = require '../util'
-{debug} = require '../command'
+{debug, finished} = require '../command'
 {Source} = require '../source'
 {File} = require '../file'
-{finished} = require '../command'
 {JavascriptFile} = require './javascript'
 
 class CoffeescriptSource extends Source
