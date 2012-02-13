@@ -22,6 +22,12 @@ validVersionSpec = (vsn) ->
   )
 
 
+class InvalidChecksum extends Error
+  constructor: (@formula, @url) ->
+    @message = "Invalid checksum for #{formula.name} (#{version}), downloaded from #{url}"
+    @name = 'InvalidChecksum'
+  
+
 class Installer extends EventEmitter
   constructor: (@formula, @project, @version="latest") ->
   
@@ -72,8 +78,13 @@ class Installer extends EventEmitter
       ws.on 'error', (err) -> cb(err)
       req.pipe ws
       
+      if (checksum = @formula.checksum)?
+        md5 = crypto.createHash 'md5'
+        req.on 'data', (data) -> md5.update data
       
       req.on 'end', ->
+        if checksum? and checksum isnt md5.digest 'hex'
+          cb new InvalidChecksum formula, url
         else cb(null, download)
     
   
@@ -162,6 +173,8 @@ _.extend exports,
 
   Installer: Installer
   Formula: Formula
+  InvalidChecksum: InvalidChecksum
+  
   formulae: (file) ->
     ctx = _.clone global
     ctx.formulae = {}
