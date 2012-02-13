@@ -8,7 +8,7 @@ formula 'backbone', ->
   
   @urls 
     latest: 'http://backbonejs.org/backbone.js'
-    'X.X.X': (v) -> "https://github.com/documentcloud/backbone/tarball/#{v}"
+    '> 0.1.0': (v) -> "https://github.com/documentcloud/backbone/tarball/#{v}"
   
   @install (path, next) ->
     if @version == 'latest'

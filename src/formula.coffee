@@ -1,5 +1,5 @@
 fs = require 'fs'
-{join, basename, resolve} = require 'path'
+{join, basename, resolve, exists, existsSync} = require 'path'
 crypto = require 'crypto'
 vm = require 'vm'
 {spawn} = require 'child_process'
@@ -12,6 +12,7 @@ coffeescript = require 'coffee-script'
 
 {chdir} = process
 {info, debug} = require './command'
+util = require './util'
 move = fs.renameSync
 
 validVersionSpec = (vsn) ->
@@ -28,9 +29,14 @@ class InvalidChecksum extends Error
     @name = 'InvalidChecksum'
   
 
+class NonSemanticVersion extends TypeError
+  constructor: (@version) ->
+    @message = "Provided version (#{@version}) is not a valid semantic version (see http://semver.org/)"
+    @name = "NonSemanticVersion"
+  
+
 class Installer extends EventEmitter
   constructor: (@formula, @project, @version="latest") ->
-  
   
   context: ->
     include: (src, opts, cb) =>
@@ -157,9 +163,10 @@ class Formula
       if _.isFunction map
         @urls = map
       else if _.isObject map
+        debug map
         for version, value of map
-          unless validVersionSpec(version)
-            throw new Error("Invalid version specifier")
+          unless validVersionSpec version
+            throw new NonSemanticVersion version
           if !@urls? or _.isFunction @urls
             @urls = {}
           @urls[version] = value
@@ -174,33 +181,66 @@ class Formula
 
 class Catalog
   constructor: (@dirpath=resolve(__dirname, '..', 'formula')) ->
-    @path = join dirpath, 'catalog.json'
-  
+    @path = join @dirpath, 'catalog.json'
+    Object.defineProperty @, 'formulae',
+      get: ->
+        if @_formulae?
+          return            @_formulae
+        else
+          if @exists() then @_formulae = @readFile()
+          else              @formulae = @reload()
+      
+      set: (@_formulae) -> @writeFile @_formulae
   
   readFile: ->
-    @formulae = JSON.parse fs.readFileSync @path, 'utf-8'
+    try
+      JSON.parse fs.readFileSync @path, 'utf-8'
+    catch err
+      if err instanceof SyntaxError
+        @formulae = @reload()
+      else
+        throw err
   
-  writeFile: ->
-    fs.writeFileSync @path, JSON.stringify(@formulae, null, 4), 'utf-8'
+  writeFile: (formulae) ->
+    fs.writeFileSync @path, JSON.stringify(formulae, null, 4), 'utf-8'
   
-  exists: -> path.exists @path
+  exists: -> existsSync @path
   
-  parsedir: (cb) ->
-    
+  formulaFiles: ->
+    filelist = []
+    walk = (dpath) ->
+      files = _.map fs.readdirSync(dpath), (p) ->
+        fpath = join dpath, p
+        stats = fs.statSync fpath
+        if stats.isFile() and util.hasext fpath, '.coffee'
+          [fpath] 
+        else if stats.isDirectory()
+          walk fpath
+      
+      _.flatten _.filter files, (file) -> file?
+      
+    files = walk @dirpath
+    debug files
+    files
   
-
-_.extend exports,
-
-  Installer: Installer
-  Formula: Formula
-  InvalidChecksum: InvalidChecksum
   
-  formulae: (file) ->
+  entriesFromFile: (file) ->
+    entries = {}
+    _.each @formulaeFromFile(file), (formula, name) ->
+      entry = entries[name] = {file}
+      entry[p] = formula[p] for p in [
+        'name', 'homepage', 'doc'
+        'latest', 'checksum', 'urls'
+        'versions', 'requirements', 'optionals']
+      null
+    entries
+  
+  formulaeFromFile: (file) ->
     ctx = _.clone global
     ctx.formulae = {}
     
     ctx.formula = (name, body) ->
-      ctx.formulae[name] = formula = new Formula(name)
+      ctx.formulae[name] = formula = new Formula name
       body.call formula.context()
     
     coffeescript.eval fs.readFileSync(file, 'utf-8'), 
@@ -209,3 +249,17 @@ _.extend exports,
     
     ctx.formulae
   
+  reload: (cb) ->
+    formulae = {}
+    for file in @formulaFiles()
+      _formulae = @entriesFromFile file
+      _.extend formulae, _formulae
+    
+    formulae
+  
+
+_.extend exports,
+  Installer: Installer
+  Formula: Formula
+  InvalidChecksum: InvalidChecksum
+  catalog: new Catalog()

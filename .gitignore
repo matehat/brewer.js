@@ -1,4 +1,5 @@
 node_modules/
+formula/catalog.json
 .DS_Store
 tests/js/js/
 tests/css/css/build*
