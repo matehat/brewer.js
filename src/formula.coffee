@@ -1,5 +1,5 @@
 fs = require 'fs'
-{join, basename} = require 'path'
+{join, basename, resolve} = require 'path'
 crypto = require 'crypto'
 vm = require 'vm'
 {spawn} = require 'child_process'
@@ -60,7 +60,28 @@ class Installer extends EventEmitter
   
   # ### Private methods
   
-  _formattedVersion: (vsn) ->
+  _fetch: (cb) ->
+    formula = @formula
+    vsn = @version
+    temp.mkdir (err, @temp) =>
+      throw new Error err if err
+      chdir tempdir
+      url = @formula.url vsn
+      download = join tempdir, vsn
+      info "Downloading #{url} to #{download}"
+      req = request url
+      req.pipe fs.createWriteStream download
+      req.on 'end', cb
+    
+  
+  _install: (cb) ->
+    @_fetch =>
+      @formula.installer.call @, download, cb
+    
+  
+
+class Formula
+  @formattedVersion: (vsn) ->
     return vsn if vsn == 'latest'
     if (version = semver.clean vsn)?
       [v, tag] = version.split '-'
@@ -69,12 +90,17 @@ class Installer extends EventEmitter
     else
       throw new Error "The supplied version is not correctly formatted: '#{vsn}'"
   
-  _getUrl: ->
+  
+  constructor: (@name) ->
+    @requirements = []
+    @optionals = []
+  
+  valid: -> @urlGetter? and @installer?
+  url: (vsn) ->
     # Proxy the list of available versions and the
     # defined urlGetter
-    versions = @formula.availableVersions
-    urlGetter = @formula.urlGetter
-    vsn = @version
+    versions = @availableVersions
+    urlGetter = @urlGetter
     
     if _.isFunction urlGetter
       # If urlGetter is a function, we match 'latest'
@@ -95,71 +121,60 @@ class Installer extends EventEmitter
         return false unless match?
       
       if _.isFunction match
-        match = match @_formattedVersion version
+        match = match Formula.formattedVersion version
       match
   
-  _fetch: (cb) ->
-    formula = @formula
-    vsn = @version
-    temp.mkdir (err, @temp) =>
-      throw new Error err if err
-      chdir tempdir
-      url = @_getUrl vsn
-      download = join tempdir, vsn
-      info "Downloading #{url} to #{download}"
-      req = request url
-      req.pipe fs.createWriteStream download
-      req.on 'end', cb
+  context: ->
+    homepage: (@homepageURL) =>
+    doc: (@docURL) =>
+    install: (@installer) =>
+    latest: (@latestVersion) =>
+    md5: (@checksum) =>
+    
+    versions: (versions...) =>
+      @availableVersions ?= []
+      @availableVersions.push versions...
+    
+    urls: (map) =>
+      if _.isFunction map
+        @urlGetter = map
+      else if _.isObject map
+        for version, value of map
+          unless validVersionSpec(version)
+            throw new Error("Invalid version specifier")
+          if !@urlGetter? or _.isFunction @urlGetter
+            @urlGetter = {}
+          @urlGetter[version] = value
+    
+    require: (formulae...) =>
+      @requirements.push(formula) for formula in formulae when not _.include(@requirements, formula)
+    
+    optional: (formulae...) =>
+      @optionals.push(formula) for formula in formulae when not _.include(@optionals, formula)
     
   
-  _install: (cb) ->
-    @_fetch =>
-      @formula.installer.call @, download, cb
+
+
+_.extend exports,
+  Installer: Installer
+  formulae: (file) ->
+    ctx = _.clone global
+    ctx.formulae = {}
     
+    ctx.formula = (name, body) ->
+      ctx.formulae[name] = formula = new Formula(name)
+      body.call formula.context()
+    
+    coffeescript.eval fs.readFileSync(file, 'utf-8'), 
+      sandbox: vm.createContext(ctx)
+      filename: file
+    
+    ctx.formulae
   
-
-class Formula
-  constructor: (@name) ->
-  
-  homepage: (url) -> @homepageURL = url
-  doc: (url) -> @docURL = url
-  install: (cb) -> @installer = cb
-  latest: (vsn) -> @latestVersion = vsn
-  
-  valid: ->
-    @availableVersions? and @urlGetter? and @installer?
-  
-  versions: (versions...) ->
-    @availableVersions ?= []
-    @availableVersions.push versions...
-  
-  urls: (map) ->
-    if _.isFunction map
-      @urlGetter = map
-    else if _.isObject map
-      for version, value of map
-        unless validVersionSpec(version)
-          throw new Error("Invalid version specifier")
-        if !@urlGetter? or _.isFunction @urlGetter
-          @urlGetter = {}
-        @urlGetter[version] = value
-  
-  require: (formulae...) ->
-    @requirements.push(formula) for formula in formulae when not _.include(@requirements, formula)
+  makeCatalog: ->
+    formulaDir = 
+    formulaDir
   
 
 
-exports.Installer = Installer
-exports.formulae = (file) ->
-  ctx = _.clone global
-  ctx.formulae = {}
-  
-  ctx.formula = (name, body) ->
-    ctx.formulae[name] = formula = new Formula(name)
-    body.call formula
-  
-  coffeescript.eval fs.readFileSync(file, 'utf-8'), 
-    sandbox: vm.createContext(ctx)
-    filename: file
-  
-  ctx.formulae
+
