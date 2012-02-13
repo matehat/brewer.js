@@ -1,5 +1,5 @@
 var formula = require('../lib/formula'),
-    formulae = formula.formulae,
+    catalog = formula.catalog,
     Installer = formula.Installer,
     path = require('path'),
     Project = require('../lib').Project,
@@ -8,16 +8,16 @@ var formula = require('../lib/formula'),
 
 exports.tests = {
   'Parsing a formula file': function(next) {
-    var formula = formulae(path.resolve(__dirname, '../formula/jquery.coffee'));
+    assert.ok(catalog.formulae.jquery.versions['1.7.1'] == '273e017fd0bef143258516bdee173a1e');
     OK('formula/jquery parsed.');
-    assert.ok(formula.jquery.valid() && formula['jquery-dev'].valid());
+    assert.ok(catalog.get('jquery').valid());
     OK('formula/jquery valid.');
     
     process.chdir(path.resolve(__dirname, 'js'));
     project = Project.fromBrewfile(path.resolve(__dirname, 'js/Brewfile'));
     
-    assert.ok(formula['jquery-dev'].url('1.3.2') == 'https://github.com/jquery/jquery/tarball/1.3.2');
-    OK("formula['jquery-dev'].url('1.3.2') == 'https://github.com/jquery/jquery/tarball/1.3.2'");
+    assert.ok(catalog.get('jquery-dev').url('1.3.2') == 'https://github.com/jquery/jquery/tarball/1.3.2');
+    OK("catalog.get('jquery').url('1.3.2') == 'https://github.com/jquery/jquery/tarball/1.3.2'");
     
     next();
   }
