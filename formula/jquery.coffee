@@ -14,7 +14,7 @@ formula 'jquery', ->
     '1.7.1': '273e017fd0bef143258516bdee173a1e'
   
   @install (path, next) ->
-    @include_file 'js', path, next()
+    @include_file 'javascript', path, next()
 
 formula 'jquery-dev', ->
   @homepage "http://jquery.com/"
@@ -37,4 +37,4 @@ formula 'jquery-dev', ->
   
   @install (path, next) ->
     @deflate path, 'tar.gz', (path) ->
-      @include_dir 'js', "#{path}/src", {rename: 'jquery'}, next()
+      @include_dir 'javascript', "#{path}/src", {rename: 'jquery'}, next()

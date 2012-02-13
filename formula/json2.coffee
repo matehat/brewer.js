@@ -4,4 +4,4 @@ formula 'json2', ->
   @urls -> 'https://raw.github.com/douglascrockford/JSON-js/master/json2.js'
   @md5 '2ee84c1e82528e5e09c645cf07c97877'
   
-  @install (path, next) -> @include_file 'js', path, next()
+  @install (path, next) -> @include_file 'javascript', path, next()

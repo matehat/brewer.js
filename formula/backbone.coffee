@@ -16,8 +16,8 @@ formula 'backbone', ->
   
   @install (path, next) ->
     if @version == 'latest'
-      @include_file 'js', path, next()
+      @include_file 'javascript', path, next()
     else
       @deflate path, 'tar.gz', (path) ->
-        @include_file 'js', "#{path}/underscore.js", next()
+        @include_file 'javascript', "#{path}/underscore.js", next()
   
