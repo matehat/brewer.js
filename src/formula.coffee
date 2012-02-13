@@ -31,11 +31,11 @@ class InvalidChecksum extends Error
 
 class NonSemanticVersion extends TypeError
   constructor: (@version) ->
-    @message = "Provided version (#{@version}) is not a valid semantic version (see http://semver.org/)"
+    @message = "Provided version (#{@version}) is not a valid semantic version (see http://semver.org)"
     @name = "NonSemanticVersion"
   
 
-class Installer extends EventEmitter
+class Installer
   constructor: (@formula, @project, @version="latest") ->
   
   context: ->
@@ -298,6 +298,7 @@ class Catalog
     
     formulae
   
+
 
 _.extend exports,
   Installer: Installer
