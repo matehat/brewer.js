@@ -6,10 +6,9 @@ fs = require 'fs'
 util = require './util'
 
 class Project
-  @fromBrewfile: (file) ->
-    (require './brewfile').readBrewfile file
-  
-  constructor: (opts) ->
+  constructor: (@file) -> @setup()
+  setup: ->
+    opts = (require './brewfile').configs @file
     _.defaults opts,
       root: '.'
       reqs: []
@@ -21,12 +20,32 @@ class Project
     @length = packages.length
     _.each packages, (pkg, i) =>
       @[i] = Package.create pkg.opts, pkg.srcs, @vendorlibs
-    
+  
   clean: ->
     pkg.clean?() for pkg in @
   
   prepare: ->
     pkg.prepare?() for pkg in @
+  
+  watch: ->
+    pkg.watch(_.bind(@reset, @)) for pkg in @
+    @configWatcher = fs.watch @file, (event) =>
+      @reset()
+    
+    @configWatcher.on 'error', _.bind(@reset, @)
+  
+  reset: (err) ->
+    throw err if err?
+    @configWatcher?.close()
+    
+    for pkg, i in @
+      pkg.unwatch()
+      delete @[i]
+    
+    delete @length
+    delete @vendorlibs
+    @setup()
+    @watch()
   
 
 class VendorLibraries

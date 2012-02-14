@@ -20,14 +20,15 @@ class Source
   
   
   constructor: (@options, @package) ->
-    _.defaults @options, watch: false, follow: true
+    _.defaults @options, watch: true, follow: true
     {@watch, @path, @follow, @requirements} = @options
     util.makedirs @path
   
   createFile: (fpath) -> 
     ctor = @constructor
     fullpath = util.changeext path.join(@path, fpath), ctor.ext
-    file = @package.file fpath, ctor.type, fullpath, @
+    file = @package.file fpath, ctor.type
+    file.attach fullpath, @
     file.register()
     file
   

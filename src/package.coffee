@@ -70,14 +70,6 @@ class Package extends EventEmitter
     bundle.write output, cb
     finished 'Packaged', bundle.fullpath
   
-  registerSource: (src) ->
-    (@sources[src.constructor.type] ?= []).push src
-    @_pendingSources++
-    
-    src.files null, (files) =>
-      @emit 'ready' if --@_pendingSources == 0
-    
-  
   clean: ->
     for file in @impermanents()
       file.unlinkSync()
@@ -85,12 +77,32 @@ class Package extends EventEmitter
   allSources: ->
     return _.flatten _.values @sources
   
+  watch: (cb) ->
+    @actualize =>
+      for type, files of @files
+        for relpath, file of files
+          file.watch cb
+    
+  
+  unwatch: (cb) ->
+    for type, files of @files
+      file.unwatch() for relpath, file of files
+  
+  
   impermanents: ->
     acc = []
     for type, files of @files
       for file in _.values(files) when file.impermanent is true
         acc.push file
     acc
+  
+  registerSource: (src) ->
+    (@sources[src.constructor.type] ?= []).push src
+    @_pendingSources++
+    
+    src.files null, (files) =>
+      @emit 'ready' if --@_pendingSources == 0
+    
   
   registerFile: (file) ->
     type = @constructor.type

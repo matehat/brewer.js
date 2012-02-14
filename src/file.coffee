@@ -52,13 +52,31 @@ class File extends EventEmitter
     iter()
   
   
+  watch: (cb) ->
+    if @attached() and @liabilities.length > 0
+      return unless !@source? or @source.watch
+      @stamp()
+      @watcher = fs.watch @fullpath, (event) =>
+        cb() if @changed()
+      
+      @watcher.on 'error', cb
+  
+  unwatch: ->
+    @watcher?.close()
+  
+  stamp: -> @checksum = util.checksumSync(@fullpath)
+  changed: ->
+    return true unless (@exists() and @checksum? and
+      @checksum is util.checksumSync(@fullpath))
+  
+  
   readImportedPaths: ->
     if @source?
       regexp = @source.constructor.header
       recurse = (_data) ->
         return '' unless (match = _data.match regexp)?
         match[1] + recurse _data[match[0].length+match.index ...]
-    
+      
       paths = if (json = recurse @readSync()).length > 0
         JSON.parse json 
       else []
@@ -149,6 +167,7 @@ class File extends EventEmitter
     return unless @exists()
     fs.readFile @fullpath, 'utf-8', (err, data) ->
       cb(err, data)
+    
   
   readSync: -> 
     return unless @exists()
@@ -174,6 +193,8 @@ class File extends EventEmitter
       cb err if err
       morph data, (error, newdata) ->
         dest.write newdata, cb
+      
+    
   
 
 exports.File = File

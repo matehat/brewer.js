@@ -11,7 +11,7 @@ exports.version = getVersion = ->
   pkg.version
 
 getLocalProject = ->
-  (require './index').Project.fromBrewfile './Brewfile'
+  new (require './index').Project './Brewfile'
 
 # ### A few message display functions
 cli = {
@@ -51,10 +51,10 @@ _.extend exports, cli
   program
     .command('watch')
     .description("""
-      Watch for modifications on source files, automatically
-      compiling/compressing/packaging when they occur.
+      Watch for modifications in source and configuration files, 
+      automatically re-making when they occur.
     """)
-    .action (pkgs) ->
+    .action -> getLocalProject().watch()
   
   program
     .command('make [packages]*')

@@ -3,6 +3,17 @@ fs = require 'fs'
 path = require 'path'
 {debug} = require './command'
 
+@checksumSync = (path) ->
+  md5 = (require 'crypto').createHash 'md5'
+  md5.update fs.readFileSync path
+  md5.digest 'hex'
+
+@checksumStream = (readStream, cb) ->
+  md5 = (require 'crypto').createHash 'md5'
+  readStream.on 'data', (data) -> md5.update data
+  readStream.on 'end', -> cb md5.digest 'hex'
+
+
 @makedirs = makedirs = (fpath) ->
   fpath = path.resolve fpath
   dir = path.dirname fpath

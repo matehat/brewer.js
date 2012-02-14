@@ -15,7 +15,7 @@ var brewer = require('../..'),
 exports.tests = {
   setup: function() {
     process.chdir(path.resolve(__dirname));
-    project = Project.fromBrewfile(path.resolve(__dirname, './Brewfile'));
+    project = new Project(path.resolve(__dirname, './Brewfile'));
     project.clean();
     jspackage = project[0];
     jspackage2 = project[1];

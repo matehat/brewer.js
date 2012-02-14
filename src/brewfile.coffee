@@ -142,7 +142,7 @@ newContext = ->
 
 # An exported function that takes a path to a Brewfile as argument
 # and returns a configuration object containing all the packages
-configs = (file) ->
+@configs = configs = (file) ->
   # Use Coffee-script's `eval` function to execute the file content
   coffeescript.eval fs.readFileSync(file, 'utf-8'), 
     # using the above function to get a context appropriate for the DSL
