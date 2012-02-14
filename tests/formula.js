@@ -14,7 +14,7 @@ exports.tests = {
     OK('formula/jquery valid.');
     
     process.chdir(path.resolve(__dirname, 'js'));
-    project = Project.fromBrewfile(path.resolve(__dirname, 'js/Brewfile'));
+    project = new Project(path.resolve(__dirname, 'js/Brewfile'));
     
     assert.ok(catalog.get('jquery-dev').url('1.3.2') == 'https://github.com/jquery/jquery/tarball/1.3.2');
     OK("catalog.get('jquery').url('1.3.2') == 'https://github.com/jquery/jquery/tarball/1.3.2'");
