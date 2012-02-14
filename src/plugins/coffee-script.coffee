@@ -40,6 +40,7 @@ class CoffeescriptSource extends Source
         cb2 null, (require 'coffee-script').compile data
       catch err
         showError 'in', original.fullpath, ':', err.message
+        cb()
     
     original.project compiled, compile, (err) ->
       cb err if err
