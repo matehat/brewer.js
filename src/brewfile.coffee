@@ -1,16 +1,29 @@
+# This module is used internally to parse a Brewfile at the
+# root folder of a given project. It exports a single function :
+#
+# * `configs(file)`
+#
+#   This function takes the path to a Brewfile and returns a
+#   configuration object that can be used to initialize a 
+#   `Project` object.
+
+# Some essential core modules are loaded, as well as coffee-script
+# since a brewfile is written using this language.
 _ = require 'underscore'
 vm = require 'vm'
-coffeescript = require 'coffee-script'
 fs = require 'fs'
+coffeescript = require 'coffee-script'
+
+# Brewer classes (and utilities) are imported
 {debug} = require './command'
 {Package, Source} = require '../lib'
 
-# Alias the two registries so that the names don't collide 
-# with others
+# These two registries are aliased so that the names don't 
+# collide with others
 SourceRegistry = Source.registry
 PackageRegistry = Package.registry
 
-# The prototype of a Source configuration object.
+# This is the prototype of a Source configuration object.
 # The functions defined here are available in the
 # function body provided at the end of a `@source` statement
 
@@ -21,23 +34,23 @@ Source =
     _.extend @opts, opts
   
 
-# The prototype of a Package configuration object
+# This is the prototype of a Package configuration object.
 # The functions defined here are available in the
 # function body provided at the end of a package statement
 # such as `@javascript` or `@stylesheets`
 
 Package =
-  # Method used to specify options on a package 
+  # A method used to specify options on a package 
   # configuration object.
   options: (opts) -> 
     _.extend @opts, opts
   
-  # Method used to define bundles within a package
+  # A method used to define bundles within a package
   bundles: (bundles...) ->
     @opts.bundles ?= []
     @opts.bundles = _.union @opts.bundles, bundles
   
-  # Method used to define a source in a package.
+  # A method used to define a source in a package.
   # The type of the source here is inferred by the
   # default source type of the parent package
   source: (path, opts, cb) ->
@@ -45,14 +58,15 @@ Package =
   
   # A common method used to define any type of 
   # source in a package.
+  # A source configuration object is initialized
+  # with the Source prototype above.
+  # The options object is initialized then
+  # put in the source object. We add the source 
+  # config object to parent package, then call the trailing 
+  # function, if present with `this` set to the source object
   _source: (type, path, opts, cb) ->
-    # A source configuration object is initialized
-    # with the Source prototype above, then
-    # we add it to parent package.
     src = Object.create Source
     
-    # The options object is initialized then
-    # put in the source object.
     if _.isFunction opts
       cb = opts
       opts = {}
@@ -63,8 +77,6 @@ Package =
     src.opts = opts
     @srcs.push src.opts
     
-    # Finally we call the trailing function, if present
-    # with `this` set to the source object
     cb.call src if _.isFunction cb
   
 
@@ -101,14 +113,16 @@ package = (type, name, opts, cb) ->
 # A utility function used to initialize a V8 Context
 # to encapsulate the configuration included in the
 # Brewfile and all the DSL functions.
-newContext = ->
-  # Initialize a container object
-  ctx = 
-    project: prj =
+
+newContext = () ->
+  ctx = {
+    project: prj = {
       root: '.'
       packages: []
       reqs: {}
       vendorDir: './vendor'
+    }
+  }
   
   # Iterate through all package types, using their
   # type name to proxy the `package` definition function
@@ -140,22 +154,17 @@ newContext = ->
   # a seed.
   vm.createContext ctx
 
-# An exported function that takes a path to a Brewfile as argument
-# and returns a configuration object containing all the packages
+# This is the exported function, which takes a path to a Brewfile 
+# as argument and returns a configuration object containing all the 
+# packages. It uses Coffee-script's `eval` function to execute the file 
+# content, using the `newContext` function above to get a context 
+# appropriate for the DSL, and setting the filename to ease debugging.
+# Once the file was executed, `ctx.project` 
+# holds the set of configurations for a project object, which is returned.
+
 @configs = configs = (file) ->
-  # Use Coffee-script's `eval` function to execute the file content
   coffeescript.eval fs.readFileSync(file, 'utf-8'), 
-    # using the above function to get a context appropriate for the DSL
     sandbox: ctx = newContext()
-    # and setting the filename to ease debugging
     filename: file
   
-  # Once the file was executed, `ctx.project` holds the set of
-  # configurations for a project object, which is returned.
   return ctx.project
-
-# An exported function that takes a path to a Brewfile as argument
-# and returns a Project object, containing all packages and specific 
-# configurations.
-@readBrewfile = (file) ->
-  new (require '../lib').Project configs(file)
