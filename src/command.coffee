@@ -54,7 +54,10 @@ _.extend exports, cli
       Watch for modifications in source and configuration files, 
       automatically re-making when they occur.
     """)
-    .action -> getLocalProject().watch()
+    .action ->
+      getLocalProject().watch()
+      cli.info 'Watching project', process.cwd()
+    
   
   program
     .command('make [packages]*')

@@ -16,6 +16,7 @@ class StylesheetsPackage extends Package
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
     
     for lib in @vendorlibs.libraries 'stylesheets'
+      lib.watch ?= false
       @registerSource Source.create lib, @
   
   bundlePath: (file) -> 

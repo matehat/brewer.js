@@ -17,6 +17,7 @@ class JavascriptPackage extends Package
     @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
     
     for lib in @vendorlibs.libraries 'javascript'
+      lib.watch ?= false
       @registerSource Source.create lib, @
   
   bundlePath: (file) -> 

@@ -1,6 +1,6 @@
 path  = require 'path'
 util  = require './util'
-{finished, debug} = require './command'
+{finished, debug, info} = require './command'
 {EventEmitter} = require 'events'
 {debug} = require './command'
 fs    = require 'fs'
@@ -44,6 +44,7 @@ class File extends EventEmitter
             act dep, @, (err) =>
               throw new Error err if err
               cb()
+            
             newest = false
             break
         cb() if newest
@@ -51,15 +52,25 @@ class File extends EventEmitter
     
     iter()
   
-  
-  watch: (cb) ->
+  watch: (reset) ->
     if @attached() and @liabilities.length > 0
-      return unless !@source? or @source.watch
+      return unless !@source? or @source.shouldWatch
       @stamp()
       @watcher = fs.watch @fullpath, (event) =>
-        cb() if @changed()
+        if event is 'rename'
+          info "#{@fullpath} removed"
+          for file in @liabilities
+            file.destroy()
+          
+          setTimeout reset, 50
+        else if @changed()
+          info "#{@fullpath} changed"
+          reset()
       
-      @watcher.on 'error', cb
+      @watcher.on 'error', (err) =>
+        debug 'error', err
+        reset()
+      
   
   unwatch: ->
     @watcher?.close()
@@ -187,6 +198,11 @@ class File extends EventEmitter
     return unless @exists()
     fs.unlinkSync @fullpath
   
+  destroy: ->
+    for file in @liabilities
+      file.destroy()
+    
+    @unlinkSync()
   
   project: (dest, morph, cb) ->  
     @read (err, data) ->

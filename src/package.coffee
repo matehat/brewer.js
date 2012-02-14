@@ -77,17 +77,25 @@ class Package extends EventEmitter
   allSources: ->
     return _.flatten _.values @sources
   
-  watch: (cb) ->
+  watch: (reset) ->
     @actualize =>
+      for type, sources of @sources
+        for src in sources
+          src.watch reset
+    
       for type, files of @files
         for relpath, file of files
-          file.watch cb
-    
+          file.watch reset
+      
   
   unwatch: (cb) ->
+    for type, sources of @sources
+        for src in sources
+          src.unwatch()
+    
     for type, files of @files
       file.unwatch() for relpath, file of files
-  
+    
   
   impermanents: ->
     acc = []

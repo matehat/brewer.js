@@ -2,7 +2,7 @@ path  = require 'path'
 fs    = require 'fs'
 _     = require 'underscore'
 util  = require './util'
-{debug} = require './command'
+{debug, info} = require './command'
 {EventEmitter} = require 'events'
 {File} = require './file'
 
@@ -21,7 +21,8 @@ class Source
   
   constructor: (@options, @package) ->
     _.defaults @options, watch: true, follow: true
-    {@watch, @path, @follow, @requirements} = @options
+    {watch, @path, @follow, @requirements} = @options
+    @shouldWatch = watch
     util.makedirs @path
   
   createFile: (fpath) -> 
@@ -58,6 +59,22 @@ class Source
       return unless @test fpath
       yield fpath
     
-    walker.on 'end', end
+    walker.on 'end', end if end?
+  
+  watch: (reset) ->  
+    return unless @shouldWatch and @filelist?
+    filelist = (f.relpath for f in @filelist)
+    @watcher = fs.watch @path, (event) => 
+      @list (fpath) ->
+        fpath = util.changeext fpath, ''
+        if fpath not in filelist
+          info fpath, 'added'
+          reset()
+      
+    
+  
+  unwatch: ->
+    @watcher?.close()
+  
   
 exports.Source = Source

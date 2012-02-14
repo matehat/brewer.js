@@ -2,7 +2,7 @@ _ = require 'underscore'
 path = require 'path'
 fs = require 'fs'
 {Package} = require '../lib'
-{debug, warning} = require './command'
+{debug, warning, info} = require './command'
 util = require './util'
 
 class Project
@@ -29,9 +29,7 @@ class Project
   
   watch: ->
     pkg.watch(_.bind(@reset, @)) for pkg in @
-    @configWatcher = fs.watch @file, (event) =>
-      @reset()
-    
+    @configWatcher = fs.watch @file, (event) => @reset()
     @configWatcher.on 'error', _.bind(@reset, @)
   
   reset: (err) ->
