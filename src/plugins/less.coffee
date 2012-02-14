@@ -2,8 +2,9 @@ util = require '../util'
 temp = require 'temp'
 fs = require 'fs'
 path = require 'path'
+_ = require 'underscore'
 {Source} = require '..'
-{finished, debug} = require '../command'
+{finished, debug, showError} = require '../command'
 {StylesheetsPackage, StylesheetsSource} = require './css'
 
 class LessSource extends StylesheetsSource
@@ -35,13 +36,20 @@ class LessSource extends StylesheetsSource
     paths.push(path.resolve(lib.path)) for lib in @package.vendorlibs.libraries 'less'
     
     parser = new (require('less').Parser)
-      filename: @file
+      filename: original.fullpath
       paths: paths
     
-    compile = (data, cb) ->
-      parser.parse data, (err, tree) ->
-        cb err if err?
-        cb null, tree.toCSS()
+    compile = (data, cb2) ->
+      try
+        parser.parse data, (err, tree) ->
+          if err
+            showError 'in', original.fullpath, ':', err.message
+            cb()
+          else
+            cb2 null, tree.toCSS()
+      catch err
+        showError 'in', original.fullpath, ':', err.message
+        cb()
     
     original.project compiled, compile, (err) ->
       cb err if err
