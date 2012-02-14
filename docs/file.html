@@ -1,0 +1,216 @@
+<!DOCTYPE html>  <html> <head>   <title>file.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="brewfile.html">                 brewfile.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="file.html">                 file.coffee               </a>                                           <a class="source" href="index.html">                 index.coffee               </a>                                           <a class="source" href="package.html">                 package.coffee               </a>                                           <a class="source" href="coffee-script.html">                 coffee-script.coffee               </a>                                           <a class="source" href="css.html">                 css.coffee               </a>                                           <a class="source" href="javascript.html">                 javascript.coffee               </a>                                           <a class="source" href="less.html">                 less.coffee               </a>                                           <a class="source" href="stylus.html">                 stylus.coffee               </a>                                           <a class="source" href="project.html">                 project.coffee               </a>                                           <a class="source" href="source.html">                 source.coffee               </a>                                           <a class="source" href="util.html">                 util.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               file.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nv">path  = </span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span>
+<span class="nv">util  = </span><span class="nx">require</span> <span class="s1">&#39;./util&#39;</span>
+<span class="p">{</span><span class="nx">finished</span><span class="p">,</span> <span class="nx">debug</span><span class="p">,</span> <span class="nx">info</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./command&#39;</span>
+<span class="p">{</span><span class="nx">EventEmitter</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;events&#39;</span>
+<span class="p">{</span><span class="nx">debug</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./command&#39;</span>
+<span class="nv">fs    = </span><span class="nx">require</span> <span class="s1">&#39;fs&#39;</span>
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s1">&#39;underscore&#39;</span>
+
+<span class="k">class</span> <span class="nx">File</span> <span class="k">extends</span> <span class="nx">EventEmitter</span>
+  <span class="nv">constructor: </span><span class="nf">(@relpath, @type, @package) -&gt;</span>
+    <span class="vi">@dependencies = </span><span class="p">[]</span>
+    <span class="vi">@liabilities = </span><span class="p">[]</span>
+  
+  <span class="nv">attach: </span><span class="nf">(fullpath, source) -&gt;</span>
+    <span class="k">if</span> <span class="nx">@attached</span><span class="p">()</span>
+      <span class="k">if</span> <span class="nx">fullpath</span> <span class="o">isnt</span> <span class="nx">@fullpath</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s2">&quot;File already attached to #{@fullpath}&quot;</span>
+    <span class="k">else</span>
+      <span class="p">[</span><span class="nx">@fullpath</span><span class="p">,</span> <span class="nx">@source</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nx">fullpath</span><span class="p">,</span> <span class="nx">source</span><span class="p">]</span>
+      <span class="nx">@emit</span> <span class="s1">&#39;attach&#39;</span>
+  
+  <span class="nv">register: </span><span class="o">-&gt;</span> <span class="nx">@package</span><span class="p">.</span><span class="nx">registerFile</span> <span class="err">@</span>
+  <span class="nv">dependOn: </span><span class="nf">(other, actualize) -&gt;</span>
+    <span class="nx">@dependencies</span><span class="p">.</span><span class="nx">push</span> <span class="p">[</span><span class="nx">other</span><span class="p">,</span> <span class="nx">actualize</span><span class="p">]</span>
+    <span class="nx">other</span><span class="p">.</span><span class="nx">dependedBy</span> <span class="err">@</span>
+  
+  <span class="nv">dependedBy: </span><span class="nf">(other) -&gt;</span>
+    <span class="nx">@liabilities</span><span class="p">.</span><span class="nx">push</span> <span class="nx">other</span>
+  
+  <span class="nv">actualize: </span><span class="nf">(cb) -&gt;</span>
+    <span class="nv">i = </span><span class="mi">0</span>
+    
+    <span class="nv">iter = </span><span class="p">()</span> <span class="o">=&gt;</span>
+      <span class="k">if</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">@dependencies</span><span class="p">.</span><span class="nx">length</span>
+        <span class="p">[</span><span class="nx">dep</span><span class="p">,</span> <span class="nx">act</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@dependencies</span><span class="p">[</span><span class="nx">i</span><span class="o">++</span><span class="p">]</span>
+        <span class="nx">dep</span><span class="p">.</span><span class="nx">actualize</span> <span class="o">-&gt;</span> <span class="nx">iter</span><span class="p">()</span>
+      <span class="k">else</span> <span class="nx">end</span><span class="p">()</span>
+    
+    <span class="nv">end = </span><span class="p">()</span> <span class="o">=&gt;</span>
+      <span class="k">if</span> <span class="nx">@dependencies</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="nv">newest = </span><span class="kc">true</span>
+        <span class="k">for</span> <span class="p">[</span><span class="nx">dep</span><span class="p">,</span> <span class="nx">act</span><span class="p">]</span> <span class="k">in</span> <span class="nx">@dependencies</span>
+          <span class="nx">unless</span> <span class="nx">@newer</span> <span class="nx">dep</span>
+            <span class="nx">act</span> <span class="nx">dep</span><span class="p">,</span> <span class="err">@</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">=&gt;</span>
+              <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span>
+              <span class="nx">cb</span><span class="p">()</span>
+            
+            <span class="nv">newest = </span><span class="kc">false</span>
+            <span class="k">break</span>
+        <span class="nx">cb</span><span class="p">()</span> <span class="k">if</span> <span class="nx">newest</span>
+      <span class="k">else</span> <span class="nx">cb</span><span class="p">()</span>
+    
+    <span class="nx">iter</span><span class="p">()</span>
+  
+  <span class="nv">watch: </span><span class="nf">(reset) -&gt;</span>
+    <span class="k">if</span> <span class="nx">@attached</span><span class="p">()</span> <span class="o">and</span> <span class="nx">@liabilities</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+      <span class="k">return</span> <span class="nx">unless</span> <span class="o">!</span><span class="nx">@source</span><span class="o">?</span> <span class="o">or</span> <span class="nx">@source</span><span class="p">.</span><span class="nx">shouldWatch</span>
+      <span class="nx">@stamp</span><span class="p">()</span>
+      <span class="vi">@watcher = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">watch</span> <span class="nx">@fullpath</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span>
+        <span class="k">if</span> <span class="nx">event</span> <span class="o">is</span> <span class="s1">&#39;rename&#39;</span>
+          <span class="nx">info</span> <span class="s2">&quot;#{@fullpath} removed&quot;</span>
+          <span class="k">for</span> <span class="nx">file</span> <span class="k">in</span> <span class="nx">@liabilities</span>
+            <span class="nx">file</span><span class="p">.</span><span class="nx">destroy</span><span class="p">()</span>
+          
+          <span class="nx">setTimeout</span> <span class="nx">reset</span><span class="p">,</span> <span class="mi">50</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="nx">@changed</span><span class="p">()</span>
+          <span class="nx">info</span> <span class="s2">&quot;#{@fullpath} changed&quot;</span>
+          <span class="nx">reset</span><span class="p">()</span>
+      
+      <span class="nx">@watcher</span><span class="p">.</span><span class="kc">on</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">=&gt;</span>
+        <span class="nx">debug</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">err</span>
+        <span class="nx">reset</span><span class="p">()</span>
+      
+  
+  <span class="nv">unwatch: </span><span class="o">-&gt;</span>
+    <span class="nx">@watcher</span><span class="o">?</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
+  
+  <span class="nv">stamp: </span><span class="o">-&gt;</span> <span class="vi">@checksum = </span><span class="nx">util</span><span class="p">.</span><span class="nx">checksumSync</span><span class="p">(</span><span class="nx">@fullpath</span><span class="p">)</span>
+  <span class="nv">changed: </span><span class="o">-&gt;</span>
+    <span class="k">return</span> <span class="kc">true</span> <span class="nx">unless</span> <span class="p">(</span><span class="nx">@exists</span><span class="p">()</span> <span class="o">and</span> <span class="nx">@checksum</span><span class="o">?</span> <span class="o">and</span>
+      <span class="nx">@checksum</span> <span class="o">is</span> <span class="nx">util</span><span class="p">.</span><span class="nx">checksumSync</span><span class="p">(</span><span class="nx">@fullpath</span><span class="p">))</span>
+  
+  
+  <span class="nv">readImportedPaths: </span><span class="o">-&gt;</span>
+    <span class="k">if</span> <span class="nx">@source</span><span class="o">?</span>
+      <span class="nv">regexp = </span><span class="nx">@source</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">header</span>
+      <span class="nv">recurse = </span><span class="nf">(_data) -&gt;</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span> <span class="nx">unless</span> <span class="p">(</span><span class="nv">match = </span><span class="nx">_data</span><span class="p">.</span><span class="nx">match</span> <span class="nx">regexp</span><span class="p">)</span><span class="o">?</span>
+        <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nx">recurse</span> <span class="nx">_data</span><span class="p">[</span><span class="nx">match</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">length</span><span class="o">+</span><span class="nx">match</span><span class="p">.</span><span class="nx">index</span> <span class="p">...]</span>
+      
+      <span class="nv">paths = </span><span class="k">if</span> <span class="p">(</span><span class="nv">json = </span><span class="nx">recurse</span> <span class="nx">@readSync</span><span class="p">()).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">json</span> 
+      <span class="k">else</span> <span class="p">[]</span>
+      <span class="nv">paths = </span><span class="p">(</span><span class="nx">util</span><span class="p">.</span><span class="nx">changeext</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="nx">p</span> <span class="k">in</span> <span class="nx">paths</span><span class="p">)</span>
+    <span class="k">else</span>
+      <span class="p">[]</span>
+  
+  <span class="nv">setImportedPaths: </span><span class="nf">(paths) -&gt;</span> 
+    <span class="vi">@_importedPaths = </span><span class="nx">paths</span>
+    <span class="vi">@_imports = </span><span class="kc">null</span>
+  
+  <span class="nv">importedPaths: </span><span class="o">-&gt;</span>
+    <span class="nx">unless</span> <span class="nx">@_importedPaths</span><span class="o">?</span>
+      <span class="vi">@_importedPaths = </span><span class="nx">@readImportedPaths</span><span class="p">()</span>
+    <span class="nx">@_importedPaths</span>
+  
+  <span class="nv">imports: </span><span class="o">-&gt;</span>
+    <span class="nx">unless</span> <span class="nx">@_imports</span><span class="o">?</span>
+      <span class="vi">@_imports = </span><span class="p">(</span><span class="nx">@package</span><span class="p">.</span><span class="nx">file</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">@type</span><span class="p">)</span> <span class="k">for</span> <span class="nx">path</span> <span class="k">in</span> <span class="nx">@importedPaths</span><span class="p">())</span>
+    <span class="nx">@_imports</span>
+  
+  <span class="nv">dependOnImports: </span><span class="nf">(other, actualize) -&gt;</span>
+    <span class="nv">imported = </span><span class="p">[]</span>
+    <span class="nv">crawl = </span><span class="nf">(file) -&gt;</span>
+      <span class="nx">depend</span> <span class="nx">_file</span> <span class="k">for</span> <span class="nx">_file</span> <span class="k">in</span> <span class="nx">file</span><span class="p">.</span><span class="nx">imports</span><span class="p">()</span>
+    
+    <span class="nv">depend = </span><span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="k">if</span> <span class="nx">file</span><span class="p">.</span><span class="nx">relpath</span> <span class="o">not</span> <span class="k">in</span> <span class="nx">imported</span>
+        <span class="k">if</span> <span class="nx">file</span><span class="p">.</span><span class="nx">attached</span><span class="p">()</span>
+          <span class="nx">crawl</span> <span class="nx">file</span>
+        <span class="k">else</span>
+          <span class="nx">file</span><span class="p">.</span><span class="kc">on</span> <span class="s1">&#39;attach&#39;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">crawl</span> <span class="nx">file</span>
+        
+        <span class="nx">@dependOn</span> <span class="nx">file</span><span class="p">,</span> <span class="nx">actualize</span>
+        <span class="nx">imported</span><span class="p">.</span><span class="nx">push</span> <span class="nx">file</span><span class="p">.</span><span class="nx">relpath</span>
+    
+    <span class="nx">depend</span> <span class="nx">other</span>
+  
+  <span class="nv">tsortedImports: </span><span class="o">-&gt;</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h3>Topological sorting algorithm</h3>
+
+<p>It returns a list of files, the order of which preserves
+the precedence specified as 'imports'.</p>
+
+<p>This is used to get one of the solution to
+topologically sorting a directed acyclic graph.
+It is garanteed to find <em>a</em> solution, given the graph
+is really acyclic. Here, nodes are files and edges are
+imports expressed within it. This is used to bundle files
+in an order that will meet precedence requirements. If cycles
+are present, the method will silently fail, yielding a 
+non-ordered list.</p>
+
+<p>Taken from http://en.wikipedia.org/wiki/Topological_sort#Algorithms</p>             </td>             <td class="code">               <div class="highlight"><pre>    
+    <span class="nv">topoSortedFiles = </span><span class="p">[]</span>
+    <span class="nv">DAG = </span><span class="p">{}</span>
+    <span class="nv">visited = </span><span class="p">[]</span>
+    <span class="nv">buildDAG = </span><span class="nf">(file) -&gt;</span>
+      <span class="k">return</span> <span class="k">if</span> <span class="nx">file</span><span class="p">.</span><span class="nx">relpath</span> <span class="k">in</span> <span class="nx">visited</span>
+      <span class="k">for</span> <span class="nx">n</span> <span class="k">in</span> <span class="nx">file</span><span class="p">.</span><span class="nx">imports</span><span class="p">()</span>
+        <span class="nv">edges = </span><span class="nx">DAG</span><span class="p">[</span><span class="nx">n</span><span class="p">.</span><span class="nx">relpath</span><span class="p">]</span> <span class="o">?=</span> <span class="p">[]</span>
+        <span class="nx">edges</span><span class="p">.</span><span class="nx">push</span> <span class="nx">file</span><span class="p">.</span><span class="nx">relpath</span>
+        <span class="nx">buildDAG</span> <span class="nx">n</span>
+      <span class="nx">visited</span><span class="p">.</span><span class="nx">push</span> <span class="nx">file</span><span class="p">.</span><span class="nx">relpath</span>
+    
+    <span class="nx">buildDAG</span> <span class="err">@</span>
+    <span class="nv">S = </span><span class="p">[</span><span class="err">@</span><span class="p">]</span>
+    <span class="k">while</span> <span class="nx">S</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+      <span class="nv">n = </span><span class="nx">S</span><span class="p">.</span><span class="nx">shift</span><span class="p">()</span>
+      <span class="nx">topoSortedFiles</span><span class="p">.</span><span class="nx">push</span> <span class="nx">n</span>
+      <span class="k">for</span> <span class="nx">m</span> <span class="k">in</span> <span class="nx">n</span><span class="p">.</span><span class="nx">imports</span><span class="p">()</span>
+        <span class="nx">DAG</span><span class="p">[</span><span class="nx">m</span><span class="p">.</span><span class="nx">relpath</span><span class="p">]</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">without</span> <span class="nx">DAG</span><span class="p">[</span><span class="nx">m</span><span class="p">.</span><span class="nx">relpath</span><span class="p">],</span> <span class="nx">n</span><span class="p">.</span><span class="nx">relpath</span>
+        <span class="k">if</span> <span class="nx">DAG</span><span class="p">[</span><span class="nx">m</span><span class="p">.</span><span class="nx">relpath</span><span class="p">].</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span>
+          <span class="nx">S</span><span class="p">.</span><span class="nx">push</span> <span class="nx">m</span>
+    
+    <span class="nx">topoSortedFiles</span><span class="p">.</span><span class="nx">reverse</span><span class="p">()</span>
+  
+  
+  <span class="nv">newer: </span><span class="nf">(other) -&gt;</span>
+    <span class="nx">util</span><span class="p">.</span><span class="nx">newerSync</span> <span class="nx">@fullpath</span><span class="p">,</span> <span class="nx">other</span><span class="p">.</span><span class="nx">fullpath</span>
+  
+  <span class="nv">attached: </span><span class="o">-&gt;</span> <span class="nx">@fullpath</span><span class="o">?</span>
+  <span class="nv">exists: </span><span class="o">-&gt;</span> <span class="nx">@attached</span><span class="p">()</span> <span class="o">and</span> <span class="nx">path</span><span class="p">.</span><span class="nx">existsSync</span> <span class="nx">@fullpath</span>
+  <span class="nv">makedirs: </span><span class="o">-&gt;</span> <span class="nx">util</span><span class="p">.</span><span class="nx">makedirs</span> <span class="nx">path</span><span class="p">.</span><span class="nx">dirname</span> <span class="nx">@fullpath</span>
+  <span class="nv">read: </span><span class="nf">(cb) -&gt;</span>
+    <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@exists</span><span class="p">()</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span> <span class="nx">@fullpath</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="nf">(err, data) -&gt;</span>
+      <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span>
+    
+  
+  <span class="nv">readSync: </span><span class="o">-&gt;</span> 
+    <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@exists</span><span class="p">()</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span> <span class="nx">@fullpath</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span>
+  
+  <span class="nv">write: </span><span class="nf">(data, cb) -&gt;</span>
+    <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@attached</span><span class="p">()</span>
+    <span class="nx">@makedirs</span><span class="p">()</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span> <span class="nx">@fullpath</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="nx">cb</span>
+  
+  <span class="nv">writeSync: </span><span class="nf">(data) -&gt;</span>
+    <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@attached</span><span class="p">()</span>
+    <span class="nx">@makedirs</span><span class="p">()</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nx">writeFileSync</span> <span class="nx">@fullpath</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span>
+  
+  <span class="nv">unlinkSync: </span><span class="o">-&gt;</span>
+    <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@exists</span><span class="p">()</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nx">unlinkSync</span> <span class="nx">@fullpath</span>
+  
+  <span class="nv">destroy: </span><span class="o">-&gt;</span>
+    <span class="k">for</span> <span class="nx">file</span> <span class="k">in</span> <span class="nx">@liabilities</span>
+      <span class="nx">file</span><span class="p">.</span><span class="nx">destroy</span><span class="p">()</span>
+    
+    <span class="nx">@unlinkSync</span><span class="p">()</span>
+  
+  <span class="nv">project: </span><span class="nf">(dest, morph, cb) -&gt;</span>  
+    <span class="nx">@read</span> <span class="nf">(err, data) -&gt;</span>
+      <span class="nx">cb</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span>
+      <span class="nx">morph</span> <span class="nx">data</span><span class="p">,</span> <span class="nf">(error, newdata) -&gt;</span>
+        <span class="nx">dest</span><span class="p">.</span><span class="nx">write</span> <span class="nx">newdata</span><span class="p">,</span> <span class="nx">cb</span>
+      
+    
+  
+
+<span class="nv">exports.File = </span><span class="nx">File</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

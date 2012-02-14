@@ -1,0 +1,79 @@
+<!DOCTYPE html>  <html> <head>   <title>project.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="brewfile.html">                 brewfile.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="file.html">                 file.coffee               </a>                                           <a class="source" href="index.html">                 index.coffee               </a>                                           <a class="source" href="package.html">                 package.coffee               </a>                                           <a class="source" href="coffee-script.html">                 coffee-script.coffee               </a>                                           <a class="source" href="css.html">                 css.coffee               </a>                                           <a class="source" href="javascript.html">                 javascript.coffee               </a>                                           <a class="source" href="less.html">                 less.coffee               </a>                                           <a class="source" href="stylus.html">                 stylus.coffee               </a>                                           <a class="source" href="project.html">                 project.coffee               </a>                                           <a class="source" href="source.html">                 source.coffee               </a>                                           <a class="source" href="util.html">                 util.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               project.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nv">_ = </span><span class="nx">require</span> <span class="s1">&#39;underscore&#39;</span>
+<span class="nv">path = </span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span>
+<span class="nv">fs = </span><span class="nx">require</span> <span class="s1">&#39;fs&#39;</span>
+<span class="p">{</span><span class="nx">Package</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;../lib&#39;</span>
+<span class="p">{</span><span class="nx">debug</span><span class="p">,</span> <span class="nx">warning</span><span class="p">,</span> <span class="nx">info</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./command&#39;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s1">&#39;./util&#39;</span>
+
+<span class="k">class</span> <span class="nx">Project</span>
+  <span class="nv">constructor: </span><span class="nf">(@file) -&gt;</span> <span class="nx">@setup</span><span class="p">()</span>
+  <span class="nv">setup: </span><span class="o">-&gt;</span>
+    <span class="nv">opts = </span><span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;./brewfile&#39;</span><span class="p">).</span><span class="nx">configs</span> <span class="nx">@file</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">defaults</span> <span class="nx">opts</span><span class="p">,</span>
+      <span class="nv">root: </span><span class="s1">&#39;.&#39;</span>
+      <span class="nv">reqs: </span><span class="p">[]</span>
+      <span class="nv">packages: </span><span class="p">[]</span>
+      <span class="nv">vendorDir: </span><span class="s1">&#39;./vendor&#39;</span>
+    
+    <span class="p">{</span><span class="nx">@root</span><span class="p">,</span> <span class="nx">reqs</span><span class="p">,</span> <span class="nx">packages</span><span class="p">,</span> <span class="nx">vendorDir</span><span class="p">}</span> <span class="o">=</span> <span class="nx">opts</span>
+    <span class="vi">@vendorlibs = </span><span class="k">new</span> <span class="nx">VendorLibraries</span> <span class="err">@</span><span class="p">,</span> <span class="nx">vendorDir</span><span class="p">,</span> <span class="nx">reqs</span>
+    <span class="vi">@length = </span><span class="nx">packages</span><span class="p">.</span><span class="nx">length</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">packages</span><span class="p">,</span> <span class="p">(</span><span class="nx">pkg</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="err">@</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">Package</span><span class="p">.</span><span class="nx">create</span> <span class="nx">pkg</span><span class="p">.</span><span class="nx">opts</span><span class="p">,</span> <span class="nx">pkg</span><span class="p">.</span><span class="nx">srcs</span><span class="p">,</span> <span class="nx">@vendorlibs</span>
+  
+  <span class="nv">clean: </span><span class="o">-&gt;</span>
+    <span class="nx">pkg</span><span class="p">.</span><span class="nx">clean</span><span class="o">?</span><span class="p">()</span> <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="err">@</span>
+  
+  <span class="nv">prepare: </span><span class="o">-&gt;</span>
+    <span class="nx">pkg</span><span class="p">.</span><span class="nx">prepare</span><span class="o">?</span><span class="p">()</span> <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="err">@</span>
+  
+  <span class="nv">watch: </span><span class="o">-&gt;</span>
+    <span class="nx">pkg</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">@reset</span><span class="p">,</span> <span class="err">@</span><span class="p">))</span> <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="err">@</span>
+    <span class="vi">@configWatcher = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">watch</span> <span class="nx">@file</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">@reset</span><span class="p">()</span>
+    <span class="nx">@configWatcher</span><span class="p">.</span><span class="kc">on</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">@reset</span><span class="p">,</span> <span class="err">@</span><span class="p">)</span>
+  
+  <span class="nv">reset: </span><span class="nf">(err) -&gt;</span>
+    <span class="k">throw</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span><span class="o">?</span>
+    <span class="nx">@configWatcher</span><span class="o">?</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
+    
+    <span class="k">for</span> <span class="nx">pkg</span><span class="p">,</span> <span class="nx">i</span> <span class="k">in</span> <span class="err">@</span>
+      <span class="nx">pkg</span><span class="p">.</span><span class="nx">unwatch</span><span class="p">()</span>
+      <span class="k">delete</span> <span class="err">@</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+    
+    <span class="k">delete</span> <span class="nx">@length</span>
+    <span class="k">delete</span> <span class="nx">@vendorlibs</span>
+    <span class="nx">@setup</span><span class="p">()</span>
+    <span class="nx">@watch</span><span class="p">()</span>
+  
+
+<span class="k">class</span> <span class="nx">VendorLibraries</span>
+  <span class="nv">constructor: </span><span class="nf">(@project, vendorDir, @requirements) -&gt;</span>
+    <span class="vi">@root = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">@project</span><span class="p">.</span><span class="nx">root</span><span class="p">,</span> <span class="nx">vendorDir</span>
+    <span class="nx">util</span><span class="p">.</span><span class="nx">makedirs</span> <span class="nx">@root</span>
+    <span class="vi">@libs = </span><span class="nx">@read</span><span class="p">()</span>
+  
+  <span class="nv">stateFile: </span><span class="o">-&gt;</span> 
+    <span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">@root</span><span class="p">,</span> <span class="s1">&#39;libraries.json&#39;</span>
+  
+  <span class="nv">read: </span><span class="o">-&gt;</span>
+    <span class="k">if</span> <span class="nx">path</span><span class="p">.</span><span class="nx">existsSync</span><span class="p">(</span><span class="nv">stateFile = </span><span class="nx">@stateFile</span><span class="p">())</span>
+      <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span> <span class="nx">stateFile</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span>
+    <span class="k">else</span>
+      <span class="p">{}</span>
+  
+  <span class="nv">write: </span><span class="o">-&gt;</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nx">writeFileSync</span> <span class="nx">@stateFile</span><span class="p">(),</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">@libs</span><span class="p">),</span> <span class="s1">&#39;utf-8&#39;</span>
+  
+  <span class="nv">libraries: </span><span class="nf">(type) -&gt;</span>
+    <span class="nv">libs = </span><span class="p">[]</span>
+    <span class="k">for</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">lib</span> <span class="k">of</span> <span class="nx">@libs</span>
+      <span class="k">for</span> <span class="nx">dpath</span><span class="p">,</span> <span class="nx">dir</span> <span class="k">of</span> <span class="nx">lib</span><span class="p">.</span><span class="nx">content</span> <span class="k">when</span> <span class="nx">dir</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="nx">type</span>
+        <span class="nv">_lib = </span><span class="p">{</span><span class="nv">path: </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">@root</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">dpath</span><span class="p">)}</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">_lib</span><span class="p">,</span> <span class="nx">dir</span>
+        <span class="nx">libs</span><span class="p">.</span><span class="nx">push</span> <span class="nx">_lib</span>
+    
+    <span class="nx">libs</span>
+
+<span class="nv">exports.Project = </span><span class="nx">Project</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

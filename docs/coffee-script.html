@@ -1,0 +1,54 @@
+<!DOCTYPE html>  <html> <head>   <title>coffee-script.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="brewfile.html">                 brewfile.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="file.html">                 file.coffee               </a>                                           <a class="source" href="index.html">                 index.coffee               </a>                                           <a class="source" href="package.html">                 package.coffee               </a>                                           <a class="source" href="coffee-script.html">                 coffee-script.coffee               </a>                                           <a class="source" href="css.html">                 css.coffee               </a>                                           <a class="source" href="javascript.html">                 javascript.coffee               </a>                                           <a class="source" href="less.html">                 less.coffee               </a>                                           <a class="source" href="stylus.html">                 stylus.coffee               </a>                                           <a class="source" href="project.html">                 project.coffee               </a>                                           <a class="source" href="source.html">                 source.coffee               </a>                                           <a class="source" href="util.html">                 util.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               coffee-script.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nv">_ = </span><span class="nx">require</span> <span class="s1">&#39;underscore&#39;</span>
+<span class="nv">fs = </span><span class="nx">require</span> <span class="s1">&#39;fs&#39;</span>
+<span class="nv">path = </span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s1">&#39;../util&#39;</span>
+<span class="p">{</span><span class="nx">debug</span><span class="p">,</span> <span class="nx">finished</span><span class="p">,</span> <span class="nx">showError</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;../command&#39;</span>
+<span class="p">{</span><span class="nx">Source</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;../source&#39;</span>
+<span class="p">{</span><span class="nx">File</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;../file&#39;</span>
+<span class="p">{</span><span class="nx">JavascriptFile</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./javascript&#39;</span>
+
+<span class="k">class</span> <span class="nx">CoffeescriptSource</span> <span class="k">extends</span> <span class="nx">Source</span>
+  <span class="vi">@type = </span><span class="s1">&#39;coffeescript&#39;</span>
+  <span class="vi">@aliases = </span><span class="p">[</span><span class="s1">&#39;coffee-script&#39;</span><span class="p">,</span> <span class="s1">&#39;cs&#39;</span><span class="p">]</span>
+  <span class="vi">@header = </span><span class="sr">/^#\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m</span>
+  <span class="vi">@ext = </span><span class="s1">&#39;.coffee&#39;</span>
+  
+  <span class="nv">constructor: </span><span class="nf">(options, package) -&gt;</span>
+    <span class="k">throw</span> <span class="s2">&quot;Coffeescript source needs a &#39;output&#39; options&quot;</span> <span class="nx">unless</span> <span class="nx">options</span><span class="p">.</span><span class="nx">output</span><span class="o">?</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">defaults</span> <span class="nx">options</span><span class="p">,</span> <span class="nv">follow: </span><span class="kc">true</span>
+    <span class="p">{</span><span class="nx">@follow</span><span class="p">,</span> <span class="nx">@output</span><span class="p">}</span> <span class="o">=</span> <span class="nx">options</span>
+    <span class="k">super</span>
+  
+  <span class="nv">createFile: </span><span class="nf">(path) -&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>As soon as we create the original file, create the compiled counterpart
+returning the original</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">@createCompiledFile</span> <span class="nv">original = </span><span class="k">super</span>
+    <span class="nx">original</span>
+  
+  <span class="nv">createCompiledFile: </span><span class="nf">(original) -&gt;</span>
+    <span class="nv">cpath = </span><span class="nx">util</span><span class="p">.</span><span class="nx">changeext</span> <span class="p">(</span><span class="nv">fpath = </span><span class="nx">original</span><span class="p">.</span><span class="nx">relpath</span><span class="p">),</span> <span class="s1">&#39;.js&#39;</span>
+    <span class="nv">compiled = </span><span class="nx">@package</span><span class="p">.</span><span class="nx">file</span> <span class="nx">fpath</span><span class="p">,</span> <span class="s1">&#39;javascript&#39;</span><span class="p">,</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">@output</span><span class="p">,</span> <span class="nx">cpath</span><span class="p">),</span> <span class="err">@</span>
+    <span class="nx">compiled</span><span class="p">.</span><span class="nx">dependOn</span> <span class="nx">original</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">@compile</span><span class="p">,</span> <span class="err">@</span><span class="p">)</span>
+    <span class="nx">compiled</span><span class="p">.</span><span class="nx">setImportedPaths</span> <span class="nx">original</span><span class="p">.</span><span class="nx">readImportedPaths</span><span class="p">()</span>
+    <span class="nv">compiled.impermanent = </span><span class="kc">true</span>
+    <span class="nx">compiled</span><span class="p">.</span><span class="nx">register</span><span class="p">()</span>
+    <span class="nx">compiled</span>
+  
+  <span class="nv">compile: </span><span class="nf">(original, compiled, cb) -&gt;</span>
+    <span class="nv">compile = </span><span class="nf">(data, cb2) -&gt;</span>
+      <span class="k">try</span>
+        <span class="nx">cb2</span> <span class="kc">null</span><span class="p">,</span> <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;coffee-script&#39;</span><span class="p">).</span><span class="nx">compile</span> <span class="nx">data</span>
+      <span class="k">catch</span> <span class="nx">err</span>
+        <span class="nx">showError</span> <span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="nx">original</span><span class="p">.</span><span class="nx">fullpath</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nx">message</span>
+        <span class="nx">cb</span><span class="p">()</span>
+    
+    <span class="nx">original</span><span class="p">.</span><span class="nx">project</span> <span class="nx">compiled</span><span class="p">,</span> <span class="nx">compile</span><span class="p">,</span> <span class="nf">(err) -&gt;</span>
+      <span class="nx">cb</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span>
+      <span class="nx">finished</span> <span class="s1">&#39;Compiled&#39;</span><span class="p">,</span> <span class="nx">original</span><span class="p">.</span><span class="nx">fullpath</span>
+      <span class="nx">cb</span><span class="p">()</span>
+    
+  
+
+
+<span class="nv">exports.CoffeescriptSource = </span><span class="nx">CoffeescriptSource</span>
+<span class="nx">Source</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">CoffeescriptSource</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

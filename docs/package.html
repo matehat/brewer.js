@@ -1,0 +1,134 @@
+<!DOCTYPE html>  <html> <head>   <title>package.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="brewfile.html">                 brewfile.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="file.html">                 file.coffee               </a>                                           <a class="source" href="index.html">                 index.coffee               </a>                                           <a class="source" href="package.html">                 package.coffee               </a>                                           <a class="source" href="coffee-script.html">                 coffee-script.coffee               </a>                                           <a class="source" href="css.html">                 css.coffee               </a>                                           <a class="source" href="javascript.html">                 javascript.coffee               </a>                                           <a class="source" href="less.html">                 less.coffee               </a>                                           <a class="source" href="stylus.html">                 stylus.coffee               </a>                                           <a class="source" href="project.html">                 project.coffee               </a>                                           <a class="source" href="source.html">                 source.coffee               </a>                                           <a class="source" href="util.html">                 util.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               package.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nv">path = </span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span>
+<span class="nv">sys = </span><span class="nx">require</span> <span class="s1">&#39;util&#39;</span>
+<span class="nv">util = </span><span class="nx">require</span> <span class="s1">&#39;./util&#39;</span>
+<span class="nv">fs = </span><span class="nx">require</span> <span class="s1">&#39;fs&#39;</span>
+<span class="nv">_ = </span><span class="nx">require</span> <span class="s1">&#39;underscore&#39;</span>
+<span class="p">{</span><span class="nx">EventEmitter</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;events&#39;</span>
+
+<span class="p">{</span><span class="nx">Source</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./source&#39;</span>
+<span class="p">{</span><span class="nx">File</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./file&#39;</span>
+<span class="p">{</span><span class="nx">debug</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="nx">finished</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./command&#39;</span>
+
+<span class="k">class</span> <span class="nx">Package</span> <span class="k">extends</span> <span class="nx">EventEmitter</span>
+  <span class="vi">@registry = </span><span class="p">{}</span>
+  <span class="vi">@extend: </span><span class="nf">(packages...) -&gt;</span>
+    <span class="k">for</span> <span class="nx">package</span> <span class="k">in</span> <span class="nx">packages</span>
+      <span class="nx">@registry</span><span class="p">[</span><span class="nx">package</span><span class="p">.</span><span class="nx">type</span><span class="p">]</span> <span class="o">=</span> <span class="nx">package</span>
+      <span class="k">for</span> <span class="nx">alias</span> <span class="k">in</span> <span class="p">(</span><span class="nx">package</span><span class="p">.</span><span class="nx">aliases</span> <span class="o">?</span> <span class="p">[])</span>
+        <span class="nx">@registry</span><span class="p">[</span><span class="nx">alias</span><span class="p">]</span> <span class="o">=</span> <span class="nx">package</span>
+  
+  <span class="vi">@create: </span><span class="nf">(options, sources, vendor) -&gt;</span>
+    <span class="k">throw</span> <span class="s2">&quot;Package type #{options.type} not known&quot;</span> <span class="nx">unless</span> <span class="p">(</span><span class="nv">typ = </span><span class="nx">@registry</span><span class="p">[</span><span class="nx">options</span><span class="p">.</span><span class="nx">type</span><span class="p">])</span><span class="o">?</span>
+    <span class="k">new</span> <span class="nx">typ</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">sources</span><span class="p">,</span> <span class="nx">vendor</span>
+  
+  
+  <span class="nv">constructor: </span><span class="nf">(@options, sources, @vendorlibs) -&gt;</span>
+    <span class="p">{</span><span class="nx">@name</span><span class="p">,</span> <span class="nx">bundles</span><span class="p">}</span> <span class="o">=</span> <span class="nx">@options</span>
+    <span class="vi">@files = </span><span class="p">{}</span>
+    <span class="vi">@sources = </span><span class="p">{}</span>
+    <span class="vi">@_ready = </span><span class="kc">false</span>
+    <span class="vi">@_pendingSources = </span><span class="mi">0</span>
+    
+    <span class="nx">@on</span> <span class="s1">&#39;ready&#39;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="vi">@_ready = </span><span class="kc">true</span>
+    
+    <span class="p">(</span><span class="nx">@registerSource</span> <span class="nx">Source</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">src</span><span class="p">,</span> <span class="err">@</span><span class="p">)</span> <span class="k">for</span> <span class="nx">src</span> <span class="k">in</span> <span class="nx">sources</span><span class="p">)</span>
+    <span class="vi">@bundlePaths = </span><span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">bundles</span>
+      <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span> <span class="nx">bundles</span>
+    <span class="k">else</span> <span class="p">(</span><span class="nx">bundles</span> <span class="o">?=</span> <span class="p">[])</span>
+  
+  <span class="nv">ready: </span><span class="nf">(cb) -&gt;</span> 
+    <span class="k">if</span> <span class="nx">@_ready</span> <span class="k">then</span> <span class="nx">cb</span><span class="p">()</span> <span class="k">else</span> <span class="nx">@on</span> <span class="s1">&#39;ready&#39;</span><span class="p">,</span> <span class="nx">cb</span>
+  
+  <span class="nv">file: </span><span class="nf">(relpath, type, fullpath, src) -&gt;</span>
+    <span class="nx">@files</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">?=</span> <span class="p">{}</span>
+    <span class="nv">file = </span><span class="p">(</span><span class="nv">_files = </span><span class="nx">@files</span><span class="p">[</span><span class="nx">type</span><span class="p">])[</span><span class="nx">relpath</span><span class="p">]</span>
+    <span class="nx">unless</span> <span class="nx">file</span><span class="o">?</span>
+      <span class="nv">file = </span><span class="nx">_files</span><span class="p">[</span><span class="nx">relpath</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">File</span> <span class="nx">relpath</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="err">@</span>
+    
+    <span class="nx">file</span><span class="p">.</span><span class="nx">attach</span> <span class="nx">fullpath</span><span class="p">,</span> <span class="nx">src</span> <span class="k">if</span> <span class="nx">fullpath</span><span class="o">?</span>
+    <span class="k">return</span> <span class="nx">file</span>
+  
+  <span class="nv">actualize: </span><span class="nf">(cb) -&gt;</span>
+    <span class="nx">@ready</span> <span class="o">=&gt;</span>
+      <span class="nv">allFiles = </span><span class="p">[]</span>
+      <span class="k">for</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">files</span> <span class="k">of</span> <span class="nx">@files</span>
+        <span class="k">for</span> <span class="nx">relpath</span><span class="p">,</span> <span class="nx">file</span> <span class="k">of</span> <span class="nx">files</span>
+          <span class="nx">allFiles</span><span class="p">.</span><span class="nx">push</span> <span class="nx">file</span>
+      <span class="nv">leaves = </span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span> <span class="nx">allFiles</span><span class="p">,</span> <span class="nf">(file) -&gt;</span> <span class="nx">file</span><span class="p">.</span><span class="nx">liabilities</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">0</span>
+      <span class="nv">i = </span><span class="mi">0</span>
+      <span class="p">(</span><span class="nv">iter = </span><span class="o">-&gt;</span>
+        <span class="k">return</span> <span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span><span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="k">if</span> <span class="nx">i</span> <span class="o">is</span> <span class="nx">leaves</span><span class="p">.</span><span class="nx">length</span>
+        <span class="nx">leaves</span><span class="p">[</span><span class="nx">i</span><span class="o">++</span><span class="p">].</span><span class="nx">actualize</span> <span class="nx">iter</span>
+      <span class="p">)()</span>
+  
+  <span class="nv">bundle: </span><span class="nf">(imported, bundle, cb) -&gt;</span>
+    <span class="nv">output = </span><span class="s1">&#39;&#39;</span>
+    <span class="nv">parent = </span><span class="nx">bundle</span><span class="p">.</span><span class="nx">parent</span>
+    <span class="k">for</span> <span class="nx">file</span> <span class="k">in</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">tsortedImports</span><span class="p">()</span>
+      <span class="nx">output</span> <span class="o">+=</span> <span class="nx">file</span><span class="p">.</span><span class="nx">readSync</span><span class="p">()</span>
+    
+    <span class="nx">bundle</span><span class="p">.</span><span class="nx">write</span> <span class="nx">output</span><span class="p">,</span> <span class="nx">cb</span>
+    <span class="nx">finished</span> <span class="s1">&#39;Packaged&#39;</span><span class="p">,</span> <span class="nx">bundle</span><span class="p">.</span><span class="nx">fullpath</span>
+  
+  <span class="nv">clean: </span><span class="o">-&gt;</span>
+    <span class="k">for</span> <span class="nx">file</span> <span class="k">in</span> <span class="nx">@impermanents</span><span class="p">()</span>
+      <span class="nx">file</span><span class="p">.</span><span class="nx">unlinkSync</span><span class="p">()</span>
+  
+  <span class="nv">allSources: </span><span class="o">-&gt;</span>
+    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">flatten</span> <span class="nx">_</span><span class="p">.</span><span class="nx">values</span> <span class="nx">@sources</span>
+  
+  <span class="nv">watch: </span><span class="nf">(reset) -&gt;</span>
+    <span class="nx">@actualize</span> <span class="o">=&gt;</span>
+      <span class="k">for</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">sources</span> <span class="k">of</span> <span class="nx">@sources</span>
+        <span class="k">for</span> <span class="nx">src</span> <span class="k">in</span> <span class="nx">sources</span>
+          <span class="nx">src</span><span class="p">.</span><span class="nx">watch</span> <span class="nx">reset</span>
+    
+      <span class="k">for</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">files</span> <span class="k">of</span> <span class="nx">@files</span>
+        <span class="k">for</span> <span class="nx">relpath</span><span class="p">,</span> <span class="nx">file</span> <span class="k">of</span> <span class="nx">files</span>
+          <span class="nx">file</span><span class="p">.</span><span class="nx">watch</span> <span class="nx">reset</span>
+      
+  
+  <span class="nv">unwatch: </span><span class="nf">(cb) -&gt;</span>
+    <span class="k">for</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">sources</span> <span class="k">of</span> <span class="nx">@sources</span>
+        <span class="k">for</span> <span class="nx">src</span> <span class="k">in</span> <span class="nx">sources</span>
+          <span class="nx">src</span><span class="p">.</span><span class="nx">unwatch</span><span class="p">()</span>
+    
+    <span class="k">for</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">files</span> <span class="k">of</span> <span class="nx">@files</span>
+      <span class="nx">file</span><span class="p">.</span><span class="nx">unwatch</span><span class="p">()</span> <span class="k">for</span> <span class="nx">relpath</span><span class="p">,</span> <span class="nx">file</span> <span class="k">of</span> <span class="nx">files</span>
+    
+  
+  <span class="nv">impermanents: </span><span class="o">-&gt;</span>
+    <span class="nv">acc = </span><span class="p">[]</span>
+    <span class="k">for</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">files</span> <span class="k">of</span> <span class="nx">@files</span>
+      <span class="k">for</span> <span class="nx">file</span> <span class="k">in</span> <span class="nx">_</span><span class="p">.</span><span class="nx">values</span><span class="p">(</span><span class="nx">files</span><span class="p">)</span> <span class="k">when</span> <span class="nx">file</span><span class="p">.</span><span class="nx">impermanent</span> <span class="o">is</span> <span class="kc">true</span>
+        <span class="nx">acc</span><span class="p">.</span><span class="nx">push</span> <span class="nx">file</span>
+    <span class="nx">acc</span>
+  
+  <span class="nv">registerSource: </span><span class="nf">(src) -&gt;</span>
+    <span class="p">(</span><span class="nx">@sources</span><span class="p">[</span><span class="nx">src</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">type</span><span class="p">]</span> <span class="o">?=</span> <span class="p">[]).</span><span class="nx">push</span> <span class="nx">src</span>
+    <span class="nx">@_pendingSources</span><span class="o">++</span>
+    
+    <span class="nx">src</span><span class="p">.</span><span class="nx">files</span> <span class="kc">null</span><span class="p">,</span> <span class="p">(</span><span class="nx">files</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="nx">@emit</span> <span class="s1">&#39;ready&#39;</span> <span class="k">if</span> <span class="o">--</span><span class="nx">@_pendingSources</span> <span class="o">==</span> <span class="mi">0</span>
+    
+  
+  <span class="nv">registerFile: </span><span class="nf">(file) -&gt;</span>
+    <span class="nv">type = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">type</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>If the registered file is of the same type as the package and it has
+the same relative path as a listed bundle, make a corresponding bundled 
+file and register it</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="nv">fpath = </span><span class="nx">file</span><span class="p">.</span><span class="nx">relpath</span><span class="p">)</span> <span class="k">in</span> <span class="nx">@bundlePaths</span> <span class="o">and</span> <span class="nx">file</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="nx">type</span>
+      <span class="nv">bundle = </span><span class="nx">@file</span> <span class="nx">fpath</span><span class="p">,</span> <span class="s2">&quot;#{type}-bundle&quot;</span><span class="p">,</span> <span class="nx">@bundlePath</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span>
+      <span class="nx">bundle</span><span class="p">.</span><span class="nx">dependOnImports</span> <span class="nx">file</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@bundle</span><span class="p">,</span> <span class="err">@</span>
+      <span class="nv">bundle.impermanent = </span><span class="kc">true</span>
+      <span class="nv">bundle.parent = </span><span class="nx">file</span>
+      <span class="nx">bundle</span><span class="p">.</span><span class="nx">register</span><span class="p">()</span>
+      </pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>If the package is configured to compress its bundles, make a corresponding
+compressed file and register it</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="k">if</span> <span class="nx">@compress</span>
+        <span class="nv">compressed = </span><span class="nx">@file</span> <span class="nx">fpath</span><span class="p">,</span> <span class="s2">&quot;#{type}-bundle-minified&quot;</span><span class="p">,</span> <span class="nx">@compressedPath</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span>
+        <span class="nx">compressed</span><span class="p">.</span><span class="nx">dependOn</span> <span class="nx">bundle</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@compressFile</span><span class="p">,</span> <span class="err">@</span>
+        <span class="nv">compressed.impermanent = </span><span class="kc">true</span>
+        <span class="nx">compressed</span><span class="p">.</span><span class="nx">register</span><span class="p">()</span>
+  
+
+<span class="nv">exports.Package = </span><span class="nx">Package</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
