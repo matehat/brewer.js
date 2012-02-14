@@ -3,7 +3,7 @@ fs = require 'fs'
 path = require 'path'
 _ = require 'underscore'
 {Source} = require '..'
-{finished, debug} = require '../command'
+{finished, debug, showError} = require '../command'
 {StylesheetsPackage, StylesheetsSource} = require './css'
 
 class StylusSource extends StylesheetsSource
@@ -32,7 +32,7 @@ class StylusSource extends StylesheetsSource
     compiled
   
   compile: (original, compiled, cb) ->
-    compile = (data, cb) =>
+    compile = (data, cb2) =>
       parser = require('stylus') data
       parser.set 'filename', @file
       parser.set 'paths', (src.path for src in @package.sources.stylus)
@@ -42,8 +42,11 @@ class StylusSource extends StylesheetsSource
         parser.use(module()) if _.isFunction module
       
       parser.render (err, css) ->
-        cb err if err?
-        cb null, css
+        if err?
+          showError 'in', original.fullpath, ':', err.message
+          cb()
+        else
+          cb2 null, css
     
     original.project compiled, compile, (err) ->
       cb err if err
