@@ -2,7 +2,7 @@ _ = require 'underscore'
 fs = require 'fs'
 path = require 'path'
 util = require '../util'
-{debug, finished} = require '../command'
+{debug, finished, showError} = require '../command'
 {Source} = require '../source'
 {File} = require '../file'
 {JavascriptFile} = require './javascript'
@@ -35,8 +35,11 @@ class CoffeescriptSource extends Source
     compiled
   
   compile: (original, compiled, cb) ->
-    compile = (data, cb2) -> 
-      cb2 null, (require 'coffee-script').compile data
+    compile = (data, cb2) ->
+      try
+        cb2 null, (require 'coffee-script').compile data
+      catch err
+        showError 'in', original.fullpath, ':', err.message
     
     original.project compiled, compile, (err) ->
       cb err if err

@@ -26,6 +26,10 @@ cli = {
 
   info: (msgs...) ->
     console.log clr('Info', 'green'), msgs...
+  
+  showError: (msgs...) ->
+    console.log clr('Error', 'red'), msgs...
+  
 }
 _.extend exports, cli
 
