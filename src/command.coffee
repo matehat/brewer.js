@@ -67,6 +67,7 @@ _.extend exports, cli
     .command('make [packages]*')
     .description("Aggregate bundles from the given packages (or all)")
     .action (pkgs) ->
+      pkgs ?= 'all'
       project = getLocalProject()
       if pkgs is 'all'
         packages = project
