@@ -3,7 +3,7 @@
 # *Version 0.2.2 - Source code is freely available on 
 # [github](http://github.com/matehat/brewer.js).*
 #
-# This file is the module one gets when one does `require('brewer')`. 
+# This is the module obtained when importing `brewer`. 
 # It exports the main classes from [project](project.html), [package](package.html), 
 # [source](source.html) and [file](file.html).
 
