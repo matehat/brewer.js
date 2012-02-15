@@ -30,15 +30,15 @@
     "growl": ">= 1.4.0",
     "ansi-color": ">= 0.2.0",
     "semver": ">= 1.0.0",
-    "request": ">= 2.9.0"
-  },
-  "devDependencies": {
-    "coffee-script": ">= 1.1.0",
-    "less": ">= 1.2.0",
-    "jsdom": ">= 0.2.10",
-    "cssom": ">= 0.2.0",
+    "request": ">= 2.9.0",
     "ncss": ">= 1.1.0",
     "stylus": ">= 0.22.0",
+    "coffee-script": ">= 1.1.0",
+    "less": ">= 1.2.0"
+  },
+  "devDependencies": {
+    "jsdom": ">= 0.2.10",
+    "cssom": ">= 0.2.0",
     "docco": ">= 0.3.0"
   }
 }
