@@ -1,33 +1,11 @@
-_ = require 'underscore'
-fs = require 'fs'
-path = require 'path'
-
 {Package, Source} = require '..'
-util = require '../util'
 {finished, debug} = require '../command'
 
 class JavascriptPackage extends Package
   @type = 'javascript'
   @aliases = ['js']
-  
-  constructor: (options) ->
-    super
-    _.defaults options, compress: true
-    {@compress, @build, @bundles} = options
-    @bundles = JSON.parse fs.readFileSync @bundles if _.isString @bundles
-    
-    for lib in @vendorlibs.libraries 'javascript'
-      lib.watch ?= false
-      @registerSource Source.create lib, @
-  
-  bundlePath: (file) -> 
-    path.join @build, util.changeext file.relpath, '.js'
-  
-  compressedPath: (file) ->
-    path.join @build, if @compress is true
-      util.changeext file.relpath, '.min.js'
-    else
-      _.template(compress) filename: file.relpath
+  @compressedext = '.min.js'
+  @ext = '.js'
   
   compressFile: (original, dest, cb) ->
     compress = (data, cb) -> 
@@ -51,4 +29,4 @@ class JavascriptSource extends Source
 
 Source.extend JavascriptSource
 Package.extend JavascriptPackage
-_.extend exports, {JavascriptSource, JavascriptPackage}
+(require 'underscore').extend exports, {JavascriptSource, JavascriptPackage}
