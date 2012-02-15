@@ -27,6 +27,9 @@
       pre span.info {
         color: green;
       }
+      pre span.prompt {
+        color: #888;
+      }
     </style>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
 
@@ -84,9 +87,9 @@
     </div>
 
     <div class="container">
-      
+      <br />
       <h1>Brewer.js</h1>
-      <h3>Your asset management friend.</h3>
+      <h3>Your asset management friend.</h3><br />
     
       <section id="overview" class="row">
         <div class="span6">
@@ -103,7 +106,7 @@
             </li>
           </ul><br />
           <div class="btn-group">
-            <a href="http://github.com/matehat/brewer.js" class="btn btn-primary">View source code on Github</a>
+            <a href="http://github.com/matehat/brewer.js" class="btn btn-primary">Source code on Github</a>
             <a href="#" class="btn dropdown-toggle" data-toggle="dropdown">
               Annotated source
               <b class="caret"></b>
@@ -127,7 +130,7 @@
         </div>
         <div class="span6">
 <pre class="console">
-$ brewer watch
+<span class="prompt">$</span> brewer watch
 <span class="info">Info</span> Watching project /path/to/current/working/directory
 <span class="fn">Compiled</span> coffee/test.coffee
 <span class="fn">Compiled</span> less/index.less
@@ -140,8 +143,28 @@ $ brewer watch
       
       <section id="installation">
         <h3>Installation</h3>
+        <br />
+        <p>
+          To setup Brewer.js, make sure you have 
+          <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">installed Node.js.</a>
+          When this is done, enter the terminal and type.
+        </p>
+        <pre><span class="prompt">$</span> npm install -g brewer</pre>
         
-        <p>Make sure you have <a href="">Node.js</a> installed</p>
+        <p>
+          The <code>-g</code> flag is used to make the installation global, so you get access to the <code>brewer</code>
+          executable. Then, from a project directory you wish to manage using Brewer.js
+        </p>
+        <pre><span class="prompt">$</span> brewer init [&lt;template name&gt;]</pre>
+        <p>
+          The <code>&lt;template name&gt;</code> part is optional. Anyway, for the moment, there is only <em>one</em> 
+          template available, <strong>lesscoffee</strong>, which is also the default. This template sets up LESS and 
+          Coffeescript support for the current directory.
+        </p>
+        <p>
+          What this does is create a <a href="#brewfile">Brewfile</a> in the current directory, according to the template
+          provided and run <code>brewer make</code> (see <a href="#usage">usage</a>) on it.
+        </p>
       </section>
       <hr />
       
