@@ -66,7 +66,11 @@ javascript 'package_name', ->
   @options {build: './build', compress: true}
 ```
 
-The `build` option specifies where to put bundles aggregated from source files, and `compress` &hellip; well, I think you can guess that one.
+The `build` option specifies where to put bundles aggregated from source files, and `compress` &hellip; well, I think you can guess that one. `@options` is a method available in the package definition body, that specify additional options on the package. Another such method is `@bundles(bundle1, bundle2, ...)` which specify names for bundles in the package (see **Bundles** below).
+
+##### Sources
+
+In the body of a package definition, 
 
 ### Usage
 
