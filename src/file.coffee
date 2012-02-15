@@ -1,11 +1,11 @@
-### The File class
+# ## The File class
 #
-# This module exports the `File` class, which wraps all
+# This module exports the *File* class, which wraps all
 # information about a file: 
 #
 # * Its access path and full path
 # * Its type (*javascript, css, less, etc.*)
-# * Its associated `Source` and `Package` objects
+# * Its associated *[Source](source.html)* and *[Package](package.html)* objects
 #
 # It also holds all logic related to maintaining and interacting 
 # with the files on disk.
@@ -23,8 +23,8 @@ _ = require 'underscore'
 
 #### Initialization
 #
-# A `File` object is initialized with an access path, a type
-# and a `Package` object. At this point, it cannot interact with
+# A *File* object is initialized with an access path, a type
+# and a *Package* object. At this point, it cannot interact with
 # the filesystem, because it does not know what the fullpath is
 # (it might not even exist!).
 
@@ -35,7 +35,7 @@ class File extends EventEmitter
   
   
   # This method associates a file with a fullpath and
-  # a `Source` object. At this point, it can interact with the
+  # a *Source* object. At this point, it can interact with the
   # filesystem. It is used first to detect if a file is attached
   # twice (which shouldn't happen), and to trigger listeners, which
   # might have been waiting for the file to be attached. This happens
@@ -49,7 +49,7 @@ class File extends EventEmitter
       @emit 'attach'
   
   
-  # This method tells the associated `Package` object to
+  # This method tells the associated *Package* object to
   # register this file, a mechanism required so the package can 
   # adequately manage all its contained files.
   register: ->
@@ -190,7 +190,7 @@ class File extends EventEmitter
   # this file be used in a bundle.
   
   # This method reads the file and parses it to find `import`
-  # directives. It can only do this if it is attached to a `Source`
+  # directives. It can only do this if it is attached to a *Source*
   # object, since this source specifies the regular expression used
   # to find those directives.
   readImportedPaths: ->
@@ -233,9 +233,9 @@ class File extends EventEmitter
     @_importedPaths
   
   
-  # This returns a list of imports, as a list of `File` objects. It
+  # This returns a list of imports, as a list of *File* objects. It
   # first looks for a cached version, making it if not found. It uses
-  # the associated `Package` object to find those `File` objects, so
+  # the associated *Package* object to find those *File* objects, so
   # if those files were not initialized, they are still available.
   imports: ->
     unless @_imports?
