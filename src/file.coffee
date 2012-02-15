@@ -334,32 +334,29 @@ class File extends EventEmitter
   # full path exist.
   makedirs: -> util.makedirs path.dirname @fullpath
   
-  # This method is used to read the content of the current file.
+  # These methods (async and sync) are used to read the content of 
+  # the current file.
   read: (cb) ->
     return unless @exists()
     fs.readFile @fullpath, 'utf-8', (err, data) -> cb(err, data)
   
-  
-  # This method is a synchronous version of the above.
   readSync: ->
     return unless @exists()
     fs.readFileSync @fullpath, 'utf-8'
   
   
-  # This method is used to write content to the current file.
+  # These methods (async and sync) are used to write content to the current file.
   write: (data, cb) ->
     return unless @attached()
     @makedirs()
     fs.writeFile @fullpath, data, 'utf-8', cb
   
-
-  # This method is a synchronous version of the above.
   writeSync: (data) ->
     return unless @attached()
     @makedirs()
     fs.writeFileSync @fullpath, data, 'utf-8'
   
-
+  
   # This method is used to delete the current file.
   unlinkSync: ->
     return unless @exists()
