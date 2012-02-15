@@ -24,7 +24,7 @@ To setup Brewer.js, make sure you have [installed Node.js](https://github.com/jo
 
     $ npm install -g brewer
 
-The `-g` flag is used to make the installation global, so you get access to the brewer executable. Then, from a project directory you wish to manage using Brewer.js
+The `-g` flag is used to make the installation global, so you get access to the `brewer` executable. Then, from a project directory you wish to manage using Brewer.js
 
     $ brewer init [<template name>]
 
