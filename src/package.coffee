@@ -24,15 +24,17 @@ class Package extends (require 'events').EventEmitter
   # maps types to subclasses. `Package.extend(packages*)` adds subclasses to 
   # the registry, and `Package.create(options, sources, vendor)` creates an 
   # instance of the appropriate subclass, given `options.type` is registered.
-  @registry = {}
+  @types: -> 
+    (type for own type of this when type not in ['types', 'extend', 'create'])
+  
   @extend: (packages...) ->
     for package in packages
-      @registry[package.type] = package
+      this[package.type] = package
       for alias in (package.aliases ? [])
-        @registry[alias] = package
+        this[alias] = package
   
   @create: (options, sources, vendor) ->
-    throw "Package type #{options.type} not known" unless (typ = @registry[options.type])?
+    throw "Package type #{options.type} not known" unless (typ = this[options.type])?
     new typ options, sources, vendor
   
   

@@ -1,7 +1,7 @@
 _ = require 'underscore'
 {Source} = require '..'
 {finished, debug, showError} = require '../command'
-{StylesheetsSource} = require './css'
+StylesheetsSource = Source.stylesheets
 
 class StylusSource extends StylesheetsSource
   @type = 'stylus'

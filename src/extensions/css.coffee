@@ -1,3 +1,7 @@
+# ### CSS Extension
+#
+# This extension 
+
 {Package, Source} = require '..'
 {finished, debug} = require '../command'
 
@@ -25,4 +29,3 @@ class StylesheetsSource extends Source
 
 Source.extend StylesheetsSource
 Package.extend StylesheetsPackage
-(require 'underscore').extend exports, {StylesheetsPackage, StylesheetsSource}

@@ -20,15 +20,17 @@ class Source
   # must be maintained to associate types (*coffeescript*, *less*, *javascript*, 
   # etc) to particular subclasses of *Source*. Type aliases, alternate type namings,
   # are also associated to the same subclasses, so to stay flexible.
-  @registry = {}
+  @types: -> 
+    (type for own type of this when type not in ['types', 'extend', 'create'])
+  
   @extend: (sources...) ->
     for src in sources
-      @registry[src.type] = src
+      this[src.type] = src
       for alias in (src.aliases ? [])
-        @registry[alias] = src
+        this[alias] = src
   
   @create: (options, package) ->
-    throw "Source type #{options.type} not known" unless (typ = @registry[options.type])?
+    throw "Source type #{options.type} not known" unless (typ = this[options.type])?
     new typ options, package
   
   

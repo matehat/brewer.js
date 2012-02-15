@@ -29,4 +29,3 @@ class JavascriptSource extends Source
 
 Source.extend JavascriptSource
 Package.extend JavascriptPackage
-(require 'underscore').extend exports, {JavascriptSource, JavascriptPackage}

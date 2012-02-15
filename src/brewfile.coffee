@@ -16,12 +16,7 @@ coffeescript = require 'coffee-script'
 
 # Brewer classes (and utilities) are imported
 {debug} = require './command'
-{Package, Source} = require '../lib'
-
-# These two registries are aliased so that the names don't 
-# collide with others
-SourceRegistry = Source.registry
-PackageRegistry = Package.registry
+brewer = require './index'
 
 # ### Source directives
 #
@@ -88,9 +83,9 @@ Package =
 # Iterate through all defined source types to add their
 # type names to the Package object prototype, to add them as
 # proxies to the Package._source method
-_.each _.keys(SourceRegistry), (key) ->
+_.each brewer.Source.types(), (key) ->
   Package[key] = (path, options, cb) ->
-    Package._source.call this, SourceRegistry[key].type, path, options, cb
+    Package._source.call this, brewer.Source[key].type, path, options, cb
   
 
 # The function used to define a package object in a Brewfile.
@@ -132,9 +127,9 @@ newContext = () ->
   # Iterate through all package types, using their
   # type name to proxy the `package` definition function
   # above.
-  _.each _.keys(PackageRegistry), (key) ->
+  _.each brewer.Package.types(), (key) ->
     ctx[key] = (name, opts, cb) ->
-      package.call ctx.project, PackageRegistry[key].type, name, opts, cb
+      package.call ctx.project, brewer.Package[key].type, name, opts, cb
     
   # Define DSL functions to specify properties of the project
   ctx.root = (newRoot) -> prj.root = newRoot

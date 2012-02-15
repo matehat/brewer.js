@@ -1,6 +1,6 @@
 {Source} = require '..'
 {finished, debug, showError} = require '../command'
-{StylesheetsSource} = require './css'
+StylesheetsSource = Source.stylesheets
 
 class LessSource extends StylesheetsSource
   @type = 'less'
