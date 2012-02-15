@@ -78,7 +78,7 @@ class Package extends (require 'events').EventEmitter
       @registerSource Source.create src, this
     
     for lib in @vendorlibs.libraries ctor.type
-      _.default lib, {watch: false}
+      _.defaults lib, {watch: false}
       @registerSource Source.create lib, this
     
     # This event is triggered when a file `register` method is called. This is used

@@ -28,7 +28,7 @@ class StylusSource extends StylesheetsSource
     compiled.dependOn original, _.bind(@compile, @)
     compiled.setImportedPaths original.readImportedPaths()
     compiled.impermanent = true
-    @package.registerFile compiled
+    compiled.register()
     compiled
   
   compile: (original, compiled, cb) ->
