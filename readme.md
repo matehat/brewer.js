@@ -37,9 +37,13 @@ What this does is create a Brewfile in the current directory, according to the t
 A <strong>Brewfile</strong> is a file that sits at the root folder of your project, named, 
 well, "Brewfile", which syntax is plain [Coffeescript](http://coffeescript.org). It is used to specify the structure of the project to Brewer.js, so it knows what to do when you tell it to `make`, `watch` or `clean`. 
 
+#### Packages
+
 At the top-level of the Brewfile, the following functions are available :
 
 ```coffeescript
+# In Brewfile
+
 stylesheets 'package_name', ->
   # package body ...
 
@@ -47,7 +51,16 @@ javascript 'other_package_name', ->
   # package body ...
 ```
 
-Those two functions can be used interchangeably with `js` or `css` to be more concise. The `package_name` is used to identify certain parts of a project, in case you would like to run `$ brewer make package_name`
+Those two functions can be used interchangeably with `js` or `css` to be more concise. The `package_name` is used to identify certain parts of a project, in case you would like to run `$ brewer make package_name`. A **Package** is a conceptual component of a project in which you can define **bundles** and in which files can *import* each other. A file contained in a package can really be anywhere on the file system -- a package is not bound to a specific directory.
+
+Package can receive options, which can be specified in one of two ways :
+
+````coffeescript
+# In Brewfile
+
+javascript 'package_name', {build: './build', compress: true}, ->
+  # package body
+```
 
 ### Usage
 
