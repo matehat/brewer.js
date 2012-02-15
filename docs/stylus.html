@@ -22,11 +22,11 @@ returning the original</p>             </td>             <td class="code">      
   
   <span class="nv">createCompiledFile: </span><span class="nf">(original) -&gt;</span>
     <span class="nv">cpath = </span><span class="nx">util</span><span class="p">.</span><span class="nx">changeext</span> <span class="p">(</span><span class="nv">opath = </span><span class="nx">original</span><span class="p">.</span><span class="nx">relpath</span><span class="p">),</span> <span class="s1">&#39;.css&#39;</span>
-    <span class="nv">compiled = </span><span class="nx">@package</span><span class="p">.</span><span class="nx">file</span> <span class="nx">opath</span><span class="p">,</span> <span class="s1">&#39;stylesheets&#39;</span><span class="p">,</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">@output</span> <span class="o">?</span> <span class="s1">&#39;./cache&#39;</span><span class="p">,</span> <span class="nx">cpath</span><span class="p">),</span> <span class="err">@</span>
+    <span class="nv">compiled = </span><span class="nx">@package</span><span class="p">.</span><span class="nx">file</span> <span class="nx">opath</span><span class="p">,</span> <span class="s1">&#39;stylesheets&#39;</span><span class="p">,</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">@output</span><span class="p">,</span> <span class="nx">cpath</span><span class="p">),</span> <span class="err">@</span>
     <span class="nx">compiled</span><span class="p">.</span><span class="nx">dependOn</span> <span class="nx">original</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">@compile</span><span class="p">,</span> <span class="err">@</span><span class="p">)</span>
     <span class="nx">compiled</span><span class="p">.</span><span class="nx">setImportedPaths</span> <span class="nx">original</span><span class="p">.</span><span class="nx">readImportedPaths</span><span class="p">()</span>
     <span class="nv">compiled.impermanent = </span><span class="kc">true</span>
-    <span class="nx">@package</span><span class="p">.</span><span class="nx">registerFile</span> <span class="nx">compiled</span>
+    <span class="nx">compiled</span><span class="p">.</span><span class="nx">register</span><span class="p">()</span>
     <span class="nx">compiled</span>
   
   <span class="nv">compile: </span><span class="nf">(original, compiled, cb) -&gt;</span>

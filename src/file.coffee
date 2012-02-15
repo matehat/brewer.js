@@ -1,4 +1,4 @@
-# ## The File class
+# ## The *File* class
 #
 # This module exports the *File* class, which wraps all
 # information about a file: 

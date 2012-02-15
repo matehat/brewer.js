@@ -1,44 +1,71 @@
-<!DOCTYPE html>  <html> <head>   <title>project.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="brewfile.html">                 brewfile.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="file.html">                 file.coffee               </a>                                           <a class="source" href="index.html">                 index.coffee               </a>                                           <a class="source" href="package.html">                 package.coffee               </a>                                           <a class="source" href="coffee-script.html">                 coffee-script.coffee               </a>                                           <a class="source" href="css.html">                 css.coffee               </a>                                           <a class="source" href="javascript.html">                 javascript.coffee               </a>                                           <a class="source" href="less.html">                 less.coffee               </a>                                           <a class="source" href="stylus.html">                 stylus.coffee               </a>                                           <a class="source" href="project.html">                 project.coffee               </a>                                           <a class="source" href="source.html">                 source.coffee               </a>                                           <a class="source" href="util.html">                 util.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               project.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nv">_ = </span><span class="nx">require</span> <span class="s1">&#39;underscore&#39;</span>
+<!DOCTYPE html>  <html> <head>   <title>project.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="brewfile.html">                 brewfile.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="file.html">                 file.coffee               </a>                                           <a class="source" href="index.html">                 index.coffee               </a>                                           <a class="source" href="package.html">                 package.coffee               </a>                                           <a class="source" href="coffee-script.html">                 coffee-script.coffee               </a>                                           <a class="source" href="css.html">                 css.coffee               </a>                                           <a class="source" href="javascript.html">                 javascript.coffee               </a>                                           <a class="source" href="less.html">                 less.coffee               </a>                                           <a class="source" href="stylus.html">                 stylus.coffee               </a>                                           <a class="source" href="project.html">                 project.coffee               </a>                                           <a class="source" href="source.html">                 source.coffee               </a>                                           <a class="source" href="util.html">                 util.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               project.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h2>The <em>Project</em> class</h2>
+
+<p>This module exports the <em>Project</em> class. A <em>Project</em> object
+is tightly coupled with, as well as initialized with, a 
+<a href="brewfile.html">Brewfile</a>. It contains a set of 
+packages, as well as cross-project configurations, such as <em>vendor libraries</em>.
+Vendor libraries are entities that can export one or many 
+<a href="source.html">sources</a>, of different types, which can be used when 
+aggregating bundles. </p>
+
+<blockquote>
+  <p><em>TODO</em>: Vendor libraries are currently <em>not documented</em>, because, 
+  although they are functional, there is no easy way for someone 
+  to include them in their project. This is implemented mostly to prepare
+  for an upcoming feature : <em><a href="http://mxcl.github.com/homebrew">Homebrew</a>-style 
+  formulas</em></p>
+</blockquote>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Underscore, core modules and CLI utilities are loaded.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">_ = </span><span class="nx">require</span> <span class="s1">&#39;underscore&#39;</span>
 <span class="nv">path = </span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span>
 <span class="nv">fs = </span><span class="nx">require</span> <span class="s1">&#39;fs&#39;</span>
-<span class="p">{</span><span class="nx">Package</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;../lib&#39;</span>
-<span class="p">{</span><span class="nx">debug</span><span class="p">,</span> <span class="nx">warning</span><span class="p">,</span> <span class="nx">info</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./command&#39;</span>
-<span class="nv">util = </span><span class="nx">require</span> <span class="s1">&#39;./util&#39;</span>
-
-<span class="k">class</span> <span class="nx">Project</span>
+<span class="p">{</span><span class="nx">debug</span><span class="p">,</span> <span class="nx">warning</span><span class="p">,</span> <span class="nx">info</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./command&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>The Project class is initialized with a Brewfile, which immidiately
+calls the <code>setup</code> instance method. There, the <code>configs</code> function
+exported from <a href="brewfile.html">brewfile.coffee</a> is called with the
+given brewfile as argument, to obtain an project configuration object.
+This object is then given default values and used to initialize
+the project vendor libraries and packages. Packages are inserted as
+<em>array elements</em> in the project.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nx">Project</span>
   <span class="nv">constructor: </span><span class="nf">(@file) -&gt;</span> <span class="nx">@setup</span><span class="p">()</span>
   <span class="nv">setup: </span><span class="o">-&gt;</span>
-    <span class="nv">opts = </span><span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;./brewfile&#39;</span><span class="p">).</span><span class="nx">configs</span> <span class="nx">@file</span>
-    <span class="nx">_</span><span class="p">.</span><span class="nx">defaults</span> <span class="nx">opts</span><span class="p">,</span>
+    <span class="nv">configs = </span><span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;./brewfile&#39;</span><span class="p">).</span><span class="nx">configs</span> <span class="nx">@file</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">defaults</span> <span class="nx">configs</span><span class="p">,</span>
       <span class="nv">root: </span><span class="s1">&#39;.&#39;</span>
       <span class="nv">reqs: </span><span class="p">[]</span>
       <span class="nv">packages: </span><span class="p">[]</span>
       <span class="nv">vendorDir: </span><span class="s1">&#39;./vendor&#39;</span>
     
-    <span class="p">{</span><span class="nx">@root</span><span class="p">,</span> <span class="nx">reqs</span><span class="p">,</span> <span class="nx">packages</span><span class="p">,</span> <span class="nx">vendorDir</span><span class="p">}</span> <span class="o">=</span> <span class="nx">opts</span>
-    <span class="vi">@vendorlibs = </span><span class="k">new</span> <span class="nx">VendorLibraries</span> <span class="err">@</span><span class="p">,</span> <span class="nx">vendorDir</span><span class="p">,</span> <span class="nx">reqs</span>
+    <span class="p">{</span><span class="nx">@root</span><span class="p">,</span> <span class="nx">reqs</span><span class="p">,</span> <span class="nx">packages</span><span class="p">,</span> <span class="nx">vendorDir</span><span class="p">}</span> <span class="o">=</span> <span class="nx">configs</span>
+    <span class="vi">@vendorlibs = </span><span class="k">new</span> <span class="nx">VendorLibraries</span> <span class="k">this</span><span class="p">,</span> <span class="nx">vendorDir</span><span class="p">,</span> <span class="nx">reqs</span>
     <span class="vi">@length = </span><span class="nx">packages</span><span class="p">.</span><span class="nx">length</span>
     <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">packages</span><span class="p">,</span> <span class="p">(</span><span class="nx">pkg</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span>
-      <span class="err">@</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">Package</span><span class="p">.</span><span class="nx">create</span> <span class="nx">pkg</span><span class="p">.</span><span class="nx">opts</span><span class="p">,</span> <span class="nx">pkg</span><span class="p">.</span><span class="nx">srcs</span><span class="p">,</span> <span class="nx">@vendorlibs</span>
+      <span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;./package&#39;</span><span class="p">).</span><span class="nx">Package</span><span class="p">.</span><span class="nx">create</span> <span class="nx">pkg</span><span class="p">.</span><span class="nx">opts</span><span class="p">,</span> <span class="nx">pkg</span><span class="p">.</span><span class="nx">srcs</span><span class="p">,</span> <span class="nx">@vendorlibs</span>
   
-  <span class="nv">clean: </span><span class="o">-&gt;</span>
-    <span class="nx">pkg</span><span class="p">.</span><span class="nx">clean</span><span class="o">?</span><span class="p">()</span> <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="err">@</span>
+  </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>These two methods barely proxy methods with the same name, but invoked on all 
+contained packages.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">clean: </span><span class="o">-&gt;</span>
+    <span class="nx">pkg</span><span class="p">.</span><span class="nx">clean</span><span class="o">?</span><span class="p">()</span> <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="k">this</span>
   
   <span class="nv">prepare: </span><span class="o">-&gt;</span>
-    <span class="nx">pkg</span><span class="p">.</span><span class="nx">prepare</span><span class="o">?</span><span class="p">()</span> <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="err">@</span>
+    <span class="nx">pkg</span><span class="p">.</span><span class="nx">prepare</span><span class="o">?</span><span class="p">()</span> <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="k">this</span>
   
-  <span class="nv">watch: </span><span class="o">-&gt;</span>
-    <span class="nx">pkg</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">@reset</span><span class="p">,</span> <span class="err">@</span><span class="p">))</span> <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="err">@</span>
+  </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>This method proxies the method with the same name, invoked on all contained 
+packages, and sets up a 
+<a href="http://nodejs.org/docs/latest/api/fs.html#fs.FSWatcher">FSWatchers</a> for the
+Brewfile used for this project's configuration. It passes the <code>reset</code> instance
+methods as the reset callback for all watching methods.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">watch: </span><span class="o">-&gt;</span>
+    <span class="nx">pkg</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">@reset</span><span class="p">,</span> <span class="k">this</span><span class="p">))</span> <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="k">this</span>
     <span class="vi">@configWatcher = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">watch</span> <span class="nx">@file</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">@reset</span><span class="p">()</span>
-    <span class="nx">@configWatcher</span><span class="p">.</span><span class="kc">on</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">@reset</span><span class="p">,</span> <span class="err">@</span><span class="p">)</span>
+    <span class="nx">@configWatcher</span><span class="p">.</span><span class="kc">on</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">@reset</span><span class="p">,</span> <span class="k">this</span><span class="p">)</span>
   
-  <span class="nv">reset: </span><span class="nf">(err) -&gt;</span>
+  </pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>This method is the <code>reset</code> callback invoked when any relevant change occur
+in the project. If an error is passed, it is thrown. Otherwise, the 
+Brewfile FSWatcher is closed, and the <code>unwatch</code> method is called on each
+packages. Finally, it deletes instance variables, contained packages and
+re-invokes the <code>setup</code> instance method to start over.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">reset: </span><span class="nf">(err) -&gt;</span>
     <span class="k">throw</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span><span class="o">?</span>
     <span class="nx">@configWatcher</span><span class="o">?</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
     
-    <span class="k">for</span> <span class="nx">pkg</span><span class="p">,</span> <span class="nx">i</span> <span class="k">in</span> <span class="err">@</span>
+    <span class="k">for</span> <span class="nx">pkg</span><span class="p">,</span> <span class="nx">i</span> <span class="k">in</span> <span class="k">this</span>
       <span class="nx">pkg</span><span class="p">.</span><span class="nx">unwatch</span><span class="p">()</span>
-      <span class="k">delete</span> <span class="err">@</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+      <span class="k">delete</span> <span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
     
     <span class="k">delete</span> <span class="nx">@length</span>
     <span class="k">delete</span> <span class="nx">@vendorlibs</span>
@@ -49,7 +76,7 @@
 <span class="k">class</span> <span class="nx">VendorLibraries</span>
   <span class="nv">constructor: </span><span class="nf">(@project, vendorDir, @requirements) -&gt;</span>
     <span class="vi">@root = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span> <span class="nx">@project</span><span class="p">.</span><span class="nx">root</span><span class="p">,</span> <span class="nx">vendorDir</span>
-    <span class="nx">util</span><span class="p">.</span><span class="nx">makedirs</span> <span class="nx">@root</span>
+    <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;./util&#39;</span><span class="p">).</span><span class="nx">makedirs</span> <span class="nx">@root</span>
     <span class="vi">@libs = </span><span class="nx">@read</span><span class="p">()</span>
   
   <span class="nv">stateFile: </span><span class="o">-&gt;</span> 

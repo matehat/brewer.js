@@ -1,4 +1,4 @@
-# ## The Package class
+# ## The *Package* class
 #
 # This module exports the *Package* class. A *Package* is a conceptual
 # container within which source files can reference each other as "imports".

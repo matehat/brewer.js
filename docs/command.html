@@ -49,7 +49,7 @@ default otherwise. It writes that template file into <em>Brewfile</em>, initiali
 <code>Project</code> object from it and asks it to produce the directory structure.</p>             </td>             <td class="code">               <div class="highlight"><pre>  
   <span class="nx">program</span>
     <span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s1">&#39;init&#39;</span><span class="p">)</span>
-    <span class="p">.</span><span class="nx">description</span><span class="p">(</span><span class="s2">&quot;Initialize #{clr(&#39;Brewer&#39;, &#39;green&#39;)} in the current directory&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">description</span><span class="p">(</span><span class="s2">&quot; Initialize #{clr(&#39;Brewer&#39;, &#39;green&#39;)} in the current directory&quot;</span><span class="p">)</span>
     <span class="p">.</span><span class="nx">action</span> <span class="o">-&gt;</span>
       <span class="nv">templ = </span><span class="nx">program</span><span class="p">.</span><span class="nx">template</span> <span class="o">?</span> <span class="s1">&#39;lesscoffee&#39;</span>
       <span class="nv">template = </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span><span class="p">,</span> <span class="s2">&quot;#{templ}.coffee&quot;</span><span class="p">)</span>
@@ -70,7 +70,7 @@ method is called.</p>             </td>             <td class="code">           
   <span class="nx">program</span>
     <span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s1">&#39;watch&#39;</span><span class="p">)</span>
     <span class="p">.</span><span class="nx">description</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">      Watch for modifications in source and configuration files, </span>
+<span class="s2">       Watch for modifications in source and configuration files, </span>
 <span class="s2">      automatically re-making when they occur.</span>
 <span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
     <span class="p">.</span><span class="nx">action</span> <span class="o">-&gt;</span>
@@ -84,7 +84,7 @@ It first checks to see if package names were specified, defaulting to 'all' othe
 Then, the <code>.actualize()</code> method is called on each matching package.</p>             </td>             <td class="code">               <div class="highlight"><pre>  
   <span class="nx">program</span>
     <span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s1">&#39;make [packages]*&#39;</span><span class="p">)</span>
-    <span class="p">.</span><span class="nx">description</span><span class="p">(</span><span class="s2">&quot;Aggregate bundles from the given packages (or all)&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">description</span><span class="p">(</span><span class="s2">&quot; Aggregate bundles from the given packages (or all)&quot;</span><span class="p">)</span>
     <span class="p">.</span><span class="nx">action</span> <span class="nf">(pkgs) -&gt;</span>
       <span class="nx">pkgs</span> <span class="o">?=</span> <span class="s1">&#39;all&#39;</span>
       <span class="nv">project = </span><span class="nx">getLocalProject</span><span class="p">()</span>
@@ -99,7 +99,29 @@ Then, the <code>.actualize()</code> method is called on each matching package.</
           <span class="nx">pkg</span><span class="p">.</span><span class="nx">actualize</span> <span class="o">-&gt;</span>
             <span class="nx">cli</span><span class="p">.</span><span class="nx">info</span> <span class="s2">&quot;Finished making #{clr(pkg.name, &#39;underline&#39;)} package&quot;</span>
     
-  </pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>This tells the <code>Command</code> object to parse the given program arguments, triggering
+  </pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <h4>The <code>clean</code> command</h4>
+
+<p>This command is used to remove files that are derived from source files. This 
+includes compiled <em>javascript</em> and <em>css</em> files, as well as bundles and their
+compressed counterparts.</p>             </td>             <td class="code">               <div class="highlight"><pre>  
+  <span class="nx">program</span>
+    <span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s1">&#39;clean [packages]*&#39;</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">description</span><span class="p">(</span><span class="s2">&quot; Delete bundles and compiled files from the given packages (or all)&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">action</span> <span class="nf">(pkgs) -&gt;</span>
+      <span class="nx">pkgs</span> <span class="o">?=</span> <span class="s1">&#39;all&#39;</span>
+      <span class="nv">project = </span><span class="nx">getLocalProject</span><span class="p">()</span>
+      <span class="k">if</span> <span class="nx">pkgs</span> <span class="o">is</span> <span class="s1">&#39;all&#39;</span>
+        <span class="nv">packages = </span><span class="nx">project</span>
+      <span class="k">else</span>
+        <span class="nv">names = </span><span class="nx">pkgs</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="nv">packages = </span><span class="p">(</span><span class="nx">pkg</span> <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="nx">project</span> <span class="k">when</span> <span class="nx">pkg</span><span class="p">.</span><span class="nx">name</span> <span class="k">in</span> <span class="nx">names</span><span class="p">)</span>
+      
+      <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="nx">packages</span>
+        <span class="nx">do</span> <span class="nf">(pkg) -&gt;</span>
+          <span class="nx">pkg</span><span class="p">.</span><span class="nx">clean</span><span class="p">()</span>
+    
+  
+  </pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>This tells the <code>Command</code> object to parse the given program arguments, triggering
 the proper action, or printing the usage.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">program</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">argv</span>
 
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

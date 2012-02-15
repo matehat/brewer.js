@@ -23,6 +23,8 @@ coffeescript = require 'coffee-script'
 SourceRegistry = Source.registry
 PackageRegistry = Package.registry
 
+# ### Source directives
+#
 # This is the prototype of a Source configuration object.
 # The functions defined here are available in the
 # function body provided at the end of a `@source` statement
@@ -33,7 +35,6 @@ Source =
   options: (opts) ->
     _.extend @opts, opts
   
-
 
 # ### Package directives
 #
