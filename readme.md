@@ -11,12 +11,12 @@ stylesheets and javascript source files. From a single command, it takes care of
 
 Watching a whole project structure of Coffee-script, LESS or Stylus source files can be as easy as :
 
-        $ brewer watch
-        Info Watching project /path/to/current/working/directory
-        Compiled coffee/test.coffee
-        Compiled less/index.less
-        Packaged build/css/index.css
-        Compressed build/css/index.css
+    $ brewer watch
+    Info Watching project /path/to/current/working/directory
+    Compiled coffee/test.coffee
+    Compiled less/index.less
+    Packaged build/css/index.css
+    Compressed build/css/index.css
 
 ### Installation
 
