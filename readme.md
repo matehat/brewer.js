@@ -60,6 +60,10 @@ Package can receive options, which can be specified in one of two ways :
 
 javascript 'package_name', {build: './build', compress: true}, ->
   # package body
+
+# equivalent to
+javascript 'package_name', ->
+  @options {build: './build', compress: true}
 ```
 
 ### Usage
