@@ -36,37 +36,100 @@ class Package extends (require 'events').EventEmitter
     new typ options, sources, vendor
   
   
+  # A Package is not meant to be initialized directly, but rather through a 
+  # *Project* object, which knows about *vendor libraries* (more details about
+  # those in [project.coffee](project.html)). The first argument, *options*,
+  # is the result of evaluating a package section of a 
+  # [Brewfile](brewfile.html#section-7).
   constructor: (@options, sources, @vendorlibs) ->
     fs = require 'fs'
-    
-    _.defaults options, compress: true
     ctor = @constructor
+    
+    # * `build` specifies the build directory, where aggregated bundles are put.
+    # * `bundles` specifies the access path of bundles.
+    # * `compress` can either be a boolean, or a 
+    # [template string](http://underscorejs.org/#template)
+    _.defaults options, {
+      compress: true
+      build: './build'
+      bundles: []
+    }
     {@name, @compress, @build, bundles} = @options
-    @files = {}
-    @sources = {}
-    @_ready = false
-    @_pendingSources = 0
-    
-    @on 'ready', => @_ready = true
-    
-    (@registerSource Source.create(src, @) for src in sources)
     @bundlePaths = if _.isString bundles
       JSON.parse fs.readFileSync bundles
-    else (bundles ?= [])
+    else bundles
+    
+    # *Registries for files and sources*. Those will hold all those
+    # objects, neatly classified by types and access path.
+    @files = {}
+    @sources = {}
+    
+    # *State tracking variables*. Since sources are crawled asynchronously,
+    # a package object is not ready upfront. We need those variables to
+    # act only when appropriate. When the 'ready' event is fired, we update
+    # our state.
+    @_ready = false
+    @_pendingSources = 0
+    @on 'ready', => @_ready = true
+    
+    # All specified sources and vendor libraries are initialized and 
+    # registered. Vendor libraries, by default don't have to be watched.
+    for src in sources
+      @registerSource Source.create src, this
     
     for lib in @vendorlibs.libraries ctor.type
-      lib.watch ?= false
-      @registerSource Source.create lib, @
+      _.default lib, {watch: false}
+      @registerSource Source.create lib, this
+    
+    # This event is triggered when a file `register` method is called. This is used
+    # to indicate that a file has beed created and properly configured. In a package,
+    # we need to know when that happens to detect files that corresponds to bundles
+    # and act appropriately. Other parts of the system might hook to this event.
+    @on 'newfile', (file) =>
+      type = @constructor.type
+      # If the registered file is of the same type as the package and it has
+      # the same relative path as a listed bundle, make a corresponding bundled 
+      # file and register it
+      if (fpath = file.relpath) in @bundlePaths and file.type is type
+        bundle = @file fpath, "#{type}-bundle", @bundlePath(file)
+        bundle.dependOnImports file, _.bind @bundle, @
+        bundle.impermanent = true
+        bundle.parent = file
+        bundle.register()
+        
+        # If the package is configured to compress its bundles, make a corresponding
+        # compressed file and register it
+        if @compress
+          compressed = @file fpath, "#{type}-bundle-minified", @compressedPath(file)
+          compressed.dependOn bundle, _.bind @compressFile, @
+          compressed.impermanent = true
+          compressed.register()
+    
   
+  
+  # This method returns a *File* object that corresponds to the given
+  # arguments, in terms of access path, type and optionally fullpath and
+  # source. If the specification does not corresponds to an existing file,
+  # it creates the file and binds it to the appropriate objects. This is 
+  # used to reference a file that might not exist yet, and that should be
+  # attached later to a file on disk. The `@files` variable is a 
+  # 2-dimensional map : `@file[type][access path]` maps to one and only one 
+  # *File* object.
   file: (relpath, type, fullpath, src) ->
     @files[type] ?= {}
     file = (_files = @files[type])[relpath]
     unless file?
-      file = _files[relpath] = new File relpath, type, @
+      file = _files[relpath] = new File relpath, type, this
     
     file.attach fullpath, src if fullpath?
     return file
   
+  
+  # This method is used to register a *Source* object. The `@sources`
+  # variable maps to a list of sources, by type: `@sources[type] = 
+  # [src1, src2, ...]`. After adding the source to the register, it is told 
+  # to loop spawn its set of contained files. At the end of the crawling,
+  # if not other sources are pending, we emit the 'ready' event.
   registerSource: (src) ->
     (@sources[src.constructor.type] ?= []).push src
     @_pendingSources++
@@ -75,26 +138,11 @@ class Package extends (require 'events').EventEmitter
       @emit 'ready' if --@_pendingSources == 0
     
   
-  registerFile: (file) ->
-    type = @constructor.type
-    # If the registered file is of the same type as the package and it has
-    # the same relative path as a listed bundle, make a corresponding bundled 
-    # file and register it
-    if (fpath = file.relpath) in @bundlePaths and file.type is type
-      bundle = @file fpath, "#{type}-bundle", @bundlePath(file)
-      bundle.dependOnImports file, _.bind @bundle, @
-      bundle.impermanent = true
-      bundle.parent = file
-      bundle.register()
-      
-      # If the package is configured to compress its bundles, make a corresponding
-      # compressed file and register it
-      if @compress
-        compressed = @file fpath, "#{type}-bundle-minified", @compressedPath(file)
-        compressed.dependOn bundle, _.bind @compressFile, @
-        compressed.impermanent = true
-        compressed.register()
   
+  # This method is used to produce a bundle file by aggregating all the
+  # necessary imported files. It uses `file.tsortedImports` to obtain a
+  # sorted list of all necessary imports, then loops through them, reading
+  # the content and filling a buffer, later written on disk.
   bundle: (imported, bundle, cb) ->
     output = ''
     parent = bundle.parent
@@ -104,32 +152,53 @@ class Package extends (require 'events').EventEmitter
     bundle.write output, cb
     finished 'Packaged', bundle.fullpath
   
+  
+  # This method returns the full path to a bundle file.
   bundlePath: (file) -> 
     (require 'path').join @build, util.changeext file.relpath, @constructor.ext
   
+  
+  # This method returns the full path to the compressed bundle file.
   compressedPath: (file) ->
     (require 'path').join @build, if @compress is true
       util.changeext file.relpath, @constructor.compressedext
     else
       _.template(compress) filename: file.relpath
   
+  
+  # This method is used to make sure the package is ready before 
+  # performing an action. It takes a continuation callback, called
+  # immediately if the package is already ready, or as soon as it is.
   ready: (cb) -> 
     if @_ready then cb() else @on 'ready', cb
   
+  
+  # This method is used to perform all necessary tranforming and 
+  # aggregating actions for all files in the package. This includes
+  # compiling files into their *javascript* or *css* equivalents, 
+  # aggregating bundles and compressing them. This is done by finding 
+  # all files that are not depended by any other files (root nodes),
+  # and calling their [`actualize`](file.html#section-7) method, one 
+  # after the other, asynchronously.
   actualize: (cb) ->
     @ready =>
       allFiles = []
       for type, files of @files
         for relpath, file of files
           allFiles.push file
-      leaves = _.filter allFiles, (file) -> file.liabilities.length == 0
+      roots = _.filter allFiles, (file) -> file.liabilities.length == 0
       i = 0
       iter = ->
-        return process.nextTick(cb) if i is leaves.length
-        leaves[i++].actualize iter
+        return process.nextTick(cb) if i is roots.length
+        roots[i++].actualize iter
       
       iter()
+    
   
+  
+  # This method is used to first `actualize` a project and watching 
+  # behavior on all files and sources and carrying over the reset callback,
+  # provided usually by the parent `Project` object.
   watch: (reset) ->
     @actualize =>
       for type, sources of @sources
@@ -141,7 +210,11 @@ class Package extends (require 'events').EventEmitter
           file.watch reset
       
   
-  unwatch: (cb) ->
+  
+  # This method is used to remove the 
+  # [FSWatchers](http://nodejs.org/docs/latest/api/fs.html#fs.FSWatcher) 
+  # from all files and sources. 
+  unwatch: ->
     for type, sources of @sources
         for src in sources
           src.unwatch()
@@ -150,10 +223,19 @@ class Package extends (require 'events').EventEmitter
       file.unwatch() for relpath, file of files
     
   
+  
+  # This method is used to remove all files that were marked as 
+  # *impermanent* (see next method).
   clean: ->
     for file in @impermanents()
       file.unlinkSync()
   
+  
+  # This method returns a list of all *impermanent* files which includes, 
+  # for instance, compiled files, bundles
+  # and their compressed counterparts. The rationale behind this is that
+  # those files are all completely derived from source files, thus could
+  # be removed safely without losing information.
   impermanents: ->
     acc = []
     for type, files of @files

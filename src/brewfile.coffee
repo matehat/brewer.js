@@ -34,11 +34,15 @@ Source =
     _.extend @opts, opts
   
 
+
+# ### Package directives
+#
 # This is the prototype of a Package configuration object.
 # The functions defined here are available in the
 # function body provided at the end of a package statement
-# such as `@javascript` or `@stylesheets`
-
+# such as `@javascript` or `@stylesheets`, and operate on
+# a package configuration object, used later as the first
+# argument when initializing a *[Package](package.html)* object.
 Package =
   # A method used to specify options on a package 
   # configuration object.

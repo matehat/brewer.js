@@ -53,7 +53,7 @@ class File extends EventEmitter
   # register this file, a mechanism required so the package can 
   # adequately manage all its contained files.
   register: ->
-    @package.registerFile this
+    @package.emit 'newfile', this
   
   
   #### Output methods
@@ -241,6 +241,7 @@ class File extends EventEmitter
     unless @_imports?
       @_imports = (@package.file(path, @type) for path in @importedPaths())
     @_imports
+  
   
   # This method is used to mark the graph of *imports* (starting at `other`)
   # as *dependencies* on this file. This is used in bundles specifically,
