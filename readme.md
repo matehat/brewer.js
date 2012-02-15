@@ -47,6 +47,8 @@ javascript 'other_package_name', ->
   # package body ...
 ```
 
+Those two functions can be used interchangeably with `js` or `css` to be more concise. The `package_name` is used to identify certain parts of a project, in case you would like to run `$ brewer make package_name`
+
 ### Usage
 
 
