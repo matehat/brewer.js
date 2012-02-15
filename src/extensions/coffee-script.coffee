@@ -11,8 +11,8 @@ _ = require 'underscore'
 {debug, finished, showError} = require '../command'
 {Source} = require '../source'
 
-# The *Source* class is subclassed and essential class variables
-# are specified.
+# The *Source* class is subclassed and essential 
+# [class variables](source.html#section-2) are specified.
 class CoffeescriptSource extends Source
   @type = 'coffeescript'
   @aliases = ['coffee-script', 'cs']
@@ -69,5 +69,4 @@ class CoffeescriptSource extends Source
   
 
 
-exports.CoffeescriptSource = CoffeescriptSource
 Source.extend CoffeescriptSource

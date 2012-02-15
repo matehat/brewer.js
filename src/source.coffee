@@ -5,11 +5,37 @@
 # It provides a set of source files, those that are found by recursively
 # walking the referenced directory, and testing all files it can find.
 # It is also bound to a parent package, to which its files are registered.
+
+# ### Subclassing
 #
 # The *Source* class is subclassed to implement compilation behavior, such as
 # for coffee-script. In these cases, for every single *source* file, a 
 # *compiled* file is also created, of which the type must correspond to
 # that of the parent package.
+#
+# Here is a rundown of the class properties that must be specified on subclass
+# so to function properly :
+#
+# * `@type`
+#   
+#   The source type of the *Source*. This implies that files that are
+#   found under this directory are of this type. This also makes the 
+#   `@stylesheets`, for instance, name available in the package body of a 
+#   Brewfile to create a source of this type.
+#
+# * `@aliases`
+#
+#   A list of aliases for the defined `@type`. This specifies
+#   a list of drop-in replacement names.
+#
+# * `@header`
+#
+#   The header regular expression used to find `import` statements in
+#   source files.
+#
+# * `@ext`
+#
+#   The file extension checked to yield appropriate files from the source.
 
 # Common utilities are loaded up.
 util  = require './util'

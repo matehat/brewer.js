@@ -10,34 +10,60 @@ Packages have a type (<em>javascript</em> or <em>css</em>) which is the type of 
 it produces.</p>
 
 <p>Objects of this class are not meant to be initialized directly, but rather
-produced at the initialization of a <em><a href="project.html">Project</a></em>.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Underscore, brewer.js classes and CLI utilities are loaded up.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">_ = </span><span class="nx">require</span> <span class="s1">&#39;underscore&#39;</span>
+produced at the initialization of a <em><a href="project.html">Project</a></em>.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h3>Subclassing</h3>
+
+<p>The <em>Package</em> class can be subclassed for different types of bundled files
+by specifying a few class properties and the compression mechanism.</p>
+
+<ul>
+<li><p><code>@type</code></p>
+
+<p>The source type of the <em>Package</em> subclass. This implies that bundles are
+aggregated from source files of this type, and such package can be created
+in a project by using, for instance, a `@stylesheets' statement in a Brewfile.</p></li>
+<li><p><code>@aliases</code></p>
+
+<p>A list of aliases for the defined <code>@type</code>. This specifies
+a list of drop-in replacement names.</p></li>
+<li><p><code>@compressedext</code></p>
+
+<p>The suffix appended to an access path when creating
+a compressed counterpart to a bundle. This is not used if the <code>@compress</code>
+instance variable is an <em>Underscore template string</em>.</p></li>
+<li><p><code>@ext</code></p>
+
+<p>The suffix appended to an access path when creating a bundle from
+a source file.</p></li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Underscore, brewer.js classes and CLI utilities are loaded up.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">_ = </span><span class="nx">require</span> <span class="s1">&#39;underscore&#39;</span>
 <span class="nv">util = </span><span class="nx">require</span> <span class="s1">&#39;./util&#39;</span>
 <span class="p">{</span><span class="nx">Source</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./source&#39;</span>
 <span class="p">{</span><span class="nx">File</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./file&#39;</span>
 <span class="p">{</span><span class="nx">debug</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="nx">finished</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./command&#39;</span>
 
-<span class="k">class</span> <span class="nx">Package</span> <span class="k">extends</span> <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;events&#39;</span><span class="p">).</span><span class="nx">EventEmitter</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>The Package class needs to maintain a registry of its subclasses, which 
+<span class="k">class</span> <span class="nx">Package</span> <span class="k">extends</span> <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;events&#39;</span><span class="p">).</span><span class="nx">EventEmitter</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>The Package class needs to maintain a registry of its subclasses, which 
 maps types to subclasses. <code>Package.extend(packages*)</code> adds subclasses to 
 the registry, and <code>Package.create(options, sources, vendor)</code> creates an 
-instance of the appropriate subclass, given <code>options.type</code> is registered.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="vi">@registry = </span><span class="p">{}</span>
+instance of the appropriate subclass, given <code>options.type</code> is registered.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="vi">@types: </span><span class="o">-&gt;</span> 
+    <span class="p">(</span><span class="nx">type</span> <span class="k">for</span> <span class="nx">own</span> <span class="nx">type</span> <span class="k">of</span> <span class="k">this</span> <span class="k">when</span> <span class="nx">type</span> <span class="o">not</span> <span class="k">in</span> <span class="p">[</span><span class="s1">&#39;types&#39;</span><span class="p">,</span> <span class="s1">&#39;extend&#39;</span><span class="p">,</span> <span class="s1">&#39;create&#39;</span><span class="p">])</span>
+  
   <span class="vi">@extend: </span><span class="nf">(packages...) -&gt;</span>
     <span class="k">for</span> <span class="nx">package</span> <span class="k">in</span> <span class="nx">packages</span>
-      <span class="nx">@registry</span><span class="p">[</span><span class="nx">package</span><span class="p">.</span><span class="nx">type</span><span class="p">]</span> <span class="o">=</span> <span class="nx">package</span>
+      <span class="k">this</span><span class="p">[</span><span class="nx">package</span><span class="p">.</span><span class="nx">type</span><span class="p">]</span> <span class="o">=</span> <span class="nx">package</span>
       <span class="k">for</span> <span class="nx">alias</span> <span class="k">in</span> <span class="p">(</span><span class="nx">package</span><span class="p">.</span><span class="nx">aliases</span> <span class="o">?</span> <span class="p">[])</span>
-        <span class="nx">@registry</span><span class="p">[</span><span class="nx">alias</span><span class="p">]</span> <span class="o">=</span> <span class="nx">package</span>
+        <span class="k">this</span><span class="p">[</span><span class="nx">alias</span><span class="p">]</span> <span class="o">=</span> <span class="nx">package</span>
   
   <span class="vi">@create: </span><span class="nf">(options, sources, vendor) -&gt;</span>
-    <span class="k">throw</span> <span class="s2">&quot;Package type #{options.type} not known&quot;</span> <span class="nx">unless</span> <span class="p">(</span><span class="nv">typ = </span><span class="nx">@registry</span><span class="p">[</span><span class="nx">options</span><span class="p">.</span><span class="nx">type</span><span class="p">])</span><span class="o">?</span>
+    <span class="k">throw</span> <span class="s2">&quot;Package type #{options.type} not known&quot;</span> <span class="nx">unless</span> <span class="p">(</span><span class="nv">typ = </span><span class="k">this</span><span class="p">[</span><span class="nx">options</span><span class="p">.</span><span class="nx">type</span><span class="p">])</span><span class="o">?</span>
     <span class="k">new</span> <span class="nx">typ</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">sources</span><span class="p">,</span> <span class="nx">vendor</span>
   
-  </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>A Package is not meant to be initialized directly, but rather through a 
+  </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>A Package is not meant to be initialized directly, but rather through a 
 <em>Project</em> object, which knows about <em>vendor libraries</em> (more details about
 those in <a href="project.html">project.coffee</a>). The first argument, <em>options</em>,
 is the result of evaluating a package section of a 
 <a href="brewfile.html#section-7">Brewfile</a>.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">constructor: </span><span class="nf">(@options, sources, @vendorlibs) -&gt;</span>
     <span class="nv">fs = </span><span class="nx">require</span> <span class="s1">&#39;fs&#39;</span>
     <span class="nv">ctor = </span><span class="nx">@constructor</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <ul>
+    </pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <ul>
 <li><code>build</code> specifies the build directory, where aggregated bundles are put.</li>
 <li><code>bundles</code> specifies the access path of bundles.</li>
 <li><code>compress</code> can either be a boolean, or a 
@@ -51,27 +77,27 @@ is the result of evaluating a package section of a
     <span class="vi">@bundlePaths = </span><span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span> <span class="nx">bundles</span>
       <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span> <span class="nx">bundles</span>
     <span class="k">else</span> <span class="nx">bundles</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p><em>Registries for files and sources</em>. Those will hold all those
+    </pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p><em>Registries for files and sources</em>. Those will hold all those
 objects, neatly classified by types and access path.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="vi">@files = </span><span class="p">{}</span>
     <span class="vi">@sources = </span><span class="p">{}</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p><em>State tracking variables</em>. Since sources are crawled asynchronously,
+    </pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p><em>State tracking variables</em>. Since sources are crawled asynchronously,
 a package object is not ready upfront. We need those variables to
 act only when appropriate. When the 'ready' event is fired, we update
 our state.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="vi">@_ready = </span><span class="kc">false</span>
     <span class="vi">@_pendingSources = </span><span class="mi">0</span>
     <span class="nx">@on</span> <span class="s1">&#39;ready&#39;</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="vi">@_ready = </span><span class="kc">true</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>All specified sources and vendor libraries are initialized and 
+    </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>All specified sources and vendor libraries are initialized and 
 registered. Vendor libraries, by default don't have to be watched.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">for</span> <span class="nx">src</span> <span class="k">in</span> <span class="nx">sources</span>
       <span class="nx">@registerSource</span> <span class="nx">Source</span><span class="p">.</span><span class="nx">create</span> <span class="nx">src</span><span class="p">,</span> <span class="k">this</span>
     
     <span class="k">for</span> <span class="nx">lib</span> <span class="k">in</span> <span class="nx">@vendorlibs</span><span class="p">.</span><span class="nx">libraries</span> <span class="nx">ctor</span><span class="p">.</span><span class="nx">type</span>
       <span class="nx">_</span><span class="p">.</span><span class="nx">defaults</span> <span class="nx">lib</span><span class="p">,</span> <span class="p">{</span><span class="nv">watch: </span><span class="kc">false</span><span class="p">}</span>
       <span class="nx">@registerSource</span> <span class="nx">Source</span><span class="p">.</span><span class="nx">create</span> <span class="nx">lib</span><span class="p">,</span> <span class="k">this</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>This event is triggered when a file <code>register</code> method is called. This is used
+    </pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>This event is triggered when a file <code>register</code> method is called. This is used
 to indicate that a file has beed created and properly configured. In a package,
 we need to know when that happens to detect files that corresponds to bundles
 and act appropriately. Other parts of the system might hook to this event.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">@on</span> <span class="s1">&#39;newfile&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="o">=&gt;</span>
-      <span class="nv">type = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">type</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>If the registered file is of the same type as the package and it has
+      <span class="nv">type = </span><span class="nx">@constructor</span><span class="p">.</span><span class="nx">type</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>If the registered file is of the same type as the package and it has
 the same relative path as a listed bundle, make a corresponding bundled 
 file and register it</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="k">if</span> <span class="p">(</span><span class="nv">fpath = </span><span class="nx">file</span><span class="p">.</span><span class="nx">relpath</span><span class="p">)</span> <span class="k">in</span> <span class="nx">@bundlePaths</span> <span class="o">and</span> <span class="nx">file</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="nx">type</span>
         <span class="nv">bundle = </span><span class="nx">@file</span> <span class="nx">fpath</span><span class="p">,</span> <span class="s2">&quot;#{type}-bundle&quot;</span><span class="p">,</span> <span class="nx">@bundlePath</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span>
@@ -79,7 +105,7 @@ file and register it</p>             </td>             <td class="code">        
         <span class="nv">bundle.impermanent = </span><span class="kc">true</span>
         <span class="nv">bundle.parent = </span><span class="nx">file</span>
         <span class="nx">bundle</span><span class="p">.</span><span class="nx">register</span><span class="p">()</span>
-        </pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>If the package is configured to compress its bundles, make a corresponding
+        </pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>If the package is configured to compress its bundles, make a corresponding
 compressed file and register it</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">if</span> <span class="nx">@compress</span>
           <span class="nv">compressed = </span><span class="nx">@file</span> <span class="nx">fpath</span><span class="p">,</span> <span class="s2">&quot;#{type}-bundle-minified&quot;</span><span class="p">,</span> <span class="nx">@compressedPath</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span>
           <span class="nx">compressed</span><span class="p">.</span><span class="nx">dependOn</span> <span class="nx">bundle</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span> <span class="nx">@compressFile</span><span class="p">,</span> <span class="err">@</span>
@@ -87,7 +113,7 @@ compressed file and register it</p>             </td>             <td class="cod
           <span class="nx">compressed</span><span class="p">.</span><span class="nx">register</span><span class="p">()</span>
     
   
-  </pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>This method returns a <em>File</em> object that corresponds to the given
+  </pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>This method returns a <em>File</em> object that corresponds to the given
 arguments, in terms of access path, type and optionally fullpath and
 source. If the specification does not corresponds to an existing file,
 it creates the file and binds it to the appropriate objects. This is 
@@ -103,7 +129,7 @@ attached later to a file on disk. The <code>@files</code> variable is a
     <span class="nx">file</span><span class="p">.</span><span class="nx">attach</span> <span class="nx">fullpath</span><span class="p">,</span> <span class="nx">src</span> <span class="k">if</span> <span class="nx">fullpath</span><span class="o">?</span>
     <span class="k">return</span> <span class="nx">file</span>
   
-  </pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>This method is used to register a <em>Source</em> object. The <code>@sources</code>
+  </pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>This method is used to register a <em>Source</em> object. The <code>@sources</code>
 variable maps to a list of sources, by type: <code>@sources[type] = 
 [src1, src2, ...]</code>. After adding the source to the register, it is told 
 to loop spawn its set of contained files. At the end of the crawling,
@@ -115,7 +141,7 @@ if not other sources are pending, we emit the 'ready' event.</p>             </t
       <span class="nx">@emit</span> <span class="s1">&#39;ready&#39;</span> <span class="k">if</span> <span class="o">--</span><span class="nx">@_pendingSources</span> <span class="o">==</span> <span class="mi">0</span>
     
   
-  </pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>This method is used to produce a bundle file by aggregating all the
+  </pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>This method is used to produce a bundle file by aggregating all the
 necessary imported files. It uses <code>file.tsortedImports</code> to obtain a
 sorted list of all necessary imports, then loops through them, reading
 the content and filling a buffer, later written on disk.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">bundle: </span><span class="nf">(imported, bundle, cb) -&gt;</span>
@@ -127,21 +153,21 @@ the content and filling a buffer, later written on disk.</p>             </td>  
     <span class="nx">bundle</span><span class="p">.</span><span class="nx">write</span> <span class="nx">output</span><span class="p">,</span> <span class="nx">cb</span>
     <span class="nx">finished</span> <span class="s1">&#39;Packaged&#39;</span><span class="p">,</span> <span class="nx">bundle</span><span class="p">.</span><span class="nx">fullpath</span>
   
-  </pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>This method returns the full path to a bundle file.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">bundlePath: </span><span class="nf">(file) -&gt;</span> 
+  </pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>This method returns the full path to a bundle file.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">bundlePath: </span><span class="nf">(file) -&gt;</span> 
     <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span><span class="p">).</span><span class="nx">join</span> <span class="nx">@build</span><span class="p">,</span> <span class="nx">util</span><span class="p">.</span><span class="nx">changeext</span> <span class="nx">file</span><span class="p">.</span><span class="nx">relpath</span><span class="p">,</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">ext</span>
   
-  </pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>This method returns the full path to the compressed bundle file.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">compressedPath: </span><span class="nf">(file) -&gt;</span>
+  </pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <p>This method returns the full path to the compressed bundle file.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">compressedPath: </span><span class="nf">(file) -&gt;</span>
     <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span><span class="p">).</span><span class="nx">join</span> <span class="nx">@build</span><span class="p">,</span> <span class="k">if</span> <span class="nx">@compress</span> <span class="o">is</span> <span class="kc">true</span>
       <span class="nx">util</span><span class="p">.</span><span class="nx">changeext</span> <span class="nx">file</span><span class="p">.</span><span class="nx">relpath</span><span class="p">,</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">compressedext</span>
     <span class="k">else</span>
       <span class="nx">_</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="nx">compress</span><span class="p">)</span> <span class="nv">filename: </span><span class="nx">file</span><span class="p">.</span><span class="nx">relpath</span>
   
-  </pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <p>This method is used to make sure the package is ready before 
+  </pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <p>This method is used to make sure the package is ready before 
 performing an action. It takes a continuation callback, called
 immediately if the package is already ready, or as soon as it is.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">ready: </span><span class="nf">(cb) -&gt;</span> 
     <span class="k">if</span> <span class="nx">@_ready</span> <span class="k">then</span> <span class="nx">cb</span><span class="p">()</span> <span class="k">else</span> <span class="nx">@on</span> <span class="s1">&#39;ready&#39;</span><span class="p">,</span> <span class="nx">cb</span>
   
-  </pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <p>This method is used to perform all necessary tranforming and 
+  </pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <p>This method is used to perform all necessary tranforming and 
 aggregating actions for all files in the package. This includes
 compiling files into their <em>javascript</em> or <em>css</em> equivalents, 
 aggregating bundles and compressing them. This is done by finding 
@@ -162,7 +188,7 @@ after the other, asynchronously.</p>             </td>             <td class="co
       <span class="nx">iter</span><span class="p">()</span>
     
   
-  </pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <p>This method is used to first <code>actualize</code> a project and watching 
+  </pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <p>This method is used to first <code>actualize</code> a project and watching 
 behavior on all files and sources and carrying over the reset callback,
 provided usually by the parent <code>Project</code> object.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">watch: </span><span class="nf">(reset) -&gt;</span>
     <span class="nx">@actualize</span> <span class="o">=&gt;</span>
@@ -175,7 +201,7 @@ provided usually by the parent <code>Project</code> object.</p>             </td
           <span class="nx">file</span><span class="p">.</span><span class="nx">watch</span> <span class="nx">reset</span>
       
   
-  </pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <p>This method is used to remove the 
+  </pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <p>This method is used to remove the 
 <a href="http://nodejs.org/docs/latest/api/fs.html#fs.FSWatcher">FSWatchers</a> 
 from all files and sources. </p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">unwatch: </span><span class="o">-&gt;</span>
     <span class="k">for</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">sources</span> <span class="k">of</span> <span class="nx">@sources</span>
@@ -186,12 +212,12 @@ from all files and sources. </p>             </td>             <td class="code">
       <span class="nx">file</span><span class="p">.</span><span class="nx">unwatch</span><span class="p">()</span> <span class="k">for</span> <span class="nx">relpath</span><span class="p">,</span> <span class="nx">file</span> <span class="k">of</span> <span class="nx">files</span>
     
   
-  </pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <p>This method is used to remove all files that were marked as 
+  </pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <p>This method is used to remove all files that were marked as 
 <em>impermanent</em> (see next method).</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">clean: </span><span class="o">-&gt;</span>
     <span class="k">for</span> <span class="nx">file</span> <span class="k">in</span> <span class="nx">@impermanents</span><span class="p">()</span>
       <span class="nx">file</span><span class="p">.</span><span class="nx">unlinkSync</span><span class="p">()</span>
   
-  </pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <p>This method returns a list of all <em>impermanent</em> files which includes, 
+  </pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <p>This method returns a list of all <em>impermanent</em> files which includes, 
 for instance, compiled files, bundles
 and their compressed counterparts. The rationale behind this is that
 those files are all completely derived from source files, thus could

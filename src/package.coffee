@@ -12,6 +12,33 @@
 # Objects of this class are not meant to be initialized directly, but rather
 # produced at the initialization of a *[Project](project.html)*.
 
+# ### Subclassing
+# 
+# The *Package* class can be subclassed for different types of bundled files
+# by specifying a few class properties and the compression mechanism.
+# 
+# * `@type`
+#   
+#   The source type of the *Package* subclass. This implies that bundles are
+#   aggregated from source files of this type, and such package can be created
+#   in a project by using, for instance, a `@stylesheets' statement in a Brewfile.
+#
+# * `@aliases`
+#
+#   A list of aliases for the defined `@type`. This specifies
+#   a list of drop-in replacement names.
+#
+# * `@compressedext`
+#
+#   The suffix appended to an access path when creating
+#   a compressed counterpart to a bundle. This is not used if the `@compress`
+#   instance variable is an *Underscore template string*.
+#
+# * `@ext`
+#
+#   The suffix appended to an access path when creating a bundle from
+#   a source file.
+
 # Underscore, brewer.js classes and CLI utilities are loaded up.
 _ = require 'underscore'
 util = require './util'
