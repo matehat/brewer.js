@@ -12,12 +12,12 @@
 {@Source} = require './source'
 {@File} = require './file'
 
-# It also parses the _plugins/_ directory to find modules that extends **brewer.js**
+# It also parses the _extensions/_ directory to find modules that extends **brewer.js**
 # functionality.
 
-for file in (require 'fs').readdirSync((require 'path').resolve(__dirname, './plugins'))
+for file in (require 'fs').readdirSync((require 'path').resolve(__dirname, './extensions'))
   if file[0] != '.'
-    require './plugins/' + file
+    require './extensions/' + file
 
 ##### MIT License
 #

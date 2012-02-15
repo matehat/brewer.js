@@ -16,8 +16,10 @@ task 'docs', 'Produce HTML documentation in docs/ subfolder', ->
   files = [
     'index', 'command', 'brewfile', 'util'
     'project', 'package', 'source', 'file'
-    'plugins/javascript', 'plugins/css'
-    'plugins/coffee-script', 'plugins/less', 'plugins/stylus'
+    
+    'extensions/javascript', 'extensions/css'
+    'extensions/coffee-script'
+    'extensions/less', 'extensions/stylus'
   ]
   docco = spawn './node_modules/docco/bin/docco', ("src/#{f}.coffee" for f in files)
   docco.stdout.on 'data', (data) -> 

@@ -1,11 +1,6 @@
-util = require '../util'
-temp = require 'temp'
-fs = require 'fs'
-path = require 'path'
-_ = require 'underscore'
 {Source} = require '..'
 {finished, debug, showError} = require '../command'
-{StylesheetsPackage, StylesheetsSource} = require './css'
+{StylesheetsSource} = require './css'
 
 class LessSource extends StylesheetsSource
   @type = 'less'
@@ -23,17 +18,18 @@ class LessSource extends StylesheetsSource
     original
   
   createCompiledFile: (original) ->
-    cpath = util.changeext (opath = original.relpath), '.css'
-    compiled = @package.file opath, 'stylesheets', path.join(@output, cpath), @
-    compiled.dependOn original, _.bind(@compile, @)
+    cpath = (require '../util').changeext (opath = original.relpath), '.css'
+    compiled = @package.file opath, 'stylesheets', (require 'path').join(@output, cpath), @
+    compiled.dependOn original, (require 'underscore').bind(@compile, @)
     compiled.setImportedPaths original.readImportedPaths()
     compiled.impermanent = true
     compiled.register()
     compiled
   
   compile: (original, compiled, cb) ->
-    paths = (path.resolve(src.path) for src in @package.sources.less)
-    paths.push(path.resolve(lib.path)) for lib in @package.vendorlibs.libraries 'less'
+    resolve = (require 'path').resolve
+    paths = (resolve(src.path) for src in @package.sources.less)
+    paths.push(resolve(lib.path)) for lib in @package.vendorlibs.libraries 'less'
     
     parser = new (require('less').Parser)
       filename: original.fullpath

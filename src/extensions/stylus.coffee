@@ -1,10 +1,7 @@
-util = require '../util'
-fs = require 'fs'
-path = require 'path'
 _ = require 'underscore'
 {Source} = require '..'
 {finished, debug, showError} = require '../command'
-{StylesheetsPackage, StylesheetsSource} = require './css'
+{StylesheetsSource} = require './css'
 
 class StylusSource extends StylesheetsSource
   @type = 'stylus'
@@ -23,8 +20,9 @@ class StylusSource extends StylesheetsSource
     original
   
   createCompiledFile: (original) ->
-    cpath = util.changeext (opath = original.relpath), '.css'
-    compiled = @package.file opath, 'stylesheets', path.join(@output, cpath), @
+    cpath = (require '../util').changeext (opath = original.relpath), '.css'
+    compiled = @package.file opath, 'stylesheets', 
+      (require 'path').join(@output, cpath), @
     compiled.dependOn original, _.bind(@compile, @)
     compiled.setImportedPaths original.readImportedPaths()
     compiled.impermanent = true
@@ -38,7 +36,7 @@ class StylusSource extends StylesheetsSource
       parser.set 'paths', (src.path for src in @package.sources.stylus)
 
       for mod in @package.vendorlibs.libraries 'stylus'
-        module = require path.resolve mod.path
+        module = require (require 'path').resolve mod.path
         parser.use(module()) if _.isFunction module
       
       parser.render (err, css) ->
