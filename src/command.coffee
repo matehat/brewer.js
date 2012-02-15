@@ -68,7 +68,7 @@ exports.run = (argv) ->
   
   program
     .command('init')
-    .description("Initialize #{clr('Brewer', 'green')} in the current directory")
+    .description(" Initialize #{clr('Brewer', 'green')} in the current directory")
     .action ->
       templ = program.template ? 'lesscoffee'
       template = path.join(__dirname, '..', 'templates', "#{templ}.coffee")
@@ -78,6 +78,7 @@ exports.run = (argv) ->
       
       cli.info 'Making initial folder structure'
       getLocalProject().prepare()
+    
   
   ##### The `watch` command
   #
@@ -90,13 +91,14 @@ exports.run = (argv) ->
   program
     .command('watch')
     .description("""
-      Watch for modifications in source and configuration files, 
+       Watch for modifications in source and configuration files, 
       automatically re-making when they occur.
     """)
     .action ->
       getLocalProject().watch()
       cli.info 'Watching project', process.cwd()
     
+  
   ##### The `make` command
   #
   # This command is used to actualize a whole project or specific packages within it.
@@ -105,7 +107,7 @@ exports.run = (argv) ->
   
   program
     .command('make [packages]*')
-    .description("Aggregate bundles from the given packages (or all)")
+    .description(" Aggregate bundles from the given packages (or all)")
     .action (pkgs) ->
       pkgs ?= 'all'
       project = getLocalProject()
@@ -119,6 +121,31 @@ exports.run = (argv) ->
         do (pkg) ->
           pkg.actualize ->
             cli.info "Finished making #{clr(pkg.name, 'underline')} package"
+    
+  
+  ##### The `clean` command
+  #
+  # This command is used to remove files that are derived from source files. This 
+  # includes compiled *javascript* and *css* files, as well as bundles and their
+  # compressed counterparts.
+  
+  program
+    .command('clean [packages]*')
+    .description(" Delete bundles and compiled files from the given packages (or all)")
+    .action (pkgs) ->
+      pkgs ?= 'all'
+      project = getLocalProject()
+      if pkgs is 'all'
+        packages = project
+      else
+        names = pkgs.split(',')
+        packages = (pkg for pkg in project when pkg.name in names)
+      
+      for pkg in packages
+        do (pkg) ->
+          pkg.clean()
+    
+  
   
   # This tells the `Command` object to parse the given program arguments, triggering
   # the proper action, or printing the usage.

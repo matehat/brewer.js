@@ -59,6 +59,7 @@ default otherwise. It writes that template file into <em>Brewfile</em>, initiali
       
       <span class="nx">cli</span><span class="p">.</span><span class="nx">info</span> <span class="s1">&#39;Making initial folder structure&#39;</span>
       <span class="nx">getLocalProject</span><span class="p">().</span><span class="nx">prepare</span><span class="p">()</span>
+    
   </pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <h4>The <code>watch</code> command</h4>
 
 <p>This command is used to watch a whole project, monitoring changes on the
@@ -75,7 +76,8 @@ method is called.</p>             </td>             <td class="code">           
     <span class="p">.</span><span class="nx">action</span> <span class="o">-&gt;</span>
       <span class="nx">getLocalProject</span><span class="p">().</span><span class="nx">watch</span><span class="p">()</span>
       <span class="nx">cli</span><span class="p">.</span><span class="nx">info</span> <span class="s1">&#39;Watching project&#39;</span><span class="p">,</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h4>The <code>make</code> command</h4>
+    
+  </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h4>The <code>make</code> command</h4>
 
 <p>This command is used to actualize a whole project or specific packages within it.
 It first checks to see if package names were specified, defaulting to 'all' otherwise.
@@ -96,6 +98,7 @@ Then, the <code>.actualize()</code> method is called on each matching package.</
         <span class="nx">do</span> <span class="nf">(pkg) -&gt;</span>
           <span class="nx">pkg</span><span class="p">.</span><span class="nx">actualize</span> <span class="o">-&gt;</span>
             <span class="nx">cli</span><span class="p">.</span><span class="nx">info</span> <span class="s2">&quot;Finished making #{clr(pkg.name, &#39;underline&#39;)} package&quot;</span>
+    
   </pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>This tells the <code>Command</code> object to parse the given program arguments, triggering
 the proper action, or printing the usage.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">program</span><span class="p">.</span><span class="nx">parse</span> <span class="nx">argv</span>
 
