@@ -1,0 +1,38 @@
+<!DOCTYPE html>  <html> <head>   <title>index.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="brewfile.html">                 brewfile.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="coffee-script.html">                 coffee-script.coffee               </a>                                           <a class="source" href="css.html">                 css.coffee               </a>                                           <a class="source" href="javascript.html">                 javascript.coffee               </a>                                           <a class="source" href="less.html">                 less.coffee               </a>                                           <a class="source" href="stylus.html">                 stylus.coffee               </a>                                           <a class="source" href="file.html">                 file.coffee               </a>                                           <a class="source" href="index.html">                 index.coffee               </a>                                           <a class="source" href="package.html">                 package.coffee               </a>                                           <a class="source" href="project.html">                 project.coffee               </a>                                           <a class="source" href="source.html">                 source.coffee               </a>                                           <a class="source" href="util.html">                 util.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               index.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h4>Brewer.js, your asset management friend</h4>
+
+<p><em>Version 0.2.2 - Source code is freely available on 
+<a href="http://github.com/matehat/brewer.js">github</a>.</em></p>
+
+<p>This is the module obtained when importing <code>brewer</code>. 
+It exports the main classes from <a href="project.html">project</a>, <a href="package.html">package</a>, 
+<a href="source.html">source</a> and <a href="file.html">file</a>.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">{</span><span class="nx">@Package</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./package&#39;</span>
+<span class="p">{</span><span class="nx">@Project</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./project&#39;</span>
+<span class="p">{</span><span class="nx">@Source</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./source&#39;</span>
+<span class="p">{</span><span class="nx">@File</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./file&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>It also parses the <em>extensions/</em> directory to find modules that extends <strong>brewer.js</strong>
+functionality.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">for</span> <span class="nx">file</span> <span class="k">in</span> <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;fs&#39;</span><span class="p">).</span><span class="nx">readdirSync</span><span class="p">((</span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span><span class="p">).</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;./extensions&#39;</span><span class="p">))</span>
+  <span class="k">if</span> <span class="nx">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span>
+    <span class="nx">require</span> <span class="s1">&#39;./extensions/&#39;</span> <span class="o">+</span> <span class="nx">file</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <h4>MIT License</h4>
+
+<pre><code>Copyright (c) 2012 Mathieu D'Amours
+
+Permission is hereby granted, free of charge, to any person 
+obtaining a copy of this software and associated documentation 
+files (the "Software"), to deal in the Software without 
+restriction, including without limitation the rights to use, 
+copy, modify, merge, publish, distribute, sublicense, 
+and/or sell copies of the Software, and to permit persons to 
+whom the Software is furnished to do so, subject to the 
+following conditions:
+
+The above copyright notice and this permission notice shall be 
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+OTHER DEALINGS IN THE SOFTWARE.
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
