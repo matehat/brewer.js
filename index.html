@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Bootstrap, from Twitter</title>
+    <title>Brewer.js — your asset management friend.</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -17,6 +17,16 @@
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
       }
+      pre.console {
+        background-color: #333;
+        color: #fff;
+      }
+      pre span.fn {
+        color: blue;
+      }
+      pre span.info {
+        color: green;
+      }
     </style>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
 
@@ -27,7 +37,7 @@
     <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
   </head>
 
-  <body>
+  <body data-spy="scroll">
 
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
@@ -37,12 +47,36 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="#">Project name</a>
+          <a class="brand" href="#">Brewer.js</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li class="active"><a href="#overview">Overview</a></li>
+              <li><a href="#installation">Installation</a></li>
+              <li><a href="#brewfile">Brewfile</a></li>
+              <li><a href="#usage">Usage</a></li>
+              <li><a href="#changelog">Changelog</a></li>
+              
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" 
+                  data-toggle="dropdown">
+                  Annotated source <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu" id="annotatedsource">
+                  <li><a href="docs/index.html">index.coffee</a></li>
+                  <li><a href="docs/package.html">package.coffee</a></li>
+                  <li><a href="docs/project.html">project.coffee</a></li>
+                  <li><a href="docs/source.html">source.coffee</a></li>
+                  <li><a href="docs/file.html">file.coffee</a></li>
+                  <li><a href="docs/brewfile.html">brewfile.coffee</a></li>
+                  <li><a href="docs/command.html">command.coffee</a></li>
+                  <li><a href="docs/util.html">util.coffee</a></li>
+                  <li><a href="docs/javascript.html">javascript.coffee</a></li>
+                  <li><a href="docs/css.html">css.coffee</a></li>
+                  <li><a href="docs/coffee-script.html">coffee-script.coffee</a></li>
+                  <li><a href="docs/less.html">less.coffee</a></li>
+                  <li><a href="docs/stylus.html">stylus.coffee</a></li>
+                </ul>
+              </li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -50,9 +84,80 @@
     </div>
 
     <div class="container">
-
-      <h1>Bootstrap starter template</h1>
-      <p>Use this document as a way to quick start any new project.<br> All you get is this message and a barebones HTML document.</p>
+      
+      <h1>Brewer.js</h1>
+      <h3>Your asset management friend.</h3>
+    
+      <section id="overview" class="row">
+        <div class="span6">
+          <p>
+            Brewer.js is a tool that eases all sorts of tasks related to the management of 
+            stylesheets and javascript source files, such as :
+          </p>
+          <ul>
+            <li>Compilation of coffee-script source files to javascript</li>
+            <li>Compilation of LESS or Stylus files to CSS</li>
+            <li>
+              Bundling different files (javascript or CSS) into a single file (optionally compressing it)
+              while maintaining references and their proper ordering.
+            </li>
+          </ul><br />
+          <div class="btn-group">
+            <a href="http://github.com/matehat/brewer.js" class="btn btn-primary">View source code on Github</a>
+            <a href="#" class="btn dropdown-toggle" data-toggle="dropdown">
+              Annotated source
+              <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu" id="annotatedsource">
+              <li><a href="docs/index.html">index.coffee</a></li>
+              <li><a href="docs/package.html">package.coffee</a></li>
+              <li><a href="docs/project.html">project.coffee</a></li>
+              <li><a href="docs/source.html">source.coffee</a></li>
+              <li><a href="docs/file.html">file.coffee</a></li>
+              <li><a href="docs/brewfile.html">brewfile.coffee</a></li>
+              <li><a href="docs/command.html">command.coffee</a></li>
+              <li><a href="docs/util.html">util.coffee</a></li>
+              <li><a href="docs/javascript.html">javascript.coffee</a></li>
+              <li><a href="docs/css.html">css.coffee</a></li>
+              <li><a href="docs/coffee-script.html">coffee-script.coffee</a></li>
+              <li><a href="docs/less.html">less.coffee</a></li>
+              <li><a href="docs/stylus.html">stylus.coffee</a></li>
+            </ul>
+          </div><br />
+        </div>
+        <div class="span6">
+<pre class="console">
+$ brewer watch
+<span class="info">Info</span> Watching project /path/to/current/working/directory
+<span class="fn">Compiled</span> coffee/test.coffee
+<span class="fn">Compiled</span> less/index.less
+<span class="fn">Packaged</span> build/css/index.css
+<span class="fn">Compressed</span> build/css/index.css
+</pre>
+        </div>
+      </section>
+      <hr />
+      
+      <section id="installation">
+        <h3>Installation</h3>
+        
+        <p>Make sure you have <a href="">Node.js</a> installed</p>
+      </section>
+      <hr />
+      
+      <section id="brewfile">
+        <h3>Brewfile</h3>
+      </section>
+      <hr />
+      
+      <section id="usage">
+        <h3>Usage</h3>
+      </section>
+      <hr />
+      
+      <section id="changelog">
+        <h3>Changelog</h3>
+      </section>
 
     </div> <!-- /container -->
 
