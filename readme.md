@@ -43,7 +43,7 @@ At the top-level of the Brewfile, the following functions are available :
 stylesheets 'package_name', ->
   # package body ...
 
-javascript 'package_name', ->
+javascript 'other_package_name', ->
   # package body ...
 ```
 
