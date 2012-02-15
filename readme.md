@@ -37,7 +37,7 @@ What this does is create a Brewfile in the current directory, according to the t
 A <strong>Brewfile</strong> is a file that sits at the root folder of your project, named, 
 well, "Brewfile", which syntax is plain [Coffeescript](http://coffeescript.org). It is used to specify the structure of the project to Brewer.js, so it knows what to do when you tell it to `make`, `watch` or `clean`. 
 
-#### Packages
+##### Packages
 
 At the top-level of the Brewfile, the following functions are available :
 
