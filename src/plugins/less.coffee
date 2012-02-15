@@ -24,7 +24,7 @@ class LessSource extends StylesheetsSource
   
   createCompiledFile: (original) ->
     cpath = util.changeext (opath = original.relpath), '.css'
-    compiled = @package.file opath, 'stylesheets', path.join(@output ? "./cache", cpath), @
+    compiled = @package.file opath, 'stylesheets', path.join(@output, cpath), @
     compiled.dependOn original, _.bind(@compile, @)
     compiled.setImportedPaths original.readImportedPaths()
     compiled.impermanent = true
