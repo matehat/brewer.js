@@ -42,6 +42,7 @@ class Project
     @length = packages.length
     _.each packages, (pkg, i) =>
       this[i] = (require './package').Package.create pkg.opts, pkg.srcs, @vendorlibs
+    
   
   
   # These two methods barely proxy methods with the same name, but invoked on all 
@@ -110,5 +111,6 @@ class VendorLibraries
         libs.push _lib
     
     libs
+  
 
 exports.Project = Project

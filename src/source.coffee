@@ -18,7 +18,8 @@ util  = require './util'
 class Source
   # Much like for *[Package](package.html#section-3)*, a registry of subclasses
   # must be maintained to associate types (*coffeescript*, *less*, *javascript*, 
-  # etc) to particular subclasses of *Source*.
+  # etc) to particular subclasses of *Source*. Type aliases, alternate type namings,
+  # are also associated to the same subclasses, so to stay flexible.
   @registry = {}
   @extend: (sources...) ->
     for src in sources
