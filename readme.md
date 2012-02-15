@@ -66,6 +66,8 @@ javascript 'package_name', ->
   @options {build: './build', compress: true}
 ```
 
+The `build` option specifies where to put bundles aggregated from source files, and `compress` &hellip; well, I think you can guess that one.
+
 ### Usage
 
 
