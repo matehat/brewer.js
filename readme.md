@@ -40,7 +40,7 @@ What this does is create a Brewfile in the current directory, according to the t
 
 ### MIT License
 
-Copyright (c) 2012 Mathieu D'Amours
+Copyright &copy; 2012 Mathieu D'Amours
 
 Permission is hereby granted, free of charge, to any person 
 obtaining a copy of this software and associated documentation 
