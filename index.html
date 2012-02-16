@@ -37,6 +37,27 @@
       h3.title, a.brand, section > h3 {
         font-family: 'Share', cursive;
       }
+      section > h3 {
+        font-size: 30px;
+      }
+      section {
+        padding-top: 60px;
+      }
+      
+      #changelog dl {
+        margin-left: 20px;
+      }
+      #changelog dt {
+        width: 100px;
+        margin-top: 10px;
+        font-size: 16px;
+      }
+      #changelog dd {
+        margin-top: 10px;
+      }
+      div.gist {
+        margin: 20px 0;
+      }
     </style>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
     <link href='http://fonts.googleapis.com/css?family=Share:700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
@@ -94,16 +115,16 @@
       </div>
     </div>
 
-    <div class="container">
-      <br />
-      <h1 class="title">Brewer.js</h1>
-      <h3 class="title">Your asset management friend.</h3><br />
+    <div class="container main">
     
-      <section id="overview" class="row">
+      <section id="overview">
+        <h1 class="title">Brewer.js</h1>
+        <h3 class="title">Your asset management best friend.</h3><br />
+        <div class="row">
         <div class="span6">
           <p>
             Brewer.js is a tool that eases all sorts of tasks related to the management of 
-            stylesheets and javascript source files, such as :
+            stylesheets and javascript source files. From a single command, it takes charge of :
           </p>
           <ul>
             <li>Compilation of coffee-script source files to javascript</li>
@@ -112,6 +133,7 @@
               Bundling different files (javascript or CSS) into a single file (optionally compressing it)
               while maintaining references and their proper ordering.
             </li>
+            <li>Watching a directory for changes, triggering any or all of the above.</li>
           </ul><br />
           <div class="btn-group">
             <a href="http://github.com/matehat/brewer.js" class="btn btn-primary">Source code on Github</a>
@@ -146,10 +168,10 @@
 <span class="fn">Compressed</span> build/css/index.css
 </pre>
         </div>
+        </div>
       </section>
-      <hr />
       
-      <section id="installation">
+      <section id="installation"> 
         <h3>Installation</h3>
         <br />
         <p>
@@ -174,23 +196,174 @@
           provided and run <code>brewer make</code> (see <a href="#usage">usage</a>) on it.
         </p>
       </section>
-      <hr />
       
       <section id="brewfile">
-        <h3>Brewfile</h3>
+        <h3>Brewfile</h3><br />
+        <p>
+          A <strong>Brewfile</strong> is a file that sits at the root folder of your project, named, 
+          well, "Brewfile", which syntax is plain <a href="http://coffeescript.org">Coffeescript</a>. 
+          It is used to specify the structure of the project to Brewer.js, so it knows what to do when you tell 
+          it to <code>make</code>, <code>watch</code> or <code>clean</code>. 
+        </p>
+        
+        <h4>Packages</h4>
+        <p>At the top-level of the Brewfile, the following functions are available :</p>
+        <script src="https://gist.github.com/1839758.js?file=example.coffee"></script>
+        
+        <p>Those two functions can be used interchangeably with <code>js</code> or <code>css</code> to be more concise. The 
+          <code>package_name</code> is used to identify certain parts of a project, in case you would like to run 
+          <code>$ brewer make package_name</code>. A <strong>Package</strong> is a conceptual component of a project in which you 
+          can define <strong>bundles</strong> and in which files can <em>import</em> each other. A file contained in a package 
+          can really be anywhere on the file system -- a package is not bound to a specific directory.</p>
+          
+        <p>Package can receive options, which can be specified in one of two ways :</p>
+        <script src="https://gist.github.com/1839758.js?file=rw-example.coffee"></script>
+        
+        <p>The <code>build</code> option specifies where to put bundles aggregated from source files, and <code>compress</code> &hellip; 
+          well, I think you can guess that one.</p>
+        <p>
+        <code>@options</code> is a method available in the package definition body, that specifies additional options for the 
+        package. Another such method is <code>@bundles(bundle1, bundle2, ...)</code> which specifies file names for bundles in 
+        the package (see <strong>Bundles</strong> below). These two methods are prefixed with a <code>@</code>, meaning that they are members 
+        of the package body context. Other methods of this kind are available, such as those to define <strong>Sources</strong> 
+        in a package.</p>
+        
+        <h4>Sources</h4>
+        <p>Sources represent a folder on the file system, where files can be found. One or many can exist within a package, 
+          providing it with files to compile, bundle and compress. A source can be of one of many available types : 
+          <em>coffeescript</em>, <em>javascript</em>, <em>css</em>, <em>less</em> or <em>stylus</em>. One restriction about this source type is that a package 
+          can only contain sources that are either of its own type, or that can be compiled into its own type (remember a 
+          package also have a type).</p>
+        
+        <p>Now for a real-world example, so we don't get lost too quickly. Say we want to make a cool looking website using 
+          jQuery, Bootstrap and Chosen. Each of these libraries have their own source files, of different types and we want 
+          to manage all of that neatly. Here is the directory structure :</p>
+        
+        <script src="https://gist.github.com/1839758.js?file=rw-example-struct.txt"></script>
+        
+        <p>So there are files that ends up as javascript and those that ends up as css. Let's write a Brewfile that takes 
+          this structure into account.</p>
+        
+        <script src="https://gist.github.com/1839758.js?file=rw-example2.coffee"></script>
+        
+        <p>So what we're looking at now is a package for javascripts that looks for coffeescript files in <code>./coffee</code>, 
+          as well as for javascript files in <code>./vendor</code>, <code>./vendor/chosen</code> and <code>./vendor/bootstrap/js</code>. Now let's look 
+          at what a bundle would look like :</p>
+          
+        <script src="https://gist.github.com/1839758.js?file=rw-home.coffee"></script>
+        
+        <p>If we had been running <code>brew watch</code> while we wrote that script and saved it, we would have seen a file appear, 
+          named <code>./js/home.js</code>, containing an aggregate file of jquery, chosen and our little script compiled into javascript. 
+          Since we didn't provide the <code>output</code> option, a compiled javascript version of just <code>coffee/home.coffee</code> can be found 
+          in <code>./_cache</code>. If we wanted it to appear somewhere more meaningful, we could set the <code>output</code> option on a source 
+          directive. A more complete example of the above could be :</p>
+          
+        <script src="https://gist.github.com/1839758.js?file=rw-example3.coffee"></script>
+        
+        <p>This dedicates a directory <code>./build</code>, to contain files that would be deployed, and all source files in separate 
+          directories. You may have noticed we used <code>@css</code> and <code>@js</code> names to mean stylesheets and javascript respectively. 
+          As we said earlier, those are drop-in replacements.</p>
       </section>
-      <hr />
       
       <section id="usage">
-        <h3>Usage</h3>
+        <h3>Usage</h3><br />
+        
+        <p>The command-line interface for brewer provides a few methods to manage your asset project:</p>
+        
+        <ul>
+          <li>
+            <pre><span class="prompt">$</span> brew make [&lt;package&gt;*]</pre>
+            <p>
+              This command tells brewer to look for files to compile (coffeescript, less, etc.) into their 
+              javascript or css counterparts, product bundles and compress them if necessary. This intelligently 
+              selects only the tasks that needs to be done, skipping files that haven't change.
+            </p>
+          </li>
+          <li>
+            <pre><span class="prompt">$</span> brew watch [&lt;package&gt;*]</pre>
+            <p>
+              This command tells brewer to first run `brew make` on the current directory and watch for 
+              changes (file content change, new files, moved files or deleted files).
+            </p>
+          </li>
+          <li>
+            <pre><span class="prompt">$</span> brew clean [&lt;package&gt;*]</pre>
+            <p>
+              This command tells brewer to delete files that strongly depends on source files, such as those 
+              that are completely derived from the compilation of another file, bundles and their compressed 
+              counterparts.
+            </p>
+          </li>
+          <li>
+            <pre><span class="prompt">$</span> brew init [&lt;template_name&gt;]</pre>
+            <p>
+              This command tells brewer to make a Brewfile in the current directory, according to the template 
+              provided, and make an initial directory structure to support the project.
+            </p>
+          </li>
+        </ul>
       </section>
-      <hr />
       
       <section id="changelog">
-        <h3>Changelog</h3>
+        <h3>Changelog</h3><br />
+        
+        <div class="row">
+          <div class="span8"><dl>
+          <dt class="version">0.3.1</dt>
+          <dd>Bug fix to make the npm installation work.</dd>
+          
+          <dt class="version">0.3.0</dt>
+          <dd>Made CLI commands functional. Also added full documentation under docs/</dd>
+          
+          <dt class="version">0.2.2</dt>
+          <dd>Fixed a minor bug.</dd>
+          
+          <dt class="version">0.2.1</dt>
+          <dd>Added API for <code>Project</code> and <code>Package</code> to clean 
+            impermanent files.
+          </dd>
+          
+          <dt class="version">0.2.0</dt>
+          <dd>Major code refactor. All the code base is much leaner, cleaner, easier to maintain
+            and to extend.
+          </dd>
+          
+          <dt class="version">0.1.0</dt>
+          <dd>Initial release. Compilation, compression and packaging works properly for
+            LESS, Stylus, Coffeescript, JS and CSS. More file types to come!</dd>
+          </dl></div>
+        </div>
+      </section>
+      
+      <section id="license">
+        <h3>MIT License</h3><br />
+        <div class="row"><div class="span8">
+        <p>Copyright &copy; 2012 Mathieu D'Amours</p>
+
+        <p>Permission is hereby granted, free of charge, to any person 
+        obtaining a copy of this software and associated documentation 
+        files (the "Software"), to deal in the Software without 
+        restriction, including without limitation the rights to use, 
+        copy, modify, merge, publish, distribute, sublicense, 
+        and/or sell copies of the Software, and to permit persons to 
+        whom the Software is furnished to do so, subject to the 
+        following conditions:</p>
+
+        <p>The above copyright notice and this permission notice shall be 
+        included in all copies or substantial portions of the Software.</p>
+
+        <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+        OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+        NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+        HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+        WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+        FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+        OTHER DEALINGS IN THE SOFTWARE.</p>
+        </div></div>
       </section>
 
-    </div> <!-- /container -->
+    </div> <br /><br /><!-- /container -->
 
     <!-- Le javascript
     ================================================== -->
