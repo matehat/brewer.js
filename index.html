@@ -12,8 +12,6 @@
     <![endif]-->
 
     <!-- Le styles -->
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/united.css" rel="stylesheet">
     <link href="css/app.css" rel="stylesheet">
     <link href='http://fonts.googleapis.com/css?family=Share:700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     
@@ -23,7 +21,7 @@
     <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
     <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
   </head>
-
+  
   <body data-spy="scroll">
 
     <div class="container main">
@@ -296,30 +294,6 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery.js"></script>
-    <script src="js/bootstrap.js"></script>
-    <script type="text/javascript" charset="utf-8">
-      $(function() {
-        var $win = $(window)
-        , $nav = $('.navbar')
-        , navTop = $('.navbar').length && $('.navbar').offset().top - 40
-        , isFixed = 0
-      
-        processScroll();
-
-        $(window).on('scroll', processScroll);
-
-        function processScroll() {
-          var i, scrollTop = $win.scrollTop()
-          if (scrollTop >= navTop && !isFixed) {
-            isFixed = 1;
-            $nav.addClass('navbar-fixed-top');
-          } else if (scrollTop <= navTop && isFixed) {
-            isFixed = 0;
-            $nav.removeClass('navbar-fixed-top');
-          }
-        }
-      })
-    </script>
+    <script src="js/app.js"></script>
   </body>
 </html>
