@@ -21,7 +21,10 @@ class StylesheetsPackage extends Package
   # (the bundle) and destination file (the compressed counterpart) and 
   # updates the second.
   compressFile: (original, dest, cb) ->
-    compress = (data, cb) -> cb null, (require 'ncss') data
+    {cssmin} = require 'css-compressor'
+    compress = (data, cb2) ->
+      cb2 null, cssmin data
+    
     original.project dest, compress, (err) ->
       cb err if err
       finished 'Compressed', original.fullpath

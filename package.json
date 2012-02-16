@@ -31,9 +31,9 @@
     "ansi-color": ">= 0.2.0",
     "semver": ">= 1.0.0",
     "request": ">= 2.9.0",
-    "ncss": ">= 1.1.0",
     "stylus": ">= 0.22.0",
     "coffee-script": ">= 1.1.0",
+    "css-compressor": ">= 1.0.0",
     "less": ">= 1.2.0"
   },
   "devDependencies": {
