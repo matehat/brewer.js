@@ -115,7 +115,7 @@ So what we're looking at now is a package for javascripts that looks for coffees
 $ -> $('select').chosen()
 ```
 
-If we had been running `brew watch` while we wrote that script and saved it, we would have seen a file appear, named `./js/home.js`, containing an aggregate file of jquery, chosen and our little script compiled into javascript. Since we didn't provide the `output` option, a compiled javascript version of just `coffee/home.coffee` can be found in `./_cache`. If we wanted it to appear somewhere more meaningful, we could set the `output` option on a source directive. A more complete example of the above could be :
+If we had been running `brewer watch` while we wrote that script and saved it, we would have seen a file appear, named `./js/home.js`, containing an aggregate file of jquery, chosen and our little script compiled into javascript. Since we didn't provide the `output` option, a compiled javascript version of just `coffee/home.coffee` can be found in `./_cache`. If we wanted it to appear somewhere more meaningful, we could set the `output` option on a source directive. A more complete example of the above could be :
 
 ```coffeescript
 javascript 'scripts', {build: './build/js'} ->
@@ -137,19 +137,19 @@ This dedicates a directory `./build`, to contain files that would be deployed, a
 
 The command-line interface for brewer provides a few methods to manage the asset project. 
 
-* `brew make [<package>*]`
+* `brewer make [<package>*]`
 
     This command tells brewer to look for files to compile (coffeescript, less, etc.) into their javascript or css counterparts, product bundles and compress them if necessary. This intelligently selects only the tasks that needs to be done, skipping files that haven't change.
 
-* `brew watch [<package>*]`
+* `brewer watch [<package>*]`
 
-    This command tells brewer to first run `brew make` on the current directory and watch for changes (file content change, new files, moved files or deleted files).
+    This command tells brewer to first run `brewer make` on the current directory and watch for changes (file content change, new files, moved files or deleted files).
     
-* `brew clean [<package>*]`
+* `brewer clean [<package>*]`
 
     This command tells brewer to delete files that strongly depends on source files, such as those that are completely derived from the compilation of another file, bundles and their compressed counterparts.
     
-* `brew init <template_name>`
+* `brewer init <template_name>`
 
     This command tells brewer to make a Brewfile in the current directory, according to the template provided, and make an initial directory structure to support the project.
 
