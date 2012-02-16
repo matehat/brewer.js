@@ -66,15 +66,74 @@ javascript 'package_name', ->
   @options {build: './build', compress: true}
 ```
 
-The `build` option specifies where to put bundles aggregated from source files, and `compress` &hellip; well, I think you can guess that one. `@options` is a method available in the package definition body, that specify additional options on the package. Another such method is `@bundles(bundle1, bundle2, ...)` which specify names for bundles in the package (see **Bundles** below).
+The `build` option specifies where to put bundles aggregated from source files, and `compress` &hellip; well, I think you can guess that one. 
+
+`@options` is a method available in the package definition body, that specifies additional options for the package. Another such method is `@bundles(bundle1, bundle2, ...)` which specifies file names for bundles in the package (see **Bundles** below). These two methods are prefixed with a `@`, meaning that they are members of the package body context. Other methods of this kind are available, such as those to define **sources** in a package. 
 
 ##### Sources
 
-In the body of a package definition, 
+Sources represent a folder on the file system, where files can be found. One or many can exist within a package, providing it with files to compile, bundle and compress. A source can be of one of many available types : *coffeescript*, *javascript*, *css*, *less* or *stylus*. One restriction about this source type is that a package can only contain sources that are either of its own type, or that can be compiled into its own type (remember a package also have a type).
+
+Now for a real-world example, so we don't get lost too quickly. Say we want to make a cool looking website using jQuery, Bootstrap and Chosen. Each of these libraries have their own source files, of different types and we want to manage all of that neatly. Here is the directory structure :
+
+```
+Root folder
+|- js
+|- coffee
+|- css
+|- less
+|- vendor
+  |- bootstrap
+  | |- less
+  | |- js
+  |- chosen
+  |- jquery.js
+```
+
+So there are files that ends up as javascript and those that ends up as css. Let's write a Brewfile that takes this structure into account.
+
+```coffeescript
+javascript 'scripts', {build: './js'} ->
+    @bundles 'home', 'products'
+    
+    @coffeescript './coffee'
+    @js './vendor'
+
+stylesheets 'styles', {build: './css'} ->
+    @bundles 'home', 'products'
+
+    @less './less'
+    @css './vendor'
+```
+
+So what we're looking at now is a package for javascripts that looks for coffeescript files in `./coffee`, as well as for javascript files in `./vendor`, `./vendor/chosen` and `./vendor/bootstrap/js`. Now let's look at what a bundle would look like :
+
+```coffeescript
+# in coffee/home.coffee
+# import ["jquery", "chosen/chosen.jquery.js"]
+
+$ -> $('select').chosen()
+```
+
+If we had been running `brew watch` while we wrote that script and saved it, we would have seen a file appear, named `./js/home.js`, containing an aggregate file of jquery, chosen and our little script compiled into javascript. Since we didn't provide the `output` option, a compiled javascript version of just `coffee/home.coffee` can be found in `./_cache`. If we wanted it to appear somewhere more meaningful, we could set the `output` option on a source directive. A more complete example of the above could be :
+
+```coffeescript
+javascript 'scripts', {build: './build/js'} ->
+    @bundles 'home', 'products'
+    
+    @coffeescript './coffee', {output: './js'}
+    @js './vendor'
+
+stylesheets 'styles', {build: './build/css'} ->
+    @bundles 'home', 'products'
+
+    @less './less', {output: './css'}
+    @css './vendor'
+```
+
+This dedicates a directory `./build`, to contain files that would be deployed, and all source files in separate directories. You may have noticed we used `@css` and `@js` names to mean stylesheets and javascript respectively. As we said earlier, those are drop-in replacements.
 
 ### Usage
-
-
 
 ### MIT License
 
