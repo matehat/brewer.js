@@ -170,16 +170,27 @@ class Package extends (require 'events').EventEmitter
   
   # This method is used to produce a bundle file by aggregating all the
   # necessary imported files. It uses `file.tsortedImports` to obtain a
-  # sorted list of all necessary imports, then loops through them, reading
-  # the content and filling a buffer, later written on disk.
+  # sorted list of all necessary imports, then iterate through each, creating
+  # a ReadStream and piping the content to the bundle's WriteStream. When
+  # all content have been read, close the WriteStream and print a confirmation.
   bundle: (imported, bundle, cb) ->
-    output = ''
-    parent = bundle.parent
-    for file in parent.tsortedImports()
-      output += file.readSync()
+    i = 0
+    imports = bundle.parent.tsortedImports()
+    ws = bundle.writeStream()
+    ws.on 'close', ->
+      finished 'Packaged', bundle.fullpath
+      cb()
     
-    bundle.write output, cb
-    finished 'Packaged', bundle.fullpath
+    iter = ->
+      if i is imports.length
+        ws.end()
+        return
+      
+      rs = (file = imports[i++]).readStream()
+      rs.pipe ws, {end: false}
+      rs.on 'end', iter
+    
+    iter()
   
   
   # This method returns the full path to a bundle file.

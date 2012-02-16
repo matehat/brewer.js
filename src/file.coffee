@@ -335,8 +335,7 @@ class File extends EventEmitter
   # full path exist.
   makedirs: -> util.makedirs path.dirname @fullpath
   
-  # These methods (async and sync) are used to read the content of 
-  # the current file.
+  # These methods are used to read the content of the current file.
   read: (cb) ->
     return unless @exists()
     fs.readFile @fullpath, 'utf-8', (err, data) -> cb(err, data)
@@ -345,8 +344,12 @@ class File extends EventEmitter
     return unless @exists()
     fs.readFileSync @fullpath, 'utf-8'
   
+  readStream: ->
+    return unless @exists()
+    fs.createReadStream @fullpath, {encoding: 'utf-8'}
   
-  # These methods (async and sync) are used to write content to the current file.
+  
+  # These methods are used to write content to the current file.
   write: (data, cb) ->
     return unless @attached()
     @makedirs()
@@ -356,6 +359,11 @@ class File extends EventEmitter
     return unless @attached()
     @makedirs()
     fs.writeFileSync @fullpath, data, 'utf-8'
+  
+  writeStream: ->
+    return unless @attached()
+    @makedirs()
+    fs.createWriteStream @fullpath, {encoding: 'utf-8'}
   
   
   # This method is used to delete the current file.
