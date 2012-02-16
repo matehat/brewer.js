@@ -135,6 +135,24 @@ This dedicates a directory `./build`, to contain files that would be deployed, a
 
 ### Usage
 
+The command-line interface for brewer provides a few methods to manage the asset project. 
+
+* `brew make [<package>*]`
+
+    This command tells brewer to look for files to compile (coffeescript, less, etc.) into their javascript or css counterparts, product bundles and compress them if necessary. This intelligently selects only the tasks that needs to be done, skipping files that haven't change.
+
+* `brew watch [<package>*]`
+
+    This command tells brewer to first run `brew make` on the current directory and watch for changes (file content change, new files, moved files or deleted files).
+    
+* `brew clean [<package>*]`
+
+    This command tells brewer to delete files that strongly depends on source files, such as those that are completely derived from the compilation of another file, bundles and their compressed counterparts.
+    
+* `brew init <template_name>`
+
+    This command tells brewer to make a Brewfile in the current directory, according to the template provided, and make an initial directory structure to support the project.
+
 ### MIT License
 
 Copyright &copy; 2012 Mathieu D'Amours
