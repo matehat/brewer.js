@@ -43,6 +43,9 @@
       section {
         padding-top: 60px;
       }
+      section#overview {
+        padding-top: 0px;
+      }
       
       #changelog dl {
         margin-left: 20px;
@@ -58,6 +61,16 @@
       div.gist {
         margin: 20px 0;
       }
+      i.icon-github {
+        background-image: url(img/github.png);
+        background-position: 0 0;
+        width: 16px;
+        height: 16px;
+      }
+      .navbar i[class^=icon-] {
+        position: relative;
+        top: 2px;
+      }
     </style>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
     <link href="css/united.css" rel="stylesheet">
@@ -72,15 +85,42 @@
 
   <body data-spy="scroll">
 
-    <div class="navbar navbar-fixed-top">
+    <div class="container main">
+    
+      <section id="overview">
+        <h1 class="title">Brewer.js</h1>
+        <h3 class="title">Your asset management best friend.</h3><br />
+        <div class="row">
+        <div class="span6">
+          <p>
+            Brewer.js is a tool that eases all sorts of tasks related to the management of 
+            stylesheets and javascript source files. From a single command, it takes charge of :
+          </p>
+          <ul>
+            <li>Compilation of coffee-script source files to javascript</li>
+            <li>Compilation of LESS or Stylus files to CSS</li>
+            <li>
+              Bundling different files (javascript or CSS) into a single file (optionally compressing it)
+              while maintaining references and their proper ordering.
+            </li>
+            <li>Watching a directory for changes, triggering any or all of the above.</li>
+          </ul><br />
+        </div>
+        <div class="span6">
+<pre class="console">
+<span class="prompt">$</span> brewer watch
+<span class="info">Info</span> Watching project /path/to/current/working/directory
+<span class="fn">Compiled</span> coffee/test.coffee
+<span class="fn">Compiled</span> less/index.less
+<span class="fn">Packaged</span> build/css/index.css
+<span class="fn">Compressed</span> build/css/index.css
+</pre>
+        </div>
+        </div>
+        <br />
+      <div class="navbar">
       <div class="navbar-inner">
         <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="#">Brewer.js</a>
           <div class="nav-collapse">
             <ul class="nav">
               <li class="active"><a href="#overview">Overview</a></li>
@@ -89,9 +129,10 @@
               <li><a href="#usage"><i class="icon-play"></i> Usage</a></li>
               <li><a href="#changelog"><i class="icon-list"></i> Changelog</a></li>
               
+              <li><a href="http://github.com/matehat/brewer.js"><i class="icon-github"></i> Source code on Github</a></li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" 
-                  data-toggle="dropdown"><i class="icon-file icon-white"></i> 
+                  data-toggle="dropdown"><i class="icon-file"></i> 
                   Annotated source <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu" id="annotatedsource">
@@ -115,61 +156,6 @@
         </div>
       </div>
     </div>
-
-    <div class="container main">
-    
-      <section id="overview">
-        <h1 class="title">Brewer.js</h1>
-        <h3 class="title">Your asset management best friend.</h3><br />
-        <div class="row">
-        <div class="span6">
-          <p>
-            Brewer.js is a tool that eases all sorts of tasks related to the management of 
-            stylesheets and javascript source files. From a single command, it takes charge of :
-          </p>
-          <ul>
-            <li>Compilation of coffee-script source files to javascript</li>
-            <li>Compilation of LESS or Stylus files to CSS</li>
-            <li>
-              Bundling different files (javascript or CSS) into a single file (optionally compressing it)
-              while maintaining references and their proper ordering.
-            </li>
-            <li>Watching a directory for changes, triggering any or all of the above.</li>
-          </ul><br />
-          <div class="btn-group">
-            <a href="http://github.com/matehat/brewer.js" class="btn btn-primary">Source code on Github</a>
-            <a href="#" class="btn dropdown-toggle" data-toggle="dropdown">
-              Annotated source
-              <b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu" id="annotatedsource">
-              <li><a href="docs/index.html">index.coffee</a></li>
-              <li><a href="docs/package.html">package.coffee</a></li>
-              <li><a href="docs/project.html">project.coffee</a></li>
-              <li><a href="docs/source.html">source.coffee</a></li>
-              <li><a href="docs/file.html">file.coffee</a></li>
-              <li><a href="docs/brewfile.html">brewfile.coffee</a></li>
-              <li><a href="docs/command.html">command.coffee</a></li>
-              <li><a href="docs/util.html">util.coffee</a></li>
-              <li><a href="docs/javascript.html">javascript.coffee</a></li>
-              <li><a href="docs/css.html">css.coffee</a></li>
-              <li><a href="docs/coffee-script.html">coffee-script.coffee</a></li>
-              <li><a href="docs/less.html">less.coffee</a></li>
-              <li><a href="docs/stylus.html">stylus.coffee</a></li>
-            </ul>
-          </div><br />
-        </div>
-        <div class="span6">
-<pre class="console">
-<span class="prompt">$</span> brewer watch
-<span class="info">Info</span> Watching project /path/to/current/working/directory
-<span class="fn">Compiled</span> coffee/test.coffee
-<span class="fn">Compiled</span> less/index.less
-<span class="fn">Packaged</span> build/css/index.css
-<span class="fn">Compressed</span> build/css/index.css
-</pre>
-        </div>
-        </div>
       </section>
       
       <section id="installation"> 
@@ -371,6 +357,28 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.js"></script>
+    <script type="text/javascript" charset="utf-8">
+      $(function() {
+        var $win = $(window)
+        , $nav = $('.navbar')
+        , navTop = $('.navbar').length && $('.navbar').offset().top - 40
+        , isFixed = 0
+      
+        processScroll();
 
+        $(window).on('scroll', processScroll);
+
+        function processScroll() {
+          var i, scrollTop = $win.scrollTop()
+          if (scrollTop >= navTop && !isFixed) {
+            isFixed = 1;
+            $nav.addClass('navbar-fixed-top');
+          } else if (scrollTop <= navTop && isFixed) {
+            isFixed = 0;
+            $nav.removeClass('navbar-fixed-top');
+          }
+        }
+      })
+    </script>
   </body>
 </html>
