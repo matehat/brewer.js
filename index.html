@@ -178,7 +178,7 @@
           
         <script src="https://gist.github.com/1839758.js?file=rw-home.coffee"></script>
         
-        <p>If we had been running <code>brew watch</code> while we wrote that script and saved it, we would have seen a file appear, 
+        <p>If we had been running <code>brewer watch</code> while we wrote that script and saved it, we would have seen a file appear, 
           named <code>./js/home.js</code>, containing an aggregate file of jquery, chosen and our little script compiled into javascript. 
           Since we didn't provide the <code>output</code> option, a compiled javascript version of just <code>coffee/home.coffee</code> can be found 
           in <code>./_cache</code>. If we wanted it to appear somewhere more meaningful, we could set the <code>output</code> option on a source 
@@ -198,7 +198,7 @@
         
         <ul>
           <li>
-            <pre><span class="prompt">$</span> brew make [&lt;package&gt;*]</pre>
+            <pre><span class="prompt">$</span> brewer make [&lt;package&gt;*]</pre>
             <p>
               This command tells brewer to look for files to compile (coffeescript, less, etc.) into their 
               javascript or css counterparts, product bundles and compress them if necessary. This intelligently 
@@ -206,14 +206,14 @@
             </p>
           </li>
           <li>
-            <pre><span class="prompt">$</span> brew watch [&lt;package&gt;*]</pre>
+            <pre><span class="prompt">$</span> brewer watch [&lt;package&gt;*]</pre>
             <p>
               This command tells brewer to first run `brew make` on the current directory and watch for 
               changes (file content change, new files, moved files or deleted files).
             </p>
           </li>
           <li>
-            <pre><span class="prompt">$</span> brew clean [&lt;package&gt;*]</pre>
+            <pre><span class="prompt">$</span> brewer clean [&lt;package&gt;*]</pre>
             <p>
               This command tells brewer to delete files that strongly depends on source files, such as those 
               that are completely derived from the compilation of another file, bundles and their compressed 
@@ -221,7 +221,7 @@
             </p>
           </li>
           <li>
-            <pre><span class="prompt">$</span> brew init [&lt;template_name&gt;]</pre>
+            <pre><span class="prompt">$</span> brewer init [&lt;template_name&gt;]</pre>
             <p>
               This command tells brewer to make a Brewfile in the current directory, according to the template 
               provided, and make an initial directory structure to support the project.
