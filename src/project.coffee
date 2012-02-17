@@ -1,46 +1,82 @@
+# ## The *Project* class
+#
+# This module exports the *Project* class. A *Project* object
+# is tightly coupled with, as well as initialized with, a 
+# [Brewfile](brewfile.html). It contains a set of 
+# packages, as well as cross-project configurations, such as *vendor libraries*.
+# Vendor libraries are entities that can export one or many 
+# [sources](source.html), of different types, which can be used when 
+# aggregating bundles. 
+#
+# > *TODO*: Vendor libraries are currently *not documented*, because, 
+# although they are functional, there is no easy way for someone 
+# to include them in their project. This is implemented mostly to prepare
+# for an upcoming feature : *[Homebrew](http://mxcl.github.com/homebrew)-style 
+# formulas*
+
+# Underscore, core modules and CLI utilities are loaded.
 _ = require 'underscore'
 path = require 'path'
 fs = require 'fs'
-{Package} = require '../lib'
-{debug, warning} = require './command'
-util = require './util'
+{debug, warning, info} = require './command'
 
+# The Project class is initialized with a Brewfile, which immidiately
+# calls the `setup` instance method. There, the `configs` function
+# exported from [brewfile.coffee](brewfile.html) is called with the
+# given brewfile as argument, to obtain an project configuration object.
+# This object is then given default values and used to initialize
+# the project vendor libraries and packages. Packages are inserted as
+# *array elements* in the project.
 class Project
   constructor: (@file) -> @setup()
   setup: ->
-    opts = (require './brewfile').configs @file
-    _.defaults opts,
+    configs = (require './brewfile').configs @file
+    _.defaults configs,
       root: '.'
       reqs: []
       packages: []
       vendorDir: './vendor'
     
-    {@root, reqs, packages, vendorDir} = opts
-    @vendorlibs = new VendorLibraries @, vendorDir, reqs
+    {@root, reqs, packages, vendorDir} = configs
+    @vendorlibs = new VendorLibraries this, vendorDir, reqs
     @length = packages.length
     _.each packages, (pkg, i) =>
-      @[i] = Package.create pkg.opts, pkg.srcs, @vendorlibs
+      this[i] = (require './package').Package.create pkg.opts, pkg.srcs, @vendorlibs
+    
   
+  
+  # These two methods barely proxy methods with the same name, but invoked on all 
+  # contained packages.
   clean: ->
-    pkg.clean?() for pkg in @
+    pkg.clean?() for pkg in this
   
   prepare: ->
-    pkg.prepare?() for pkg in @
+    pkg.prepare?() for pkg in this
   
+  
+  # This method proxies the method with the same name, invoked on all contained 
+  # packages, and sets up a 
+  # [FSWatchers](http://nodejs.org/docs/latest/api/fs.html#fs.FSWatcher) for the
+  # Brewfile used for this project's configuration. It passes the `reset` instance
+  # methods as the reset callback for all watching methods.
   watch: ->
-    pkg.watch(_.bind(@reset, @)) for pkg in @
-    @configWatcher = fs.watch @file, (event) =>
-      @reset()
-    
-    @configWatcher.on 'error', _.bind(@reset, @)
+    pkg.watch(_.bind(@reset, this)) for pkg in this
+    @configWatcher = fs.watch @file, (event) => @reset()
+    @configWatcher.on 'error', _.bind(@reset, this)
   
+  
+  # This method is the `reset` callback invoked when any relevant change occur
+  # in the project. If an error is passed, it is thrown. Otherwise, the 
+  # Brewfile FSWatcher is closed, and the `unwatch` method is called on each
+  # packages. Finally, it deletes instance variables, contained packages and
+  # re-invokes the `setup` instance method to start over.
   reset: (err) ->
     throw err if err?
     @configWatcher?.close()
     
-    for pkg, i in @
+    for pkg, i in this
       pkg.unwatch()
-      delete @[i]
+      delete this[i]
     
     delete @length
     delete @vendorlibs
@@ -51,7 +87,7 @@ class Project
 class VendorLibraries
   constructor: (@project, vendorDir, @requirements) ->
     @root = path.join @project.root, vendorDir
-    util.makedirs @root
+    (require './util').makedirs @root
     @libs = @read()
   
   stateFile: -> 
@@ -75,5 +111,6 @@ class VendorLibraries
         libs.push _lib
     
     libs
+  
 
 exports.Project = Project

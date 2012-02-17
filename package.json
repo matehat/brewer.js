@@ -1,6 +1,6 @@
 {
   "name" : "brewer",
-  "version" : "0.2.2",
+  "version" : "0.3.2",
   "description" : "Asset compilation/packaging/compression utility",
   "keywords": [
     "javascript", "coffeescript", "asset", "compression", 
@@ -12,7 +12,8 @@
     "node": ">=0.6.0"
   },
   "directories": {
-    "lib": "./lib"
+    "lib": "./lib",
+    "docs": "./docs"
   },
   "bin": {
     "brewer": "./bin/brewer"
@@ -23,21 +24,21 @@
   },
   "dependencies": {
     "underscore": ">= 0.0.1",
+    "commander": ">= 0.5.0",
     "uglify-js": ">= 1.2.0",
     "walker": ">= 1.0.0",
     "growl": ">= 1.4.0",
     "ansi-color": ">= 0.2.0",
     "semver": ">= 1.0.0",
-    "request": ">= 2.9.0"
+    "request": ">= 2.9.0",
+    "stylus": ">= 0.22.0",
+    "coffee-script": ">= 1.1.0",
+    "css-compressor": ">= 1.0.0",
+    "less": ">= 1.2.0"
   },
   "devDependencies": {
-    "coffee-script": ">= 1.1.0",
-    "less": ">= 1.2.0",
     "jsdom": ">= 0.2.10",
     "cssom": ">= 0.2.0",
-    "ncss": ">= 1.1.0",
-    "stylus": ">= 0.22.0",
-    "nib": ">= 0.3.0",
     "docco": ">= 0.3.0"
   }
 }
