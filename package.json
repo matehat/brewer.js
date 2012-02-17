@@ -30,8 +30,7 @@
     "ansi-color": ">= 0.2.0",
     "semver": ">= 1.0.0",
     "request": ">= 2.9.0",
-    "coffee-script": ">= 1.1.0",
-    "css-compressor": ">= 1.0.0"
+    "coffee-script": ">= 1.1.0"
   },
   "devDependencies": {
     "jsdom": ">= 0.2.10",
