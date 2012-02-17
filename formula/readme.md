@@ -41,8 +41,10 @@ Within the body of this formula definition, the following methods can be used :
 
   The last, and the simplest, is a single URL string in an anonymous function:
   
-        @urls -> 'https://raw.github.com/douglascrockford/JSON-js/master/json2.js'
-        
+```coffeescript
+  @urls -> 'https://raw.github.com/douglascrockford/JSON-js/master/json2.js'
+```
+
   In fact, this is the same form as the first. We just simply didn't take the version into account.
 
 #### @exports
