@@ -227,6 +227,15 @@
               provided, and make an initial directory structure to support the project.
             </p>
           </li>
+          <li>
+            <pre><span class="prompt">$</span> brewer install</pre>
+            <p>
+              This command tells Brewer.js to install all missing Node.js modules that it needs to work properly
+              with the current project. For instance, had I put a few <code>@coffeescript</code> source directives 
+              in the project's Brewfile, Brewer.js will make sure the coffee-script module is available, installing 
+              it under its own project directory if not.
+            </p>
+          </li>
         </ul>
       </section>
       
@@ -235,7 +244,10 @@
         
         <div class="row">
           <div class="span8"><dl>
-            
+          
+          <dt class="version">0.3.3</dt>
+          <dd>Fixed a few bugs and added a `brewer install` command.</dd>
+          
           <dt class="version">0.3.2</dt>
           <dd>Fixed a bug that made the CSS compression fail under certain circumstances.</dd>
           
