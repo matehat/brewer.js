@@ -66,10 +66,10 @@ Within the body of this formula definition, the following methods can be used :
   the structure of the vendor library according to the version installed.
   The `@main` directive is used to specify a main source file (for a particular type) for the vendor library. It
   has the form `@main(<type>, <relative path>)`. For the case above, it adds a shorter access path of simply    
-  `bootstrap`, pointing to the file located at `./less/bootstrap.less`.
-  `@dir` has the form of `@dir(<source type>, <relative path>, [<options>])`. Each of those directories
-  will be added as *sources* in the project packages, thus the `<source type>` argument. The trailing `options`
-  object can provide the following values:
+  `bootstrap`, pointing to the file located at `./less/bootstrap.less`. `@dir` has the form of 
+  `@dir(<source type>, <relative path>, [<options>])`. Each of those directories will be added as *sources* in 
+  the project packages, thus the `<source type>` argument. The trailing `options` object can provide the 
+  following values:
   
   * `prefix`
   
