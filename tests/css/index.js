@@ -23,6 +23,14 @@ exports.tests = {
     project.clean();
   },
   
+  'Requirements': function(next) {
+    assert.ok(project.requiredModules().length == 3);
+    OK('The project has 3 requirements');
+    assert.ok(project.missingModules().length == 0);
+    OK('The project doesn\'t have missing required modules');
+    next();
+  },
+  
   'Packaging LESS stylesheets': function(next) {
     csspackage.actualize(function() {
       css = cssom.parse(fs.readFileSync('./css/build-less/testless1.css', 'utf-8')).cssRules;

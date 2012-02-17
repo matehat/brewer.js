@@ -23,6 +23,13 @@ exports.tests = {
   clean: function() {
     project.clean();
   },
+  'Requirements': function(next) {
+    assert.ok(project.requiredModules().length == 2);
+    OK('The project has 2 requirements');
+    assert.ok(project.missingModules().length == 0);
+    OK('The project doesn\'t have missing required modules');
+    next()
+  },
   'Packaging Coffeescript': function(next) {
     jspackage.actualize(function() {
       test = require('./js/build/test');
