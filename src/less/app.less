@@ -1,0 +1,59 @@
+// import ["bootstrap", "united"]
+.share { font-family: 'Share', cursive; }
+body {
+  padding-top: 60px;
+  background-image: url(../img/backg.jpg);
+}
+pre {
+  &.console {
+    background-color: #333;
+    color: #fff;
+  }
+  span.fn { color: rgba(118, 209, 255, 1); }
+  span.info { color: green; }
+  span.prompt { color: #888; }
+}
+
+section {
+  &#overview {
+    h1, h3, a.brand { .share }
+    h1 { font-size: 50px; }
+    h3 { font-size: 24px; }
+  }
+  
+  &[class] {
+    h1 { 
+      .share;
+      padding-top: 60px;
+      font-size: 36px;
+    }
+    h2 {
+      font-size: 18px;
+      padding-top: 60px;
+    }
+    h1 + h2 { padding-top: 20px; }
+  }
+  
+  &.changelog {
+    dl { margin-left: 20px; }
+    dd { margin-top: 10px; }
+    dt { 
+      width: 100%;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+  }
+  
+  div.gist { margin: 20px 0; }
+}
+
+i.icon-github {
+  background-image: url(../img/github.png);
+  background-position: 0 0;
+  width: 16px;
+  height: 16px;
+}
+.navbar i[class^=icon-] {
+  position: relative;
+  top: 1px;
+}

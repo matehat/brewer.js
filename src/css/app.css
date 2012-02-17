@@ -1,6 +1,8 @@
-/* import ["bootstrap", "united"] */
+.share {
+  font-family: 'Share', cursive;
+}
 body {
-  padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+  padding-top: 60px;
   background-image: url(../img/backg.jpg);
 }
 pre.console {
@@ -8,7 +10,7 @@ pre.console {
   color: #fff;
 }
 pre span.fn {
-  color: rgba(118, 209, 255, 1);
+  color: #76d1ff;
 }
 pre span.info {
   color: green;
@@ -16,46 +18,41 @@ pre span.info {
 pre span.prompt {
   color: #888;
 }
-h1.title {
+section#overview h1,
+section#overview h3,
+section#overview a.brand {
   font-family: 'Share', cursive;
+}
+section#overview h1 {
   font-size: 50px;
 }
-h3.title {
+section#overview h3 {
   font-size: 24px;
 }
-h3.title, a.brand {
+section[class] h1 {
   font-family: 'Share', cursive;
-}
-section h1 {
+  padding-top: 60px;
   font-size: 36px;
-  font-family: 'Share', cursive;
 }
-section h2 {
+section[class] h2 {
   font-size: 18px;
   padding-top: 60px;
 }
-section h1 + h2 {
+section[class] h1 + h2 {
   padding-top: 20px;
 }
-section h3 {
-  font-size: 14px;
-}
-section[class] h1 {
-  padding-top: 60px;
-}
-
-.changelog dl {
+section.changelog dl {
   margin-left: 20px;
 }
-.changelog dt {
-  width: 100px;
+section.changelog dd {
+  margin-top: 10px;
+}
+section.changelog dt {
+  width: 100%;
   margin-top: 10px;
   font-size: 16px;
 }
-.changelog dd {
-  margin-top: 10px;
-}
-div.gist {
+section div.gist {
   margin: 20px 0;
 }
 i.icon-github {

@@ -10,4 +10,5 @@
     build: './css'
   
   @bundles 'app'
+  @less './src/less', output: './src/css'
   @css './src/css'
