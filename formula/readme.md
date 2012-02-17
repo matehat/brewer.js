@@ -55,21 +55,21 @@ Within the body of this formula definition, the following methods can be used :
 
 ```coffeescript
   @exports ->
-    @dir  'less',       './less', {prefix: 'styles'}
-    @main 'less',       './less/bootstrap.less'
-    @dir  'javascript', './js'
+    @javascript './js'
+    @less './less',  {prefix: 'styles'}
+    @main 'less', './less/bootstrap.less'
 ```
           
-  This shows a few characteristics of a an `@export` directive. First, `@export` is followed by an anonymous
+  This shows a few characteristics of an `@export` directive. First, `@export` is followed by an anonymous
   function, whose body will specify the individual directories to include, using the `@dir` directive. This
   function receives a single argument : the installed version. This allows the function body to vary its
   the structure of the vendor library according to the version installed.
   The `@main` directive is used to specify a main source file (for a particular type) for the vendor library. It
   has the form `@main(<type>, <relative path>)`. For the case above, it adds a shorter access path 
-  of simply `bootstrap`, pointing to the file located at `./less/bootstrap.less`. `@dir` has the form of 
-  `@dir(<source type>, <relative path>, [<options>])`. Each of those directories will be added as *sources* in 
-  the project packages, thus the `<source type>` argument. The trailing `options` object can provide the 
-  following values:
+  of simply `bootstrap`, pointing to the file located at `./less/bootstrap.less`. `@less`, `@javascript` (and 
+  friends) have the form of `@<source_type>(<relative path>, [<options>])`. They are meant to look a lot like
+  the sources found in a package. Each of those will be added as *sources* in the project packages, thus 
+  the resemblance. The trailing `options` object can provide the following values:
   
   * `prefix`
   
@@ -90,7 +90,7 @@ Within the body of this formula definition, the following methods can be used :
   @exports <type>, <option>
   # equivalent to
   @exports ->
-    @dir <type>, '.', <option>
+    @<type> '.', <option>
 ```
 
   This implies that the whole vendor library is added as a single *source*, of the type provided, with the given 
