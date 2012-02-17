@@ -18,7 +18,7 @@ task 'docs', 'Produce HTML documentation in docs/ subfolder', ->
     'project', 'package', 'source', 'file'
     
     'extensions/javascript', 'extensions/css'
-    'extensions/coffee-script'
+    'extensions/coffee-script', 'extensions/iced-coffee-script'
     'extensions/less', 'extensions/stylus'
   ]
   docco = spawn './node_modules/docco/bin/docco', ("src/#{f}.coffee" for f in files)
