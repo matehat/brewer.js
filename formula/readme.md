@@ -1,7 +1,7 @@
 ## Brewer.js Formulae
 
-Brewer.js Formulae are a easy way, for users of Brewer.js to install vendor libraries 
-into their project. Formulae can be easily be added to this directory and immediately
+Brewer.js Formulae are a easy way, for users of Brewer.js, to install vendor libraries 
+into their project. Formulae can easily be added to this directory and immediately
 available to Brewer.js users, by forking the project, adding a formula and making a pull
 request to merge in your new-born formula.
 
@@ -10,8 +10,10 @@ request to merge in your new-born formula.
 A formula file can include one or more formulae, tightly related to each other. For example,
 the `jquery.coffee` formula file contains a `jquery` formula and a `jquery-dev` formula.This is the directive that starts off the definition of a formula
 
-    formula '<formula_name>', ->
-  
+```coffeescript
+formula '<formula_name>', ->
+```
+
 Within the body of this formula definition, the following methods can be used :
   
 #### @urls 
@@ -21,18 +23,22 @@ Within the body of this formula definition, the following methods can be used :
   is an object that can be coerced to its string representation. It also contain its `major`, `minor`, 
   `patch` and `tag` components (assuming `[major].[minor].[patch]-[tag]`)
 
-        @urls (v) ->
-          "https://ajax.googleapis.com/ajax/libs/jquery/#{v}/jquery.js"
-  
+```coffeescript
+  @urls (v) ->
+    "https://ajax.googleapis.com/ajax/libs/jquery/#{v}/jquery.js"
+```
+
   The second form is through an object, with keys being either versions, version ranges or the 'latest'
   keyword. The values can be a URL string or a function, like above :
   
-        @urls
-          "latest": "https://github.com/jquery/jquery/tarball/master"
-          "1.X.X": (v) ->
-            v = if v.patch is '0' then "#{v.major}.#{v.minor}" else v
-            "https://github.com/jquery/jquery/tarball/#{v}"
-  
+```coffeescript
+  @urls
+    "latest": "https://github.com/jquery/jquery/tarball/master"
+    "1.X.X": (v) ->
+      v = if v.patch is '0' then "#{v.major}.#{v.minor}" else v
+      "https://github.com/jquery/jquery/tarball/#{v}"
+```
+
   The last, and the simplest, is a single URL string in an anonymous function:
   
         @urls -> 'https://raw.github.com/douglascrockford/JSON-js/master/json2.js'
@@ -44,11 +50,13 @@ Within the body of this formula definition, the following methods can be used :
   **Required**. This tells Brewer.js how it should interact with a *staged* vendor library. A vendor
   library could contain, like in the case of [bootstrap][2], a mix of javascript and less files. For that case,
   a formula for bootstrap could contain the following snippet :
-  
-        @exports ->
-          @dir  'less',       './less', {prefix: 'styles'}
-          @main 'less',       './less/bootstrap.less'
-          @dir  'javascript', './js'
+
+```coffeescript
+  @exports ->
+    @dir  'less',       './less', {prefix: 'styles'}
+    @main 'less',       './less/bootstrap.less'
+    @dir  'javascript', './js'
+```
           
   This shows a few characteristics of a an `@export` directive. First, `@export` is followed by an anonymous
   function, whose body will specify the individual directories to include, using the `@dir` directive. This
@@ -76,10 +84,12 @@ Within the body of this formula definition, the following methods can be used :
   
   For some really simple formulae, the `@exports` directive can be of another form, which is :
   
-        @exports <type>, <option>
-        # equivalent to
-        @exports ->
-          @dir <type>, '.', <option>
+```coffeescript
+  @exports <type>, <option>
+  # equivalent to
+  @exports ->
+    @dir <type>, '.', <option>
+```
 
   This implies that the whole vendor library is added as a single *source*, of the type provided, with the given 
   options.
@@ -108,10 +118,12 @@ Within the body of this formula definition, the following methods can be used :
   What versions are available, if applicable. This can be in the form of an object, mapping versions to md5 
   checksums, for better reliability. The versions must comply to [semantic versioning][1] :
   
-        @versions '1.6.4', '1.7.1'
-        @versions
-          '1.6.4': 'be5cda8fa534e4db49425efbbf36c565'
-          '1.7.1': '273e017fd0bef143258516bdee173a1e'
+```coffeescript
+  @versions '1.6.4', '1.7.1'
+  @versions
+    '1.6.4': 'be5cda8fa534e4db49425efbbf36c565'
+    '1.7.1': '273e017fd0bef143258516bdee173a1e'
+```
 
 #### @homepage
 
