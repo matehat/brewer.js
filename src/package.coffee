@@ -275,8 +275,9 @@ class Package extends (require 'events').EventEmitter
   # This method is used to remove all files that were marked as 
   # *impermanent* (see next method).
   clean: ->
-    for file in @impermanents()
-      file.unlinkSync()
+    @ready =>
+      for file in @impermanents()
+        file.unlinkSync()
   
   
   # This method returns a list of all *impermanent* files which includes, 

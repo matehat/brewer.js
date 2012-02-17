@@ -142,8 +142,7 @@ exports.run = (argv) ->
         packages = (pkg for pkg in project when pkg.name in names)
       
       for pkg in packages
-        do (pkg) ->
-          pkg.clean()
+        do (pkg) -> pkg.clean()
     
   
   # #### The `install` command
