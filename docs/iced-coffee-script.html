@@ -1,0 +1,49 @@
+<!DOCTYPE html>  <html> <head>   <title>iced-coffee-script.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="brewfile.html">                 brewfile.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="coffee-script.html">                 coffee-script.coffee               </a>                                           <a class="source" href="css.html">                 css.coffee               </a>                                           <a class="source" href="iced-coffee-script.html">                 iced-coffee-script.coffee               </a>                                           <a class="source" href="javascript.html">                 javascript.coffee               </a>                                           <a class="source" href="less.html">                 less.coffee               </a>                                           <a class="source" href="stylus.html">                 stylus.coffee               </a>                                           <a class="source" href="file.html">                 file.coffee               </a>                                           <a class="source" href="index.html">                 index.coffee               </a>                                           <a class="source" href="package.html">                 package.coffee               </a>                                           <a class="source" href="project.html">                 project.coffee               </a>                                           <a class="source" href="source.html">                 source.coffee               </a>                                           <a class="source" href="util.html">                 util.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               iced-coffee-script.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h3>Iced Coffeescript extension</h3>
+
+<p>The iced-coffee-script extension works by compiling all <em>.iced</em> files
+contained in a source of type <em>icedcoffeescript</em>, into an output 
+directory. That compiled file is marked as impermanent and depends on 
+the original <em>.iced</em> file. Imports specified into a <em>.iced</em> file
+are carried over to the compiled <em>javascript</em> file.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Underscore, CLI utilities and the <em>Source</em> class are loaded</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">{</span><span class="nx">debug</span><span class="p">,</span> <span class="nx">finished</span><span class="p">,</span> <span class="nx">showError</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;../command&#39;</span>
+<span class="p">{</span><span class="nx">Source</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;../source&#39;</span>
+
+<span class="k">class</span> <span class="nx">CoffeescriptSource</span> <span class="k">extends</span> <span class="nx">Source</span><span class="p">.</span><span class="nx">coffeescript</span>
+  <span class="vi">@type = </span><span class="s1">&#39;icedcoffeescript&#39;</span>
+  <span class="vi">@aliases = </span><span class="p">[</span><span class="s1">&#39;iced-coffee-script&#39;</span><span class="p">,</span> <span class="s1">&#39;ics&#39;</span><span class="p">]</span>
+  <span class="vi">@header = </span><span class="sr">/^#\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m</span>
+  <span class="vi">@ext = </span><span class="s1">&#39;.iced&#39;</span>
+  <span class="nv">requiredModules: </span><span class="o">-&gt;</span> <span class="p">[</span><span class="s1">&#39;iced-coffee-script&#39;</span><span class="p">]</span>
+  <span class="nv">constructor: </span><span class="nf">(options) -&gt;</span>
+    <span class="k">super</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>We make an additional available option on this type of source:
+<code>runtime</code>, which can be either 'window' or 'node'. In the first case,
+which is also the default, utilities essential to IcedCoffeescript are
+attached to the window object and in the second, they are pulled using
+node.js's normal module system (which requires the user to have 
+iced-coffee-script installed).</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;underscore&#39;</span><span class="p">).</span><span class="nx">defaults</span> <span class="nx">options</span><span class="p">,</span> <span class="p">{</span><span class="nv">runtime: </span><span class="s1">&#39;window&#39;</span><span class="p">}</span>
+    <span class="p">{</span><span class="nx">@runtime</span><span class="p">}</span> <span class="o">=</span> <span class="nx">options</span>
+  </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>This method takes two files and continuation callback, the first
+being a iced-coffeescript source file and the second its compiled 
+counterpart. This follows the convention needed by the <code>file.dependOn</code>
+method. This method gets called whenever the second file is invalidated
+and needs updating. What it does is simply to compile icedcoffeescript code
+from the first file and output the result to the second file, all of
+this using the <code>file.project</code> method.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">compile: </span><span class="nf">(original, compiled, cb) -&gt;</span>
+    <span class="nv">compile = </span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">cb2</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="k">try</span>
+        <span class="nv">ndata = </span><span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;iced-coffee-script&#39;</span><span class="p">).</span><span class="nx">compile</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="p">{</span><span class="nv">runtime: </span><span class="nx">@runtime</span><span class="p">})</span>
+        <span class="nx">cb2</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">ndata</span>
+      <span class="k">catch</span> <span class="nx">err</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>In case the compilation triggered an error, we catch it
+and display it in the CLI, aborting the compilation, but
+continuing the package actualization.</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nx">showError</span> <span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="nx">original</span><span class="p">.</span><span class="nx">fullpath</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nx">message</span>
+        <span class="nx">cb</span><span class="p">()</span>
+    
+    <span class="nx">original</span><span class="p">.</span><span class="nx">project</span> <span class="nx">compiled</span><span class="p">,</span> <span class="nx">compile</span><span class="p">,</span> <span class="nf">(err) -&gt;</span>
+      <span class="nx">cb</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span>
+      <span class="nx">finished</span> <span class="s1">&#39;Compiled&#39;</span><span class="p">,</span> <span class="nx">original</span><span class="p">.</span><span class="nx">fullpath</span>
+      <span class="nx">cb</span><span class="p">()</span>
+    
+  
+
+<span class="nx">Source</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">CoffeescriptSource</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
