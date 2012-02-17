@@ -4018,11 +4018,25 @@ h1.title {
   font-family: 'Share', cursive;
   font-size: 50px;
 }
-h3.title, a.brand, section > h3 {
+h3.title {
+  font-size: 24px;
+}
+h3.title, a.brand {
   font-family: 'Share', cursive;
 }
-section > h3 {
-  font-size: 30px;
+section h1 {
+  font-size: 36px;
+  font-family: 'Share', cursive;
+}
+section h2 {
+  font-size: 18px;
+  padding-top: 60px;
+}
+section h1 + h2 {
+  padding-top: 20px;
+}
+section h3 {
+  font-size: 14px;
 }
 section {
   padding-top: 60px;
@@ -4031,15 +4045,15 @@ section#overview {
   padding-top: 0px;
 }
 
-#changelog dl {
+.changelog dl {
   margin-left: 20px;
 }
-#changelog dt {
+.changelog dt {
   width: 100px;
   margin-top: 10px;
   font-size: 16px;
 }
-#changelog dd {
+.changelog dd {
   margin-top: 10px;
 }
 div.gist {
