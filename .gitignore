@@ -4,3 +4,4 @@ tests/css/css/build*
 tests/css/cache
 *.log
 node_modules/
+lib/
