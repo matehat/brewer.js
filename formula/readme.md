@@ -14,7 +14,7 @@ the `jquery.coffee` formula file contains a `jquery` formula and a `jquery-dev` 
 formula '<formula_name>', ->
 ```
 
-Within the body of this formula definition, the following methods can be used :
+Within the body of this formula definition, the following methods can be used:
   
 #### @urls 
 
@@ -29,7 +29,7 @@ Within the body of this formula definition, the following methods can be used :
 ```
 
   The second form is through an object, with keys being either versions, version ranges or the 'latest'
-  keyword. The values can be a URL string or a function, like above :
+  keyword. The values can be a URL string or a function, like above:
   
 ```coffeescript
   @urls
@@ -51,7 +51,7 @@ Within the body of this formula definition, the following methods can be used :
 
   **Required**. This tells Brewer.js how it should interact with a *staged* vendor library. A vendor
   library could contain, like in the case of [bootstrap][2], a mix of javascript and less files. For that case,
-  a formula for bootstrap could contain the following snippet :
+  a formula for bootstrap could contain the following snippet:
 
 ```coffeescript
   @exports ->
@@ -62,7 +62,7 @@ Within the body of this formula definition, the following methods can be used :
           
   This shows a few characteristics of an `@exports` directive. First, `@exports` is followed by an anonymous
   function, whose body will specify the individual directories to include, using the `@dir` directive. This
-  function receives a single argument : the installed version. This allows the function body to vary its
+  function receives a single argument: the installed version. This allows the function body to vary its
   the structure of the vendor library according to the version installed.
   The `@main` directive is used to specify a main source file (for a particular type) for the vendor library. It
   has the form `@main(<type>, <relative path>)`. For the case above, it adds a shorter access path 
@@ -84,7 +84,7 @@ Within the body of this formula definition, the following methods can be used :
     pointed to by the access path of `<project name>/<prefix>`. Otherwise, it specifies the file pointed by
     `<project name>`. Without the `prefix` option, this is equivalent to the `@main` directive.
   
-  For some really simple formulae, the `@exports` directive can be of another form, which is :
+  For some really simple formulae, the `@exports` directive can be of another form, which is:
   
 ```coffeescript
   @exports <type>, <option>
@@ -100,7 +100,7 @@ Within the body of this formula definition, the following methods can be used :
 
   This is the directive that specify how to install the vendor library. It takes a single argument: an anonymous
   function called when installing the library. This function receives the installed version as its only argument.
-  In the function body, a couple of methods are made available : 
+  In the function body, a couple of methods are made available: 
   
   * `@stage(<path>, [<new name>])`
     
@@ -118,7 +118,7 @@ Within the body of this formula definition, the following methods can be used :
 #### @versions
 
   What versions are available, if applicable. This can be in the form of an object, mapping versions to md5 
-  checksums, for better reliability. The versions must comply to [semantic versioning][1] :
+  checksums, for better reliability. The versions must comply to [semantic versioning][1]:
   
 ```coffeescript
   @versions '1.6.4', '1.7.1'
@@ -129,12 +129,15 @@ Within the body of this formula definition, the following methods can be used :
 
 #### @homepage
 
-  This helps keep track of homepages for the installed vendor libraries.
+  This helps keep track of homepages for the installed vendor libraries. It has the form of `@homepage(<url>)`
 
 #### @doc
 
   This function can be in either of the forms allowed by `@urls`. It is used to keep
   track of where to find proper documentation for the installed vendor libraries.
+  
+Feel free to glimpse through the existing example to get a better understanding of formulae, and how you can
+roll your own!
 
 [1]: http://semver.org/
 [2]: http://twitter.github.com/bootstrap/
