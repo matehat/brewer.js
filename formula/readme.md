@@ -60,7 +60,7 @@ Within the body of this formula definition, the following methods can be used :
     @main 'less', './less/bootstrap.less'
 ```
           
-  This shows a few characteristics of an `@export` directive. First, `@export` is followed by an anonymous
+  This shows a few characteristics of an `@exports` directive. First, `@exports` is followed by an anonymous
   function, whose body will specify the individual directories to include, using the `@dir` directive. This
   function receives a single argument : the installed version. This allows the function body to vary its
   the structure of the vendor library according to the version installed.
