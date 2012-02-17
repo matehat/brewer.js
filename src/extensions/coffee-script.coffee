@@ -18,6 +18,7 @@ class CoffeescriptSource extends Source
   @aliases = ['coffee-script', 'cs']
   @header = /^#\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
   @ext = '.coffee'
+  requiredModules: -> ['coffee-script']
   
   # This method overrides the `createFile` instance method to create 
   # a compiled counterpart for every coffeescript source file found.

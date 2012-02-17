@@ -20,6 +20,8 @@ Watching a whole project structure of Coffee-script, LESS or Stylus source files
 
 ### Installation
 
+#### Using a prepared package
+
 To setup Brewer.js, make sure you have [installed Node.js](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager). When this is done, enter the terminal and type.
 
     $ npm install -g brewer
@@ -31,6 +33,23 @@ The `-g` flag is used to make the installation global, so you get access to the 
 The `<template name>` part is optional. Anyway, for the moment, there is only one template available, **lesscoffee**, which is also the default. This template sets up LESS and Coffeescript support for the current directory.
 
 What this does is create a Brewfile in the current directory, according to the template provided and run `brewer make` on it (see Usage).
+
+#### Using this repository
+
+You need Node.js, as well as coffee-script, installed globally to get the `cake` executable. You can do so by doing :
+
+    $ npm install -g coffee-script
+    
+Then, to get brewer.js to work locally
+
+    $ git clone git@github.com:matehat/brewer.js.git brewer
+    $ cd brewer
+    $ npm install
+    $ cake build
+  
+Then, if you want the `brewer` executable, you can do
+
+    $ npm link
 
 ### Brewfile
 
@@ -78,16 +97,17 @@ Now for a real-world example, so we don't get lost too quickly. Say we want to m
 
 ```
 Root folder
-|- js
-|- coffee
-|- css
-|- less
-|- vendor
-  |- bootstrap
-  | |- less
-  | |- js
-  |- chosen
-  |- jquery.js
+|-- js
+|-- coffee
+|-- css
+|-- less
+|-- vendor
+    |-- bootstrap
+    |   |- less
+    |   |- js
+    |
+    |-- chosen
+    |-- jquery.js
 ```
 
 So there are files that ends up as javascript and those that ends up as css. Let's write a Brewfile that takes this structure into account.
@@ -103,6 +123,7 @@ stylesheets 'styles', {build: './css'} ->
     @bundles 'home', 'products'
 
     @less './less'
+    @less './vendor/bootstrap/less'
     @css './vendor'
 ```
 
@@ -152,6 +173,13 @@ The command-line interface for brewer provides a few methods to manage the asset
 * `brewer init <template_name>`
 
     This command tells brewer to make a Brewfile in the current directory, according to the template provided, and make an initial directory structure to support the project.
+    
+* `brewer install`
+
+    This command tells Brewer.js to install all missing Node.js modules that it needs to work properly
+    with the current project. For instance, had I put a few `@coffeescript` source directives in the project's 
+    Brewfile, Brewer.js will make sure the coffee-script module is available, installing it under its own 
+    project directory if not.
 
 ### MIT License
 

@@ -19,7 +19,7 @@ fs    = require 'fs'
 {EventEmitter} = require 'events'
 
 _ = require 'underscore'
-{finished, debug, info} = require './command'
+{finished, debug, info, showError} = require './command'
 
 #### Initialization
 #
@@ -43,7 +43,12 @@ class File extends EventEmitter
   attach: (fullpath, source) ->
     if @attached()
       if fullpath isnt @fullpath
-        throw new Error "File already attached to #{@fullpath}"
+        showError 'with', fullpath, ':', """
+        The file "#{@relpath}" is already associated with "#{@fullpath}",
+        but a new file "#{fullpath}" is trying to get associated with the
+        same accesspath. Delete or rename one or the two to solve the
+        problem. For the moment, we're keeping "#{@fullpath}".
+        """
     else
       [@fullpath, @source] = [fullpath, source]
       @emit 'attach'

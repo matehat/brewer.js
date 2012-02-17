@@ -15,6 +15,10 @@ class StylesheetsPackage extends Package
   @compressedext = '.min.css'
   @ext = '.css'
   
+  requiredModules: -> 
+    [super()..., 'css-compressor']
+  
+  
   # This method complies to the convention required by the `file.dependOn`
   # method, so it gets called whenever a dependent file in invalidated
   # and must be updated, relative to its source file. It takes an original

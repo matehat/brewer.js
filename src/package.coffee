@@ -206,6 +206,14 @@ class Package extends (require 'events').EventEmitter
       _.template(compress) filename: file.relpath
   
   
+  # This method returns a list of modules required by the package, in its 
+  # current state, including its contained sources, to function properly.
+  requiredModules: ->
+    _.chain(@sources)
+      .values().flatten().invoke('requiredModules')
+      .flatten().uniq().value()
+  
+  
   # This method is used to make sure the package is ready before 
   # performing an action. It takes a continuation callback, called
   # immediately if the package is already ready, or as soon as it is.
@@ -267,8 +275,9 @@ class Package extends (require 'events').EventEmitter
   # This method is used to remove all files that were marked as 
   # *impermanent* (see next method).
   clean: ->
-    for file in @impermanents()
-      file.unlinkSync()
+    @ready =>
+      for file in @impermanents()
+        file.unlinkSync()
   
   
   # This method returns a list of all *impermanent* files which includes, 

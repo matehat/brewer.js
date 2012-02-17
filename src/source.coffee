@@ -69,10 +69,14 @@ class Source
       watch: true 
       output: './_cache'
     }
-    {@path, @requirements} = @options
+    {@path, @requirements, @output} = @options
     @shouldWatch = @options.watch
     util.makedirs @path
   
+  
+  # This method must be overridden by subclasses to specify modules it needs
+  # to operate properly.
+  requiredModules: -> []
   
   # This method creates a file through its parent `@package.file` method, 
   # using the given access path and this source's type. It assumes the

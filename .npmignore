@@ -1,8 +1,7 @@
-formula/catalog.json
 .DS_Store
 tests/js/js/
 tests/css/css/build*
 tests/css/cache
 *.log
 node_modules/
-lib/
+src/

@@ -17,6 +17,7 @@ class StylusSource extends Source
   @aliases = ['styl']
   @ext = '.styl'
   @header = /^\/\/\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
+  requiredModules: -> ['stylus']
   
   # This method overrides the `createFile` instance method to create 
   # a compiled counterpart for every stylus source file found.
