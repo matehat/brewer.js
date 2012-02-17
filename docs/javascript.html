@@ -9,6 +9,10 @@ properties and the compression behavior on the <em>Package</em> subclass.</p>   
   <span class="vi">@aliases = </span><span class="p">[</span><span class="s1">&#39;js&#39;</span><span class="p">]</span>
   <span class="vi">@compressedext = </span><span class="s1">&#39;.min.js&#39;</span>
   <span class="vi">@ext = </span><span class="s1">&#39;.js&#39;</span>
+  
+  <span class="nv">requiredModules: </span><span class="o">-&gt;</span> 
+    <span class="p">[</span><span class="k">super</span><span class="p">()...,</span> <span class="s1">&#39;uglify-js&#39;</span><span class="p">]</span>
+  
   </pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>This method complies to the convention required by the <code>file.dependOn</code>
 method, so it gets called whenever a dependent file in invalidated
 and must be updated, relative to its source file. It takes an original
@@ -29,6 +33,7 @@ updates the second.</p>             </td>             <td class="code">         
   <span class="vi">@aliases = </span><span class="p">[</span><span class="s1">&#39;js&#39;</span><span class="p">]</span>
   <span class="vi">@ext = </span><span class="s1">&#39;.js&#39;</span>
   <span class="vi">@header = </span><span class="sr">/^\/\/\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m</span>
+
 
 
 <span class="nx">Source</span><span class="p">.</span><span class="nx">extend</span> <span class="nx">JavascriptSource</span>

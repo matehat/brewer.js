@@ -143,15 +143,26 @@ if not other sources are pending, we emit the 'ready' event.</p>             </t
   
   </pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>This method is used to produce a bundle file by aggregating all the
 necessary imported files. It uses <code>file.tsortedImports</code> to obtain a
-sorted list of all necessary imports, then loops through them, reading
-the content and filling a buffer, later written on disk.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">bundle: </span><span class="nf">(imported, bundle, cb) -&gt;</span>
-    <span class="nv">output = </span><span class="s1">&#39;&#39;</span>
-    <span class="nv">parent = </span><span class="nx">bundle</span><span class="p">.</span><span class="nx">parent</span>
-    <span class="k">for</span> <span class="nx">file</span> <span class="k">in</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">tsortedImports</span><span class="p">()</span>
-      <span class="nx">output</span> <span class="o">+=</span> <span class="nx">file</span><span class="p">.</span><span class="nx">readSync</span><span class="p">()</span>
+sorted list of all necessary imports, then iterate through each, creating
+a ReadStream and piping the content to the bundle's WriteStream. When
+all content have been read, close the WriteStream and print a confirmation.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">bundle: </span><span class="nf">(imported, bundle, cb) -&gt;</span>
+    <span class="nv">i = </span><span class="mi">0</span>
+    <span class="nv">imports = </span><span class="nx">bundle</span><span class="p">.</span><span class="nx">parent</span><span class="p">.</span><span class="nx">tsortedImports</span><span class="p">()</span>
+    <span class="nv">ws = </span><span class="nx">bundle</span><span class="p">.</span><span class="nx">writeStream</span><span class="p">()</span>
+    <span class="nx">ws</span><span class="p">.</span><span class="kc">on</span> <span class="s1">&#39;close&#39;</span><span class="p">,</span> <span class="o">-&gt;</span>
+      <span class="nx">finished</span> <span class="s1">&#39;Packaged&#39;</span><span class="p">,</span> <span class="nx">bundle</span><span class="p">.</span><span class="nx">fullpath</span>
+      <span class="nx">cb</span><span class="p">()</span>
     
-    <span class="nx">bundle</span><span class="p">.</span><span class="nx">write</span> <span class="nx">output</span><span class="p">,</span> <span class="nx">cb</span>
-    <span class="nx">finished</span> <span class="s1">&#39;Packaged&#39;</span><span class="p">,</span> <span class="nx">bundle</span><span class="p">.</span><span class="nx">fullpath</span>
+    <span class="nv">iter = </span><span class="o">-&gt;</span>
+      <span class="k">if</span> <span class="nx">i</span> <span class="o">is</span> <span class="nx">imports</span><span class="p">.</span><span class="nx">length</span>
+        <span class="nx">ws</span><span class="p">.</span><span class="nx">end</span><span class="p">()</span>
+        <span class="k">return</span>
+      
+      <span class="nv">rs = </span><span class="p">(</span><span class="nv">file = </span><span class="nx">imports</span><span class="p">[</span><span class="nx">i</span><span class="o">++</span><span class="p">]).</span><span class="nx">readStream</span><span class="p">()</span>
+      <span class="nx">rs</span><span class="p">.</span><span class="nx">pipe</span> <span class="nx">ws</span><span class="p">,</span> <span class="p">{</span><span class="nv">end: </span><span class="kc">false</span><span class="p">}</span>
+      <span class="nx">rs</span><span class="p">.</span><span class="kc">on</span> <span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="nx">iter</span>
+    
+    <span class="nx">iter</span><span class="p">()</span>
   
   </pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>This method returns the full path to a bundle file.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">bundlePath: </span><span class="nf">(file) -&gt;</span> 
     <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span><span class="p">).</span><span class="nx">join</span> <span class="nx">@build</span><span class="p">,</span> <span class="nx">util</span><span class="p">.</span><span class="nx">changeext</span> <span class="nx">file</span><span class="p">.</span><span class="nx">relpath</span><span class="p">,</span> <span class="nx">@constructor</span><span class="p">.</span><span class="nx">ext</span>
@@ -162,12 +173,18 @@ the content and filling a buffer, later written on disk.</p>             </td>  
     <span class="k">else</span>
       <span class="nx">_</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="nx">compress</span><span class="p">)</span> <span class="nv">filename: </span><span class="nx">file</span><span class="p">.</span><span class="nx">relpath</span>
   
-  </pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <p>This method is used to make sure the package is ready before 
+  </pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <p>This method returns a list of modules required by the package, in its 
+current state, including its contained sources, to function properly.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">requiredModules: </span><span class="o">-&gt;</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">chain</span><span class="p">(</span><span class="nx">@sources</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">values</span><span class="p">().</span><span class="nx">flatten</span><span class="p">().</span><span class="nx">invoke</span><span class="p">(</span><span class="s1">&#39;requiredModules&#39;</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">flatten</span><span class="p">().</span><span class="nx">uniq</span><span class="p">().</span><span class="nx">value</span><span class="p">()</span>
+  
+  </pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <p>This method is used to make sure the package is ready before 
 performing an action. It takes a continuation callback, called
 immediately if the package is already ready, or as soon as it is.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">ready: </span><span class="nf">(cb) -&gt;</span> 
     <span class="k">if</span> <span class="nx">@_ready</span> <span class="k">then</span> <span class="nx">cb</span><span class="p">()</span> <span class="k">else</span> <span class="nx">@on</span> <span class="s1">&#39;ready&#39;</span><span class="p">,</span> <span class="nx">cb</span>
   
-  </pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <p>This method is used to perform all necessary tranforming and 
+  </pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <p>This method is used to perform all necessary tranforming and 
 aggregating actions for all files in the package. This includes
 compiling files into their <em>javascript</em> or <em>css</em> equivalents, 
 aggregating bundles and compressing them. This is done by finding 
@@ -188,7 +205,7 @@ after the other, asynchronously.</p>             </td>             <td class="co
       <span class="nx">iter</span><span class="p">()</span>
     
   
-  </pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <p>This method is used to first <code>actualize</code> a project and watching 
+  </pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <p>This method is used to first <code>actualize</code> a project and watching 
 behavior on all files and sources and carrying over the reset callback,
 provided usually by the parent <code>Project</code> object.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">watch: </span><span class="nf">(reset) -&gt;</span>
     <span class="nx">@actualize</span> <span class="o">=&gt;</span>
@@ -201,7 +218,7 @@ provided usually by the parent <code>Project</code> object.</p>             </td
           <span class="nx">file</span><span class="p">.</span><span class="nx">watch</span> <span class="nx">reset</span>
       
   
-  </pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <p>This method is used to remove the 
+  </pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <p>This method is used to remove the 
 <a href="http://nodejs.org/docs/latest/api/fs.html#fs.FSWatcher">FSWatchers</a> 
 from all files and sources. </p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">unwatch: </span><span class="o">-&gt;</span>
     <span class="k">for</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">sources</span> <span class="k">of</span> <span class="nx">@sources</span>
@@ -212,12 +229,12 @@ from all files and sources. </p>             </td>             <td class="code">
       <span class="nx">file</span><span class="p">.</span><span class="nx">unwatch</span><span class="p">()</span> <span class="k">for</span> <span class="nx">relpath</span><span class="p">,</span> <span class="nx">file</span> <span class="k">of</span> <span class="nx">files</span>
     
   
-  </pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <p>This method is used to remove all files that were marked as 
+  </pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <p>This method is used to remove all files that were marked as 
 <em>impermanent</em> (see next method).</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">clean: </span><span class="o">-&gt;</span>
     <span class="k">for</span> <span class="nx">file</span> <span class="k">in</span> <span class="nx">@impermanents</span><span class="p">()</span>
       <span class="nx">file</span><span class="p">.</span><span class="nx">unlinkSync</span><span class="p">()</span>
   
-  </pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <p>This method returns a list of all <em>impermanent</em> files which includes, 
+  </pre></div>             </td>           </tr>                               <tr id="section-24">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>               <p>This method returns a list of all <em>impermanent</em> files which includes, 
 for instance, compiled files, bundles
 and their compressed counterparts. The rationale behind this is that
 those files are all completely derived from source files, thus could

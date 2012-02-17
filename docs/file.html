@@ -262,8 +262,7 @@ which barely means, if it has a fullpath.</p>             </td>             <td 
 the file system.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">exists: </span><span class="o">-&gt;</span> <span class="nx">@attached</span><span class="p">()</span> <span class="o">and</span> <span class="nx">path</span><span class="p">.</span><span class="nx">existsSync</span> <span class="nx">@fullpath</span>
   </pre></div>             </td>           </tr>                               <tr id="section-36">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-36">&#182;</a>               </div>               <p>This method is used to make sure all directories leading to the
 full path exist.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">makedirs: </span><span class="o">-&gt;</span> <span class="nx">util</span><span class="p">.</span><span class="nx">makedirs</span> <span class="nx">path</span><span class="p">.</span><span class="nx">dirname</span> <span class="nx">@fullpath</span>
-  </pre></div>             </td>           </tr>                               <tr id="section-37">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-37">&#182;</a>               </div>               <p>These methods (async and sync) are used to read the content of 
-the current file.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">read: </span><span class="nf">(cb) -&gt;</span>
+  </pre></div>             </td>           </tr>                               <tr id="section-37">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-37">&#182;</a>               </div>               <p>These methods are used to read the content of the current file.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">read: </span><span class="nf">(cb) -&gt;</span>
     <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@exists</span><span class="p">()</span>
     <span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span> <span class="nx">@fullpath</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="nf">(err, data) -&gt;</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span>
   
@@ -271,7 +270,11 @@ the current file.</p>             </td>             <td class="code">           
     <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@exists</span><span class="p">()</span>
     <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span> <span class="nx">@fullpath</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span>
   
-  </pre></div>             </td>           </tr>                               <tr id="section-38">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-38">&#182;</a>               </div>               <p>These methods (async and sync) are used to write content to the current file.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">write: </span><span class="nf">(data, cb) -&gt;</span>
+  <span class="nv">readStream: </span><span class="o">-&gt;</span>
+    <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@exists</span><span class="p">()</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nx">createReadStream</span> <span class="nx">@fullpath</span><span class="p">,</span> <span class="p">{</span><span class="nv">encoding: </span><span class="s1">&#39;utf-8&#39;</span><span class="p">}</span>
+  
+  </pre></div>             </td>           </tr>                               <tr id="section-38">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-38">&#182;</a>               </div>               <p>These methods are used to write content to the current file.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">write: </span><span class="nf">(data, cb) -&gt;</span>
     <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@attached</span><span class="p">()</span>
     <span class="nx">@makedirs</span><span class="p">()</span>
     <span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span> <span class="nx">@fullpath</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="nx">cb</span>
@@ -280,6 +283,11 @@ the current file.</p>             </td>             <td class="code">           
     <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@attached</span><span class="p">()</span>
     <span class="nx">@makedirs</span><span class="p">()</span>
     <span class="nx">fs</span><span class="p">.</span><span class="nx">writeFileSync</span> <span class="nx">@fullpath</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span>
+  
+  <span class="nv">writeStream: </span><span class="o">-&gt;</span>
+    <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@attached</span><span class="p">()</span>
+    <span class="nx">@makedirs</span><span class="p">()</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nx">createWriteStream</span> <span class="nx">@fullpath</span><span class="p">,</span> <span class="p">{</span><span class="nv">encoding: </span><span class="s1">&#39;utf-8&#39;</span><span class="p">}</span>
   
   </pre></div>             </td>           </tr>                               <tr id="section-39">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-39">&#182;</a>               </div>               <p>This method is used to delete the current file.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">unlinkSync: </span><span class="o">-&gt;</span>
     <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@exists</span><span class="p">()</span>

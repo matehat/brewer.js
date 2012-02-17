@@ -12,6 +12,7 @@ are carried over to the compiled <em>javascript</em> file.</p>             </td>
   <span class="vi">@aliases = </span><span class="p">[</span><span class="s1">&#39;coffee-script&#39;</span><span class="p">,</span> <span class="s1">&#39;cs&#39;</span><span class="p">]</span>
   <span class="vi">@header = </span><span class="sr">/^#\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m</span>
   <span class="vi">@ext = </span><span class="s1">&#39;.coffee&#39;</span>
+  <span class="nv">requiredModules: </span><span class="o">-&gt;</span> <span class="p">[</span><span class="s1">&#39;coffee-script&#39;</span><span class="p">]</span>
   </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>This method overrides the <code>createFile</code> instance method to create 
 a compiled counterpart for every coffeescript source file found.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">createFile: </span><span class="nf">(path) -&gt;</span>
     <span class="nv">original = </span><span class="k">super</span>

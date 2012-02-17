@@ -17,7 +17,12 @@ aggregating bundles. </p>
 </blockquote>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Underscore, core modules and CLI utilities are loaded.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">_ = </span><span class="nx">require</span> <span class="s1">&#39;underscore&#39;</span>
 <span class="nv">path = </span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span>
 <span class="nv">fs = </span><span class="nx">require</span> <span class="s1">&#39;fs&#39;</span>
-<span class="p">{</span><span class="nx">debug</span><span class="p">,</span> <span class="nx">warning</span><span class="p">,</span> <span class="nx">info</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./command&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>The Project class is initialized with a Brewfile, which immidiately
+<span class="p">{</span><span class="nx">debug</span><span class="p">,</span> <span class="nx">warning</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="nx">finished</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./command&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>This function only tries to import the given module, and if it fails it returns
+<code>false</code> if error corresponds to a missing module error.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">testModule = </span><span class="nf">(mod) -&gt;</span>
+  <span class="k">try</span>
+    <span class="nx">require</span><span class="p">(</span><span class="nx">mod</span><span class="p">)</span>
+  <span class="k">catch</span> <span class="nx">err</span>
+    <span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;Cannot find module&#39;</span><span class="p">)</span> <span class="o">is</span> <span class="o">-</span><span class="mi">1</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>The Project class is initialized with a Brewfile, which immidiately
 calls the <code>setup</code> instance method. There, the <code>configs</code> function
 exported from <a href="brewfile.html">brewfile.coffee</a> is called with the
 given brewfile as argument, to obtain an project configuration object.
@@ -40,14 +45,48 @@ the project vendor libraries and packages. Packages are inserted as
       <span class="k">this</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;./package&#39;</span><span class="p">).</span><span class="nx">Package</span><span class="p">.</span><span class="nx">create</span> <span class="nx">pkg</span><span class="p">.</span><span class="nx">opts</span><span class="p">,</span> <span class="nx">pkg</span><span class="p">.</span><span class="nx">srcs</span><span class="p">,</span> <span class="nx">@vendorlibs</span>
     
   
-  </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>These two methods barely proxy methods with the same name, but invoked on all 
+  </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>These two methods barely proxy methods with the same name, but invoked on all 
 contained packages.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">clean: </span><span class="o">-&gt;</span>
     <span class="nx">pkg</span><span class="p">.</span><span class="nx">clean</span><span class="o">?</span><span class="p">()</span> <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="k">this</span>
   
   <span class="nv">prepare: </span><span class="o">-&gt;</span>
     <span class="nx">pkg</span><span class="p">.</span><span class="nx">prepare</span><span class="o">?</span><span class="p">()</span> <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="k">this</span>
   
-  </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>This method proxies the method with the same name, invoked on all contained 
+  </pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>This method takes the result of the <code>requiredModules</code> below and tests each one
+to see if the said modules are available. The method returns a list of unfound 
+modules.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">missingModules: </span><span class="o">-&gt;</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">reject</span> <span class="nx">@requiredModules</span><span class="p">(),</span> <span class="nx">testModule</span>
+  
+  </pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>This method asks every packages and their sources to come up with requirements
+regarding modules (coffee-script, less, etc.).</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">requiredModules: </span><span class="o">-&gt;</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">chain</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">invoke</span><span class="p">(</span><span class="s1">&#39;requiredModules&#39;</span><span class="p">).</span><span class="nx">flatten</span><span class="p">().</span><span class="nx">uniq</span><span class="p">()</span>
+      <span class="p">.</span><span class="nx">value</span><span class="p">()</span>
+  
+  </pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>This method tries to install the missing modules into Brewer.js project 
+directory. It first caches the previous working directory before changing to
+brewer.js root directory, so to return in the previous state.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">installMissingModules: </span><span class="nf">(cb) -&gt;</span>
+    <span class="p">{</span><span class="nx">spawn</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;child_process&#39;</span>
+    <span class="nv">brewerdir = </span><span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span> <span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span>
+    <span class="nv">modules = </span><span class="nx">@missingModules</span><span class="p">()</span>
+    <span class="nv">i = </span><span class="mi">0</span>
+    <span class="nv">iterate = </span><span class="o">-&gt;</span>
+      <span class="k">if</span> <span class="nx">i</span> <span class="o">is</span> <span class="nx">modules</span><span class="p">.</span><span class="nx">length</span>
+        <span class="nx">cb</span><span class="p">()</span> <span class="k">if</span> <span class="nx">cb</span><span class="o">?</span>
+        <span class="k">return</span>
+      
+      <span class="nv">mod = </span><span class="nx">modules</span><span class="p">[</span><span class="nx">i</span><span class="o">++</span><span class="p">]</span>
+      <span class="nx">info</span> <span class="s1">&#39;Installing&#39;</span><span class="p">,</span> <span class="nx">mod</span>
+      <span class="nv">npm = </span><span class="nx">spawn</span> <span class="s1">&#39;npm&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;install&#39;</span><span class="p">,</span> <span class="nx">mod</span><span class="p">],</span> <span class="p">{</span><span class="nv">cwd: </span><span class="nx">brewerdir</span><span class="p">}</span>
+      <span class="nx">npm</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">pipe</span> <span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span>
+      <span class="nx">npm</span><span class="p">.</span><span class="nx">stderr</span><span class="p">.</span><span class="nx">pipe</span> <span class="nx">process</span><span class="p">.</span><span class="nx">stderr</span>
+      <span class="nx">npm</span><span class="p">.</span><span class="kc">on</span> <span class="s1">&#39;exit&#39;</span><span class="p">,</span> <span class="o">-&gt;</span>
+        <span class="nx">finished</span> <span class="s1">&#39;installed&#39;</span><span class="p">,</span> <span class="nx">mod</span>
+        <span class="nx">iterate</span><span class="p">()</span>
+    
+    <span class="nx">iterate</span><span class="p">()</span>
+  
+  </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>This method proxies the method with the same name, invoked on all contained 
 packages, and sets up a 
 <a href="http://nodejs.org/docs/latest/api/fs.html#fs.FSWatcher">FSWatchers</a> for the
 Brewfile used for this project's configuration. It passes the <code>reset</code> instance
@@ -56,7 +95,7 @@ methods as the reset callback for all watching methods.</p>             </td>   
     <span class="vi">@configWatcher = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">watch</span> <span class="nx">@file</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">@reset</span><span class="p">()</span>
     <span class="nx">@configWatcher</span><span class="p">.</span><span class="kc">on</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">@reset</span><span class="p">,</span> <span class="k">this</span><span class="p">)</span>
   
-  </pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>This method is the <code>reset</code> callback invoked when any relevant change occur
+  </pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>This method is the <code>reset</code> callback invoked when any relevant change occur
 in the project. If an error is passed, it is thrown. Otherwise, the 
 Brewfile FSWatcher is closed, and the <code>unwatch</code> method is called on each
 packages. Finally, it deletes instance variables, contained packages and
