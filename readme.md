@@ -152,6 +152,13 @@ The command-line interface for brewer provides a few methods to manage the asset
 * `brewer init <template_name>`
 
     This command tells brewer to make a Brewfile in the current directory, according to the template provided, and make an initial directory structure to support the project.
+    
+* `brewer install`
+
+    This command tells Brewer.js to install all missing Node.js modules that it needs to work properly
+    with the current project. For instance, had I put a few `@coffeescript` source directives in the project's 
+    Brewfile, Brewer.js will make sure the coffee-script module is available, installing it under its own 
+    project directory if not.
 
 ### MIT License
 
