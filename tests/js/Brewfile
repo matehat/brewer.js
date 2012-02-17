@@ -12,6 +12,7 @@ javascript "script1", ->
   
   @bundles 'test'
   @coffeescript "./coffee", output: "./js"
+  @ics "./iced", output: "./js/iced"
 
 javascript "script2", ->
   @options

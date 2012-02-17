@@ -24,7 +24,7 @@ exports.tests = {
     project.clean();
   },
   'Requirements': function(next) {
-    assert.ok(project.requiredModules().length == 2);
+    assert.ok(project.requiredModules().length == 3);
     OK('The project has 2 requirements');
     assert.ok(project.missingModules().length == 0);
     OK('The project doesn\'t have missing required modules');
@@ -74,4 +74,17 @@ exports.tests = {
       }
     });
   },
+  'Packaging IcedCoffeescript': function(next) {
+      jsdom.env({
+        html: '<html><body></body></html>',
+        src: [fs.readFileSync('./js/iced/testics.js')],
+        done: function(errors, window) {
+          window.tester(function(msg) {
+            assert.ok(msg == 'Hello!');
+            OK("ICS control flow correct!");
+            next()
+          });
+        }
+      });
+  }
 };
