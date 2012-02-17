@@ -14,7 +14,7 @@ the `jquery.coffee` formula file contains a `jquery` formula and a `jquery-dev` 
   
 Within the body of this formula definition, the following methods can be used :
   
-#### `@urls`: 
+#### @urls 
 
   **Required**. This tells Brewer.js at what URL it can download the library. This can be in one of three 
   forms. The first is through the use of a function that takes a single argument, a version. This version 
@@ -39,7 +39,7 @@ Within the body of this formula definition, the following methods can be used :
         
   In fact, this is the same form as the first. We just simply didn't take the version into account.
 
-#### `@exports`
+#### @exports
 
   **Required**. This tells Brewer.js how it should interact with a *staged* vendor library. A vendor
   library could contain, like in the case of [bootstrap][2], a mix of javascript and less files. For that case,
@@ -84,7 +84,7 @@ Within the body of this formula definition, the following methods can be used :
   This implies that the whole vendor library is added as a single *source*, of the type provided, with the given 
   options.
 
-#### `@install`
+#### @install
 
   This is the directive that specify how to install the vendor library. It takes a single argument: an anonymous
   function called when installing the library. This function receives the installed version as its only argument.
@@ -103,7 +103,7 @@ Within the body of this formula definition, the following methods can be used :
     
   *More methods will be made available to the installer body as the needs emerge.*
 
-#### `@versions`
+#### @versions
 
   What versions are available, if applicable. This can be in the form of an object, mapping versions to md5 
   checksums, for better reliability. The versions must comply to [semantic versioning][1] :
@@ -113,11 +113,11 @@ Within the body of this formula definition, the following methods can be used :
           '1.6.4': 'be5cda8fa534e4db49425efbbf36c565'
           '1.7.1': '273e017fd0bef143258516bdee173a1e'
 
-#### `@homepage`
+#### @homepage
 
   This helps keep track of homepages for the installed vendor libraries.
 
-#### `@doc`
+#### @doc
 
   This function can be in either of the forms allowed by `@urls`. It is used to keep
   track of where to find proper documentation for the installed vendor libraries.
