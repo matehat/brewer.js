@@ -40,7 +40,7 @@ _.extend exports, cli = {
   info: (msgs...) ->
     console.log clr('Info', 'green'), msgs...
   
-  showError: (msgs...) ->
+  error: (msgs...) ->
     console.log clr('Error', 'red'), msgs...
   
 }

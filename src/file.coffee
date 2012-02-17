@@ -19,7 +19,7 @@ fs    = require 'fs'
 {EventEmitter} = require 'events'
 
 _ = require 'underscore'
-{finished, debug, info, showError} = require './command'
+cli = require './command'
 
 #### Initialization
 #
@@ -43,11 +43,11 @@ class File extends EventEmitter
   attach: (fullpath, source) ->
     if @attached()
       if fullpath isnt @fullpath
-        showError 'with', fullpath, ':', """
-        The file "#{@relpath}" is already associated with "#{@fullpath}",
+        cli.warning 'with', fullpath, ':', """
+        The access path "#{@relpath}" is already associated with "#{@fullpath}",
         but a new file "#{fullpath}" is trying to get associated with the
         same accesspath. Delete or rename one or the two to solve the
-        problem. For the moment, we're keeping "#{@fullpath}".
+        problem. For now, we're keeping "#{@fullpath}".
         """
     else
       [@fullpath, @source] = [fullpath, source]
@@ -135,17 +135,17 @@ class File extends EventEmitter
       @stamp()
       @watcher = fs.watch @fullpath, (event) =>
         if event is 'rename'
-          info "#{@fullpath} removed"
+          cli.info "#{@fullpath} removed"
           for file in @liabilities
             file.destroy()
           
           setTimeout reset, 50
         else if @changed()
-          info "#{@fullpath} changed"
+          cli.info "#{@fullpath} changed"
           reset()
       
       @watcher.on 'error', (err) =>
-        debug 'error', err
+        cli.debug 'error', err
         reset()
       
   

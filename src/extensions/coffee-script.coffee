@@ -8,7 +8,7 @@
 
 # Underscore, CLI utilities and the *Source* class are loaded
 _ = require 'underscore'
-{debug, finished, showError} = require '../command'
+{debug, finished, error} = require '../command'
 {Source} = require '../source'
 
 # The *Source* class is subclassed and essential 
@@ -59,7 +59,7 @@ class CoffeescriptSource extends Source
         # In case the compilation triggered an error, we catch it
         # and display it in the CLI, aborting the compilation, but
         # continuing the package actualization.
-        showError 'in', original.fullpath, ':', err.message
+        error 'in', original.fullpath, ':', err.message
         cb()
     
     original.project compiled, compile, (err) ->
