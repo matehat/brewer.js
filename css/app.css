@@ -4038,11 +4038,8 @@ section h1 + h2 {
 section h3 {
   font-size: 14px;
 }
-section {
+section[class] h1 {
   padding-top: 60px;
-}
-section#overview {
-  padding-top: 0px;
 }
 
 .changelog dl {
