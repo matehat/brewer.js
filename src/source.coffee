@@ -69,7 +69,7 @@ class Source
       watch: true 
       output: './_cache'
     }
-    {@path, @requirements} = @options
+    {@path, @requirements, @output} = @options
     @shouldWatch = @options.watch
     util.makedirs @path
   
