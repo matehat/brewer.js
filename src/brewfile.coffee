@@ -88,6 +88,7 @@ _.each brewer.Source.types(), (key) ->
     Package._source.call this, brewer.Source[key].type, path, options, cb
   
 
+
 # The function used to define a package object in a Brewfile.
 package = (type, name, opts, cb) ->
   # A package config object is initialized with the
@@ -110,10 +111,10 @@ package = (type, name, opts, cb) ->
   # as the new package object
   cb.call pkg if _.isFunction cb
 
+
 # A utility function used to initialize a V8 Context
 # to encapsulate the configuration included in the
 # Brewfile and all the DSL functions.
-
 newContext = () ->
   ctx = {
     project: prj = {
@@ -135,6 +136,7 @@ newContext = () ->
   ctx.root = (newRoot) -> prj.root = newRoot
   ctx.vendor = (newVendorDir) -> prj.vendorDir = newVendorDir
   
+  
   # Define the DSL `require` function that adds libraries to be the
   # included in the project. This function can be called any number
   # of times in a Brewfile. All dependencies are stored in an object
@@ -150,9 +152,11 @@ newContext = () ->
       for key, value of reqs
         prj.reqs[key] = value
   
+  
   # Return a V8 context, using the container above as
   # a seed.
   vm.createContext ctx
+
 
 # This is the exported function, which takes a path to a Brewfile 
 # as argument and returns a configuration object containing all the 

@@ -15,6 +15,10 @@ class JavascriptPackage extends Package
   @compressedext = '.min.js'
   @ext = '.js'
   
+  requiredModules: -> 
+    [super()..., 'uglify-js']
+  
+  
   # This method complies to the convention required by the `file.dependOn`
   # method, so it gets called whenever a dependent file in invalidated
   # and must be updated, relative to its source file. It takes an original
@@ -39,6 +43,7 @@ class JavascriptSource extends Source
   @aliases = ['js']
   @ext = '.js'
   @header = /^\/\/\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
+
 
 
 Source.extend JavascriptSource

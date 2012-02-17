@@ -18,7 +18,16 @@
 _ = require 'underscore'
 path = require 'path'
 fs = require 'fs'
-{debug, warning, info} = require './command'
+{debug, warning, info, finished} = require './command'
+
+# This function only tries to import the given module, and if it fails it returns
+# `false` if error corresponds to a missing module error.
+testModule = (mod) ->
+  try
+    require(mod)
+  catch err
+    err.message.indexOf('Cannot find module') is -1
+
 
 # The Project class is initialized with a Brewfile, which immidiately
 # calls the `setup` instance method. There, the `configs` function
@@ -52,6 +61,46 @@ class Project
   
   prepare: ->
     pkg.prepare?() for pkg in this
+  
+  
+  # This method takes the result of the `requiredModules` below and tests each one
+  # to see if the said modules are available. The method returns a list of unfound 
+  # modules.
+  missingModules: ->
+    _.reject @requiredModules(), testModule
+  
+  
+  # This method asks every packages and their sources to come up with requirements
+  # regarding modules (coffee-script, less, etc.).
+  requiredModules: ->
+    _.chain(this)
+      .invoke('requiredModules').flatten().uniq()
+      .value()
+  
+  
+  # This method tries to install the missing modules into Brewer.js project 
+  # directory. It first caches the previous working directory before changing to
+  # brewer.js root directory, so to return in the previous state.
+  installMissingModules: (cb) ->
+    {spawn} = require 'child_process'
+    brewerdir = path.resolve __dirname, '..'
+    modules = @missingModules()
+    i = 0
+    iterate = ->
+      if i is modules.length
+        cb() if cb?
+        return
+      
+      mod = modules[i++]
+      info 'Installing', mod
+      npm = spawn 'npm', ['install', mod], {cwd: brewerdir}
+      npm.stdout.pipe process.stdout
+      npm.stderr.pipe process.stderr
+      npm.on 'exit', ->
+        finished 'installed', mod
+        iterate()
+    
+    iterate()
   
   
   # This method proxies the method with the same name, invoked on all contained 

@@ -146,6 +146,21 @@ exports.run = (argv) ->
           pkg.clean()
     
   
+  # #### The `install` command
+  #
+  # This command is used to install the modules required for the current project 
+  # to function properly, according to the Brewfile.
+  
+  program
+    .command('install')
+    .description(" Install missing modules required to manage the current project")
+    .action ->
+      project = getLocalProject()
+      if project.missingModules().length > 0
+        project.installMissingModules()
+      else
+        cli.info 'No modules are missing.'
+    
   
   # This tells the `Command` object to parse the given program arguments, triggering
   # the proper action, or printing the usage.

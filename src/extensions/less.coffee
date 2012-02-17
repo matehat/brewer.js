@@ -24,6 +24,7 @@ class LessSource extends Source
     @createCompiledFile original
     original
   
+  requiredModules: -> ['less']
   
   # This method takes a source file as argument and creates another
   # file that represent the compiled counterpart of the original file.
