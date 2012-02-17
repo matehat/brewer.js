@@ -1,7 +1,7 @@
 formula 'underscore', ->
   @homepage 'http://underscorejs.org'
   @doc      'http://underscorejs.org'
-  @latest '1.3.1'
+  @latest   '1.3.1'
   
   @versions
     '0.6.0': '575c471beca85c3898d1d687f0d7ddb5'
@@ -14,10 +14,13 @@ formula 'underscore', ->
     latest: 'http://underscorejs.org/underscore.js'
     '>= 0.6.0': (v) -> "https://github.com/documentcloud/underscore/tarball/#{v}"
   
+  @exports 'js', main: './underscore.js'
   @install (path, next) ->
     if @version == 'latest'
-      @include_file 'javascript', path, next()
+      @stage path
+      next()
     else
       @deflate path, 'tar.gz', (path) ->
-        @include_file 'javascript', "#{path}/underscore.js", next()
+        @stage "#{path}/underscore.js"
+        next()
   

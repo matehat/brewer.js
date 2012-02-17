@@ -14,10 +14,13 @@ formula 'backbone', ->
     latest: 'http://backbonejs.org/backbone.js'
     '> 0.1.0': (v) -> "https://github.com/documentcloud/backbone/tarball/#{v}"
   
+  @exports 'js', main: './backbone.js'
   @install (path, next) ->
     if @version == 'latest'
-      @include_file 'javascript', path, next()
+      @stage path
+      next()
     else
       @deflate path, 'tar.gz', (path) ->
-        @include_file 'javascript', "#{path}/underscore.js", next()
+        @stage "#{path}/backbone.js"
+        next()
   
