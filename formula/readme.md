@@ -136,6 +136,8 @@ Within the body of this formula definition, the following methods can be used:
   This function can be in either of the forms allowed by `@urls`. It is used to keep
   track of where to find proper documentation for the installed vendor libraries.
   
+### Explore!
+
 Feel free to glimpse through the existing example to get a better understanding of formulae, and how you can
 roll your own!
 
