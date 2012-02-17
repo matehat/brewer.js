@@ -20,6 +20,8 @@ Watching a whole project structure of Coffee-script, LESS or Stylus source files
 
 ### Installation
 
+#### Using a prepared package
+
 To setup Brewer.js, make sure you have [installed Node.js](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager). When this is done, enter the terminal and type.
 
     $ npm install -g brewer
@@ -31,6 +33,23 @@ The `-g` flag is used to make the installation global, so you get access to the 
 The `<template name>` part is optional. Anyway, for the moment, there is only one template available, **lesscoffee**, which is also the default. This template sets up LESS and Coffeescript support for the current directory.
 
 What this does is create a Brewfile in the current directory, according to the template provided and run `brewer make` on it (see Usage).
+
+#### Using this repository
+
+You need Node.js, as well as coffee-script, installed globally to get the `cake` executable. You can do so by doing :
+
+    $ npm install -g coffee-script
+    
+Then, to get brewer.js to work locally
+
+    $ git clone git@github.com:matehat/brewer.js.git brewer
+    $ cd brewer
+    $ npm install
+    $ cake build
+  
+Then, if you want the `brewer` executable, you can do
+
+    $ npm link
 
 ### Brewfile
 

@@ -6,7 +6,10 @@ compile = (dir, options="-c") ->
     console.log data.toString().trim()
   
 
-task 'watch', 'Continually build coffee source files into lib/ subfolder', ->
+task 'build', 'Build coffee source files into lib/ folder', -> 
+  compile '.', '-c'
+
+task 'watch', 'Continually build coffee source files into lib/ subfolder', -> 
   compile ".", "-cw"
 
 task 'test', 'Run tests', ->
