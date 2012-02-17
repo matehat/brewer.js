@@ -97,16 +97,17 @@ Now for a real-world example, so we don't get lost too quickly. Say we want to m
 
 ```
 Root folder
-|- js
-|- coffee
-|- css
-|- less
-|- vendor
-  |- bootstrap
-  | |- less
-  | |- js
-  |- chosen
-  |- jquery.js
+|-- js
+|-- coffee
+|-- css
+|-- less
+|-- vendor
+    |-- bootstrap
+    |   |- less
+    |   |- js
+    |
+    |-- chosen
+    |-- jquery.js
 ```
 
 So there are files that ends up as javascript and those that ends up as css. Let's write a Brewfile that takes this structure into account.
@@ -122,6 +123,7 @@ stylesheets 'styles', {build: './css'} ->
     @bundles 'home', 'products'
 
     @less './less'
+    @less './vendor/bootstrap/less'
     @css './vendor'
 ```
 
