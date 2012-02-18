@@ -18,7 +18,7 @@
 _ = require 'underscore'
 path = require 'path'
 fs = require 'fs'
-{debug, warning, info, finished} = require './command'
+{debug, warning, error, info, finished} = require './command'
 
 # This function only tries to import the given module, and if it fails it returns
 # `false` if error corresponds to a missing module error.
@@ -39,14 +39,20 @@ testModule = (mod) ->
 class Project
   constructor: (@file) -> @setup()
   setup: ->
-    configs = (require './brewfile').configs @file
-    _.defaults configs,
-      root: '.'
-      reqs: []
-      packages: []
-      vendorDir: './vendor'
+    try
+      @configs = (require './brewfile').configs @file
+      _.defaults @configs,
+        root: '.'
+        reqs: []
+        packages: []
+        vendorDir: './vendor'
+    catch err
+      if @configs?
+        error 'in', @file, err.message
+      else
+        throw err
     
-    {@root, reqs, packages, vendorDir} = configs
+    {@root, reqs, packages, vendorDir} = @configs
     @vendorlibs = new VendorLibraries this, vendorDir, reqs
     @length = packages.length
     _.each packages, (pkg, i) =>
