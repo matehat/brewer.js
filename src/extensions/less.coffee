@@ -7,7 +7,7 @@
 # are carried over to the compiled *stylesheet*.
 
 {Source} = require '..'
-{finished, debug, showError} = require '../command'
+{finished, debug, error} = require '../command'
 
 # The *Source* class is subclassed and essential 
 # [class variables](source.html#section-2) are specified.
@@ -65,12 +65,12 @@ class LessSource extends Source
       try
         parser.parse data, (err, tree) ->
           if err
-            showError 'in', original.fullpath, ':', err.message
+            error 'in', original.fullpath, ':', err.message
             cb()
           else
             cb2 null, tree.toCSS()
       catch err
-        showError 'in', original.fullpath, ':', err.message
+        error 'in', original.fullpath, ':', err.message
         cb()
     
     # It compiles less code from the first file and output the result to the 

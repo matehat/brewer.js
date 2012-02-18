@@ -8,7 +8,7 @@
 
 _ = require 'underscore'
 {Source} = require '..'
-{finished, debug, showError} = require '../command'
+{finished, debug, error} = require '../command'
 
 # The *Source* class is subclassed and essential 
 # [class variables](source.html#section-2) are specified.
@@ -67,7 +67,7 @@ class StylusSource extends Source
       
       parser.render (err, css) ->
         if err?
-          showError 'in', original.fullpath, ':', err.message
+          error 'in', original.fullpath, ':', err.message
           cb()
         else
           cb2 null, css

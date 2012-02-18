@@ -7,7 +7,7 @@
 # are carried over to the compiled *javascript* file.
 
 # Underscore, CLI utilities and the *Source* class are loaded
-{debug, finished, showError} = require '../command'
+{debug, finished, error} = require '../command'
 {Source} = require '../source'
 
 class CoffeescriptSource extends Source.coffeescript
@@ -43,7 +43,7 @@ class CoffeescriptSource extends Source.coffeescript
         # In case the compilation triggered an error, we catch it
         # and display it in the CLI, aborting the compilation, but
         # continuing the package actualization.
-        showError 'in', original.fullpath, ':', err.message
+        error 'in', original.fullpath, ':', err.message
         cb()
     
     original.project compiled, compile, (err) ->
