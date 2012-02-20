@@ -79,34 +79,7 @@ class Project
   # This method asks every packages and their sources to come up with requirements
   # regarding modules (coffee-script, less, etc.).
   requiredModules: ->
-    _.chain(this)
-      .invoke('requiredModules').flatten().uniq()
-      .value()
-  
-  
-  # This method tries to install the missing modules into Brewer.js project 
-  # directory. It first caches the previous working directory before changing to
-  # brewer.js root directory, so to return in the previous state.
-  installMissingModules: (cb) ->
-    {spawn} = require 'child_process'
-    brewerdir = path.resolve __dirname, '..'
-    modules = @missingModules()
-    i = 0
-    iterate = ->
-      if i is modules.length
-        cb() if cb?
-        return
-      
-      mod = modules[i++]
-      info 'Installing', mod
-      npm = spawn 'npm', ['install', mod], {cwd: brewerdir}
-      npm.stdout.pipe process.stdout
-      npm.stderr.pipe process.stderr
-      npm.on 'exit', ->
-        finished 'installed', mod
-        iterate()
-    
-    iterate()
+    _.uniq _.flatten _.invoke this, 'requiredModules'
   
   
   # This method proxies the method with the same name, invoked on all contained 

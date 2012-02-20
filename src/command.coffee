@@ -155,8 +155,29 @@ exports.run = (argv) ->
     .description(" Install missing modules required to manage the current project")
     .action ->
       project = getLocalProject()
-      if project.missingModules().length > 0
-        project.installMissingModules()
+      missingmods = project.missingModules()
+      if missingmods.length > 0
+        # If modules are missing, try to install the missing modules into Brewer.js project 
+        # directory.
+        {spawn} = require 'child_process'
+        brewerdir = path.resolve __dirname, '..'
+        i = 0
+        iterate = ->
+          if i is missingmods.length
+            cb() if cb?
+            return
+
+          mod = missingmods[i++]
+          cli.info 'Installing', mod
+          npm = spawn 'npm', ['install', mod], {cwd: brewerdir}
+          npm.stdout.pipe process.stdout
+          npm.stderr.pipe process.stderr
+          npm.on 'exit', ->
+            finished 'installed', mod
+            iterate()
+          
+        iterate()
+        
       else
         cli.info 'No modules are missing.'
     
