@@ -133,6 +133,7 @@ class File extends EventEmitter
       # the file has really change by checking the stamp, then trigger
       # reset in case it really did change.
       @stamp()
+      require('./index').watchers.incr()
       @watcher = fs.watch @fullpath, (event) =>
         if event is 'rename'
           cli.info "#{@fullpath} removed"
@@ -151,9 +152,12 @@ class File extends EventEmitter
   
   
   # This method shuts the watcher if it exists, so no more fs events
-  # are catched.
+  # are catched. It also decrements the global count of file watchers.
   unwatch: ->
-    @watcher?.close()
+    if @watcher?
+      @watcher.close()
+      require('./index').watchers.decr()
+      delete @watcher
   
   
   # The stamping method used to cache a md5 checksum of the file on

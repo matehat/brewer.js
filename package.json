@@ -1,6 +1,6 @@
 {
   "name" : "brewer",
-  "version" : "0.3.4",
+  "version" : "0.3.5",
   "description" : "Asset compilation/packaging/compression utility",
   "keywords": [
     "javascript", "coffeescript", "asset", "compression", 
@@ -16,7 +16,7 @@
     "docs": "./docs"
   },
   "bin": {
-    "brewer": "./bin/brewer"
+    "brake": "./bin/brake"
   },
   "repository": {
     "type": "git",

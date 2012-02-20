@@ -12,6 +12,12 @@
 {@Source} = require './source'
 {@File} = require './file'
 
+@watchers = {
+  count: 0
+  incr: -> @count++
+  decr: -> @count--
+}
+
 # It also parses the _extensions/_ directory to find modules that extends **brewer.js**
 # functionality.
 

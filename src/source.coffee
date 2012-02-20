@@ -146,6 +146,7 @@ class Source
   watch: (reset) ->  
     return unless @shouldWatch
     filelist = null
+    require('./index').watchers.incr()
     @watcher = (require 'fs').watch @path, (event) =>
       return unless @filelist?
       filelist ?= (f.relpath for f in @filelist)
@@ -158,9 +159,13 @@ class Source
     
   
   
-  # This method is used to close the FSWatcher if it as been set.
+  # This method is used to close the FSWatcher if it as been set, and
+  # decrements the global file watcher count
   unwatch: ->
-    @watcher?.close()
+    if @watcher
+      @watcher.close()
+      require('./index').watchers.decr()
+      delete @watcher
   
   
 exports.Source = Source

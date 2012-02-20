@@ -99,30 +99,6 @@ exports.run = (argv) ->
       cli.info 'Watching project', process.cwd()
     
   
-  ##### The `make` command
-  #
-  # This command is used to actualize a whole project or specific packages within it.
-  # It first checks to see if package names were specified, defaulting to 'all' otherwise.
-  # Then, the `.actualize()` method is called on each matching package.
-  
-  program
-    .command('make [packages]*')
-    .description(" Aggregate bundles from the given packages (or all)")
-    .action (pkgs) ->
-      pkgs ?= 'all'
-      project = getLocalProject()
-      if pkgs is 'all'
-        packages = project
-      else
-        names = pkgs.split(',')
-        packages = (pkg for pkg in project when pkg.name in names)
-      
-      for pkg in packages
-        do (pkg) ->
-          pkg.actualize ->
-            cli.info "Finished making #{clr(pkg.name, 'underline')} package"
-    
-  
   ##### The `clean` command
   #
   # This command is used to remove files that are derived from source files. This 
@@ -180,6 +156,28 @@ exports.run = (argv) ->
         
       else
         cli.info 'No modules are missing.'
+    
+  ##### The main `brake` command
+  #
+  # This command is used to actualize a whole project or specific packages within it.
+  # It first checks to see if package names were specified, or `all`, which means "all packages".
+  # Then, the `.actualize()` method is called on each matching package.
+  
+  program
+    .command('*')
+    .description(" Aggregate bundles from the given packages (or all)")
+    .action (pkgs...) ->
+      pkgs ?= 'all'
+      project = getLocalProject()
+      if pkgs[0] is 'all'
+        packages = project
+      else
+        packages = (pkg for pkg in project when pkg.name in pkgs)
+      
+      for pkg in packages
+        do (pkg) ->
+          pkg.actualize ->
+            cli.info "Finished making #{clr(pkg.name, 'underline')} package"
     
   
   # This tells the `Command` object to parse the given program arguments, triggering

@@ -1,4 +1,12 @@
 
+### 0.3.5 / 2012-02-20 
+
+  * Changed `brewer` for `brake`
+  * Added tracking of file watchers to address #6
+  * Changed 'showError' for 'error'
+  * Graceful handling of parsing error of Brewfile
+  * Removed LICENSE file, since its in the readme
+
 ### 0.3.4 / 2012-02-17
 
 * Removed obsolete dependency
