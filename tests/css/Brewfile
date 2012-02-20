@@ -1,21 +1,14 @@
-require
+@require
   nib: '0.3.X'
   test: '0.1.1'
 
-stylesheets "styles1",
-  build: "./css/build-less"
-  bundles: ["testcss1", "testless1"]
+@bundler
+  css: ['testcss1', 'testless1', 'test1', 'test2']
   compress: true
-  ->
-    @source "./css"
-    @less "./less"
-    @less "./less/auto", output: "./css/build-less"
+  output: 'css/build'
 
-css "styles2", ->
-  @options
-    build: "./css/build-stylus"
-    compress: true
-  
-  @bundles 'test1', 'test2'
-  @stylus "./stylus"
-  @stylus "./stylus-nib"
+@css    'css'
+@less   'less'
+@less   'less/auto', output: 'css/build-less'
+@stylus 'stylus'
+@stylus 'stylus-nib'

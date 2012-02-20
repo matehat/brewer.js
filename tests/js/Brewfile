@@ -1,24 +1,14 @@
-require
+@require
   jquery:     '1.7.X'
   backbone:   '0.9.X'
   underscore: '1.3.X'
-
-vendor './deps'
-
-javascript "script1", ->
-  @options
-    build: "./js/build"
-    compress: true
   
-  @bundles 'test'
-  @coffeescript "./coffee", output: "./js"
-  @ics "./iced", output: "./js/iced"
+  $vendordir: 'deps'
 
-javascript "script2", ->
-  @options
-    type: "js"
-    build: "./js/build"
-    compress: true
-  
-  @bundles 'test2'
-  @coffeescript "./coffee", output: "./js"
+@bundler 
+  js: ['test'], 
+  compress: true, 
+  output: 'build'
+
+@coffeescript "coffee", output: "js"
+@ics          "iced",   output: "js/iced"
