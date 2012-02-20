@@ -11,7 +11,7 @@ stylesheets and javascript source files. From a single command, it takes care of
 
 Watching a whole project structure of Coffee-script, LESS or Stylus source files can be as easy as :
 
-    $ brewer watch
+    $ brake watch
     Info Watching project /path/to/current/working/directory
     Compiled coffee/test.coffee
     Compiled less/index.less
@@ -26,13 +26,13 @@ To setup Brewer.js, make sure you have [installed Node.js](https://github.com/jo
 
     $ npm install -g brewer
 
-The `-g` flag is used to make the installation global, so you get access to the `brewer` executable. Then, from a project directory you wish to manage using Brewer.js
+The `-g` flag is used to make the installation global, so you get access to the `brake` executable. Then, from a project directory you wish to manage using Brewer.js
 
-    $ brewer init [<template name>]
+    $ brake init [<template name>]
 
 The `<template name>` part is optional. Anyway, for the moment, there is only one template available, **lesscoffee**, which is also the default. This template sets up LESS and Coffeescript support for the current directory.
 
-What this does is create a Brewfile in the current directory, according to the template provided and run `brewer make` on it (see Usage).
+What this does is create a Brewfile in the current directory, according to the template provided and run `brake make` on it (see Usage).
 
 #### Using this repository
 
@@ -70,7 +70,7 @@ javascript 'other_package_name', ->
   # package body ...
 ```
 
-Those two functions can be used interchangeably with `js` or `css` to be more concise. The `package_name` is used to identify certain parts of a project, in case you would like to run `$ brewer make package_name`. A **Package** is a conceptual component of a project in which you can define **bundles** and in which files can *import* each other. A file contained in a package can really be anywhere on the file system -- a package is not bound to a specific directory.
+Those two functions can be used interchangeably with `js` or `css` to be more concise. The `package_name` is used to identify certain parts of a project, in case you would like to run `$ brake make package_name`. A **Package** is a conceptual component of a project in which you can define **bundles** and in which files can *import* each other. A file contained in a package can really be anywhere on the file system -- a package is not bound to a specific directory.
 
 Package can receive options, which can be specified in one of two ways :
 
@@ -136,7 +136,7 @@ So what we're looking at now is a package for javascripts that looks for coffees
 $ -> $('select').chosen()
 ```
 
-If we had been running `brewer watch` while we wrote that script and saved it, we would have seen a file appear, named `./js/home.js`, containing an aggregate file of jquery, chosen and our little script compiled into javascript. Since we didn't provide the `output` option, a compiled javascript version of just `coffee/home.coffee` can be found in `./_cache`. If we wanted it to appear somewhere more meaningful, we could set the `output` option on a source directive. A more complete example of the above could be :
+If we had been running `brake watch` while we wrote that script and saved it, we would have seen a file appear, named `./js/home.js`, containing an aggregate file of jquery, chosen and our little script compiled into javascript. Since we didn't provide the `output` option, a compiled javascript version of just `coffee/home.coffee` can be found in `./_cache`. If we wanted it to appear somewhere more meaningful, we could set the `output` option on a source directive. A more complete example of the above could be :
 
 ```coffeescript
 javascript 'scripts', {build: './build/js'} ->
@@ -158,23 +158,23 @@ This dedicates a directory `./build`, to contain files that would be deployed, a
 
 The command-line interface for brewer provides a few methods to manage the asset project. 
 
-* `brewer make [<package>*]`
+* `brake init <template_name>`
+
+    This command tells brewer to make a Brewfile in the current directory, according to the template provided, and make an initial directory structure to support the project.
+
+* `brake [all|<package>*]`
 
     This command tells brewer to look for files to compile (coffeescript, less, etc.) into their javascript or css counterparts, product bundles and compress them if necessary. This intelligently selects only the tasks that needs to be done, skipping files that haven't change.
-
-* `brewer watch [<package>*]`
-
-    This command tells brewer to first run `brewer make` on the current directory and watch for changes (file content change, new files, moved files or deleted files).
     
-* `brewer clean [<package>*]`
+* `brake clean [<package>*]`
 
     This command tells brewer to delete files that strongly depends on source files, such as those that are completely derived from the compilation of another file, bundles and their compressed counterparts.
     
-* `brewer init <template_name>`
+* `brake watch`
 
-    This command tells brewer to make a Brewfile in the current directory, according to the template provided, and make an initial directory structure to support the project.
+    This command tells brewer to first run `brake make` on the current directory and watch for changes (file content change, new files, moved files or deleted files).
     
-* `brewer install`
+* `brake install`
 
     This command tells Brewer.js to install all missing Node.js modules that it needs to work properly
     with the current project. For instance, had I put a few `@coffeescript` source directives in the project's 
