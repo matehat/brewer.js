@@ -115,9 +115,15 @@ class Project
   # Brewfile used for this project's configuration. It passes the `reset` instance
   # methods as the reset callback for all watching methods.
   watch: ->
-    pkg.watch(_.bind(@reset, this)) for pkg in this
-    @configWatcher = fs.watch @file, (event) => @reset()
-    @configWatcher.on 'error', _.bind(@reset, this)
+    cnt = 0
+    acc = =>
+      if ++cnt is @length
+        require('./index').watchers.incr()
+        @configWatcher = fs.watch @file, (event) => @reset()
+        @configWatcher.on 'error', _.bind(@reset, this)
+        info 'Watching', require('./index').watchers.count, 'files'
+    
+    pkg.watch(_.bind(@reset, this), acc) for pkg in this
   
   
   # This method is the `reset` callback invoked when any relevant change occur
@@ -127,7 +133,10 @@ class Project
   # re-invokes the `setup` instance method to start over.
   reset: (err) ->
     throw err if err?
-    @configWatcher?.close()
+    if @configWatcher?
+      @configWatcher.close()
+      delete @configWatcher
+      require('./index').watchers.decr()
     
     for pkg, i in this
       pkg.unwatch()

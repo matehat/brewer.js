@@ -247,7 +247,7 @@ class Package extends (require 'events').EventEmitter
   # This method is used to first `actualize` a project and watching 
   # behavior on all files and sources and carrying over the reset callback,
   # provided usually by the parent `Project` object.
-  watch: (reset) ->
+  watch: (reset, ready) ->
     @actualize =>
       for type, sources of @sources
         for src in sources
@@ -257,6 +257,7 @@ class Package extends (require 'events').EventEmitter
         for relpath, file of files
           file.watch reset
       
+      ready() if ready?
   
   
   # This method is used to remove the 
