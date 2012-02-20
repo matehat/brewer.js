@@ -18,16 +18,8 @@
 _ = require 'underscore'
 path = require 'path'
 fs = require 'fs'
-{debug, warning, error, info, finished} = require './command'
-
-# This function only tries to import the given module, and if it fails it returns
-# `false` if error corresponds to a missing module error.
-testModule = (mod) ->
-  try
-    require(mod)
-  catch err
-    err.message.indexOf('Cannot find module') is -1
-
+cli = require './command'
+{testModule} = require './util'
 
 # The Project class is initialized with a Brewfile, which immidiately
 # calls the `setup` instance method. There, the `configs` function
@@ -48,25 +40,49 @@ class Project
         vendorDir: './vendor'
     catch err
       if @configs?
-        error 'in', @file, err.message
+        cli.error 'in', @file, err.message
       else
         throw err
     
-    {@root, reqs, packages, vendorDir} = @configs
-    @vendorlibs = new VendorLibraries this, vendorDir, reqs
-    @length = packages.length
-    _.each packages, (pkg, i) =>
-      this[i] = (require './package').Package.create pkg.opts, pkg.srcs, @vendorlibs
+    # *Registries for files and sources*. Those will hold all those
+    # objects, neatly classified by types and access path.
+    @files = {}
+    @sources = {}
+    
+    @_pendingSources = 0
+    @_ready = false
+    @_ev = new (require 'events').EventEmitter()
+    @_ev.on 'ready', => @_ready = true
+  
+  # This method is used to register a *Source* object. The `@sources`
+  # variable maps to a list of sources, by type: `@sources[type] = 
+  # [src1, src2, ...]`. After adding the source to the register, it is told 
+  # to loop spawn its set of contained files. At the end of the crawling,
+  # if not other sources are pending, we emit the 'ready' event.
+  register: (src) ->
+    (@sources[src.constructor.type] ?= []).push src
+    @_pendingSources++
+    
+    src.files null, (files) =>
+      @_ev.emit 'ready' if --@_pendingSources == 0
     
   
-  
-  # These two methods barely proxy methods with the same name, but invoked on all 
-  # contained packages.
-  clean: ->
-    pkg.clean?() for pkg in this
-  
-  prepare: ->
-    pkg.prepare?() for pkg in this
+  # This method returns a *File* object that corresponds to the given
+  # arguments, in terms of access path, type and optionally fullpath and
+  # source. If the specification does not corresponds to an existing file,
+  # it creates the file and binds it to the appropriate objects. This is 
+  # used to reference a file that might not exist yet, and that should be
+  # attached later to a file on disk. The `@files` variable is a 
+  # 2-dimensional map : `@file[type][access path]` maps to one and only one 
+  # *File* object.
+  file: (relpath, type, fullpath, src) ->
+    @files[type] ?= {}
+    file = (_files = @files[type])[relpath]
+    unless file?
+      file = _files[relpath] = new File relpath, type, this
+    
+    file.attach fullpath, src if fullpath?
+    return file
   
   
   # This method takes the result of the `requiredModules` below and tests each one
@@ -79,7 +95,9 @@ class Project
   # This method asks every packages and their sources to come up with requirements
   # regarding modules (coffee-script, less, etc.).
   requiredModules: ->
-    _.uniq _.flatten _.invoke this, 'requiredModules'
+    _.chain(@sources)
+      .values().flatten().invoke('requiredModules')
+      .flatten().uniq().value()
   
   
   # This method proxies the method with the same name, invoked on all contained 
@@ -120,34 +138,50 @@ class Project
     @setup()
     @watch()
   
-
-class VendorLibraries
-  constructor: (@project, vendorDir, @requirements) ->
-    @root = path.join @project.root, vendorDir
-    (require './util').makedirs @root
-    @libs = @read()
   
-  stateFile: -> 
-    path.join @root, 'libraries.json'
-  
-  read: ->
-    if path.existsSync(stateFile = @stateFile())
-      JSON.parse fs.readFileSync stateFile, 'utf-8'
-    else
-      {}
-  
-  write: ->
-    fs.writeFileSync @stateFile(), JSON.stringify(@libs), 'utf-8'
-  
-  libraries: (type) ->
-    libs = []
-    for name, lib of @libs
-      for dpath, dir of lib.content when dir.type is type
-        _lib = {path: path.join(@root, name, dpath)}
-        _.extend _lib, dir
-        libs.push _lib
+  # This method is used to perform all necessary tranforming and 
+  # aggregating actions for all files in the package. This includes
+  # compiling files into their *javascript* or *css* equivalents, 
+  # aggregating bundles and compressing them. This is done by finding 
+  # all files that are not depended by any other files (root nodes),
+  # and calling their [`actualize`](file.html#section-7) method, one 
+  # after the other, asynchronously.
+  actualize: (cb) ->
+    @ready =>
+      allFiles = []
+      for type, files of @files
+        for relpath, file of files
+          allFiles.push file
+      roots = _.filter allFiles, (file) -> file.liabilities.length == 0
+      i = 0
+      iter = ->
+        return process.nextTick(cb) if i is roots.length
+        roots[i++].actualize iter
+      
+      iter()
     
-    libs
   
+  
+  # This method is used to remove all files that were marked as 
+  # *impermanent* (see next method).
+  clean: ->
+    @ready =>
+      for file in @impermanents()
+        file.unlinkSync()
+  
+  
+  # This method returns a list of all *impermanent* files which includes, 
+  # for instance, compiled files, bundles
+  # and their compressed counterparts. The rationale behind this is that
+  # those files are all completely derived from source files, thus could
+  # be removed safely without losing information.
+  impermanents: ->
+    acc = []
+    for type, files of @files
+      for file in _.values(files) when file.impermanent is true
+        acc.push file
+    acc
+  
+
 
 exports.Project = Project

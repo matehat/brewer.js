@@ -54,13 +54,6 @@ class File extends EventEmitter
       @emit 'attach'
   
   
-  # This method tells the associated *Package* object to
-  # register this file, a mechanism required so the package can 
-  # adequately manage all its contained files.
-  register: ->
-    @package.emit 'newfile', this
-  
-  
   #### Output methods
   
   # This method is used to actualize a file relative to its 

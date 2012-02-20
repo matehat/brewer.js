@@ -7,16 +7,26 @@
 # It exports the main classes from [project](project.html), [package](package.html), 
 # [source](source.html) and [file](file.html).
 
-{@Package} = require './package'
-{@Project} = require './project'
-{@Source} = require './source'
-{@File} = require './file'
-
-@watchers = {
+@watchers =
   count: 0
   incr: -> @count++
   decr: -> @count--
+
+@DSL = {
+  register: (kls) ->
+    {bind, isFunction} = require 'underscore'
+    unless isFunction(kls.directive) and kls.name?
+      throw new Error("""
+      Only classes with a `<cls>.directive()` class method and a `<cls>.term` class property 
+      can be registered as a DSL term.
+      """)
+    this[kls.name] = bind kls.directive, kls
 }
+
+{@Project} = require './project'
+{@Source} = require './source'
+{@File} = require './file'
+{@Bundler} = require './assets'
 
 # It also parses the _extensions/_ directory to find modules that extends **brewer.js**
 # functionality.

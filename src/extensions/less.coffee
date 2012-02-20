@@ -82,4 +82,5 @@ class LessSource extends Source
     
   
 
-Source.extend exports.LessSource = LessSource
+LessSource.register()
+exports.LessSource = LessSource

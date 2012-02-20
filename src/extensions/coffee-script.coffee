@@ -70,4 +70,5 @@ class CoffeescriptSource extends Source
   
 
 
-Source.extend CoffeescriptSource
+CoffeescriptSource.register()
+exports.CoffeescriptSource = CoffeescriptSource

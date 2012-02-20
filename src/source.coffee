@@ -39,37 +39,32 @@
 
 # Common utilities are loaded up.
 util  = require './util'
+_ = require 'underscore'
 {debug, info} = require './command'
 
 class Source
-  # Much like for *[Package](package.html#section-3)*, a registry of subclasses
-  # must be maintained to associate types (*coffeescript*, *less*, *javascript*, 
-  # etc) to particular subclasses of *Source*. Type aliases, alternate type namings,
-  # are also associated to the same subclasses, so to stay flexible.
-  @types: -> 
-    (type for own type of this when type not in ['types', 'extend', 'create'])
-  
-  @extend: (sources...) ->
-    for src in sources
-      this[src.type] = src
-      for alias in (src.aliases ? [])
-        this[alias] = src
-  
-  @create: (options, package) ->
-    throw "Source type #{options.type} not known" unless (typ = this[options.type])?
-    new typ options, package
+  @register: -> (require './index').DSL.register this
+  @directive: (project, path, options) ->
+    if path? 
+      if !_.isString path
+        options = path
+      else
+        options ?= {}
+        options.path = path
+    new this options, project
   
   
   # A *Source* is initialized with an option object, which is the result of 
   # evaluating a *source directive* in a [Brewfile](brewfile.html#section-5).
   # After setting instance variables, the path to the source directory is
   # created recursively.
-  constructor: (@options, @package) ->
+  constructor: (@options, @project) ->
     (require 'underscore').defaults @options, {
       watch: true 
-      output: './_cache'
+      output: (require 'temp').mkdirSync('brewerjs-source')
+      prefix: ''
     }
-    {@path, @requirements, @output} = @options
+    {@path, @requirements, @output, @prefix} = @options
     @shouldWatch = @options.watch
     util.makedirs @path
   
@@ -78,18 +73,18 @@ class Source
   # to operate properly.
   requiredModules: -> []
   
-  # This method creates a file through its parent `@package.file` method, 
+  # This method creates a file through its parent `@project.file` method, 
   # using the given access path and this source's type. It assumes the
   # fullpath is simply the access path, prefix with this source's path and
   # this source's extension (class variable `ext`).
   createFile: (fpath) -> 
     ctor = @constructor
-    fullpath = util.changeext (require 'path').join(@path, fpath), ctor.ext
-    file = @package.file fpath, ctor.type, fullpath, @
-    file.register()
+    {join} = require 'path'
+    fpath = join @prefix, fpath
+    fullpath = util.changeext join(@path, fpath), ctor.ext
+    file = @project.file fpath, ctor.type, fullpath, @
     if (imports = @requirements?[file.relpath])?
       file.setImportedPaths imports
-    
     file
   
   

@@ -108,3 +108,12 @@ path = require 'path'
   for otherFile in others
     newest &&= @newer file, otherFile
   newest
+
+
+# This function only tries to import the given module, and if it fails it returns
+# `false` if error corresponds to a missing module error.
+@testModule = (mod) ->
+  try
+    require(mod)
+  catch err
+    err.message.indexOf('Cannot find module') is -1

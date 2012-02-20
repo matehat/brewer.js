@@ -9,8 +9,9 @@
 # Underscore, CLI utilities and the *Source* class are loaded
 {debug, finished, error} = require '../command'
 {Source} = require '../source'
+{CoffeescriptSource} = require './coffee-script'
 
-class CoffeescriptSource extends Source.coffeescript
+class IcedCoffeescriptSource extends CoffeescriptSource
   @type = 'icedcoffeescript'
   @aliases = ['iced-coffee-script', 'ics']
   @header = /^#\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
@@ -53,4 +54,5 @@ class CoffeescriptSource extends Source.coffeescript
     
   
 
-Source.extend CoffeescriptSource
+IcedCoffeescriptSource.register()
+exports.IcedCoffeescriptSource = IcedCoffeescriptSource

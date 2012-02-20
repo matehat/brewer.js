@@ -81,4 +81,5 @@ class StylusSource extends Source
     
   
 
-Source.extend exports.StylusSource = StylusSource
+StylusSource.register()
+exports.StylusSource = StylusSource
