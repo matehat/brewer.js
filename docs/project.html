@@ -17,7 +17,7 @@ aggregating bundles. </p>
 </blockquote>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Underscore, core modules and CLI utilities are loaded.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">_ = </span><span class="nx">require</span> <span class="s1">&#39;underscore&#39;</span>
 <span class="nv">path = </span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span>
 <span class="nv">fs = </span><span class="nx">require</span> <span class="s1">&#39;fs&#39;</span>
-<span class="p">{</span><span class="nx">debug</span><span class="p">,</span> <span class="nx">warning</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="nx">finished</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./command&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>This function only tries to import the given module, and if it fails it returns
+<span class="p">{</span><span class="nx">debug</span><span class="p">,</span> <span class="nx">warning</span><span class="p">,</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="nx">finished</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./command&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>This function only tries to import the given module, and if it fails it returns
 <code>false</code> if error corresponds to a missing module error.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">testModule = </span><span class="nf">(mod) -&gt;</span>
   <span class="k">try</span>
     <span class="nx">require</span><span class="p">(</span><span class="nx">mod</span><span class="p">)</span>
@@ -31,14 +31,20 @@ the project vendor libraries and packages. Packages are inserted as
 <em>array elements</em> in the project.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nx">Project</span>
   <span class="nv">constructor: </span><span class="nf">(@file) -&gt;</span> <span class="nx">@setup</span><span class="p">()</span>
   <span class="nv">setup: </span><span class="o">-&gt;</span>
-    <span class="nv">configs = </span><span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;./brewfile&#39;</span><span class="p">).</span><span class="nx">configs</span> <span class="nx">@file</span>
-    <span class="nx">_</span><span class="p">.</span><span class="nx">defaults</span> <span class="nx">configs</span><span class="p">,</span>
-      <span class="nv">root: </span><span class="s1">&#39;.&#39;</span>
-      <span class="nv">reqs: </span><span class="p">[]</span>
-      <span class="nv">packages: </span><span class="p">[]</span>
-      <span class="nv">vendorDir: </span><span class="s1">&#39;./vendor&#39;</span>
+    <span class="k">try</span>
+      <span class="vi">@configs = </span><span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;./brewfile&#39;</span><span class="p">).</span><span class="nx">configs</span> <span class="nx">@file</span>
+      <span class="nx">_</span><span class="p">.</span><span class="nx">defaults</span> <span class="nx">@configs</span><span class="p">,</span>
+        <span class="nv">root: </span><span class="s1">&#39;.&#39;</span>
+        <span class="nv">reqs: </span><span class="p">[]</span>
+        <span class="nv">packages: </span><span class="p">[]</span>
+        <span class="nv">vendorDir: </span><span class="s1">&#39;./vendor&#39;</span>
+    <span class="k">catch</span> <span class="nx">err</span>
+      <span class="k">if</span> <span class="nx">@configs</span><span class="o">?</span>
+        <span class="nx">error</span> <span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="nx">@file</span><span class="p">,</span> <span class="nx">err</span><span class="p">.</span><span class="nx">message</span>
+      <span class="k">else</span>
+        <span class="k">throw</span> <span class="nx">err</span>
     
-    <span class="p">{</span><span class="nx">@root</span><span class="p">,</span> <span class="nx">reqs</span><span class="p">,</span> <span class="nx">packages</span><span class="p">,</span> <span class="nx">vendorDir</span><span class="p">}</span> <span class="o">=</span> <span class="nx">configs</span>
+    <span class="p">{</span><span class="nx">@root</span><span class="p">,</span> <span class="nx">reqs</span><span class="p">,</span> <span class="nx">packages</span><span class="p">,</span> <span class="nx">vendorDir</span><span class="p">}</span> <span class="o">=</span> <span class="nx">@configs</span>
     <span class="vi">@vendorlibs = </span><span class="k">new</span> <span class="nx">VendorLibraries</span> <span class="k">this</span><span class="p">,</span> <span class="nx">vendorDir</span><span class="p">,</span> <span class="nx">reqs</span>
     <span class="vi">@length = </span><span class="nx">packages</span><span class="p">.</span><span class="nx">length</span>
     <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">packages</span><span class="p">,</span> <span class="p">(</span><span class="nx">pkg</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span>
@@ -91,9 +97,15 @@ packages, and sets up a
 <a href="http://nodejs.org/docs/latest/api/fs.html#fs.FSWatcher">FSWatchers</a> for the
 Brewfile used for this project's configuration. It passes the <code>reset</code> instance
 methods as the reset callback for all watching methods.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">watch: </span><span class="o">-&gt;</span>
-    <span class="nx">pkg</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">@reset</span><span class="p">,</span> <span class="k">this</span><span class="p">))</span> <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="k">this</span>
-    <span class="vi">@configWatcher = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">watch</span> <span class="nx">@file</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">@reset</span><span class="p">()</span>
-    <span class="nx">@configWatcher</span><span class="p">.</span><span class="kc">on</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">@reset</span><span class="p">,</span> <span class="k">this</span><span class="p">)</span>
+    <span class="nv">cnt = </span><span class="mi">0</span>
+    <span class="nv">acc = </span><span class="o">=&gt;</span>
+      <span class="k">if</span> <span class="o">++</span><span class="nx">cnt</span> <span class="o">is</span> <span class="nx">@length</span>
+        <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./index&#39;</span><span class="p">).</span><span class="nx">watchers</span><span class="p">.</span><span class="nx">incr</span><span class="p">()</span>
+        <span class="vi">@configWatcher = </span><span class="nx">fs</span><span class="p">.</span><span class="nx">watch</span> <span class="nx">@file</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">@reset</span><span class="p">()</span>
+        <span class="nx">@configWatcher</span><span class="p">.</span><span class="kc">on</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">@reset</span><span class="p">,</span> <span class="k">this</span><span class="p">)</span>
+        <span class="nx">info</span> <span class="s1">&#39;Watching&#39;</span><span class="p">,</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./index&#39;</span><span class="p">).</span><span class="nx">watchers</span><span class="p">.</span><span class="nx">count</span><span class="p">,</span> <span class="s1">&#39;files&#39;</span>
+    
+    <span class="nx">pkg</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">@reset</span><span class="p">,</span> <span class="k">this</span><span class="p">),</span> <span class="nx">acc</span><span class="p">)</span> <span class="k">for</span> <span class="nx">pkg</span> <span class="k">in</span> <span class="k">this</span>
   
   </pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>This method is the <code>reset</code> callback invoked when any relevant change occur
 in the project. If an error is passed, it is thrown. Otherwise, the 
@@ -101,7 +113,10 @@ Brewfile FSWatcher is closed, and the <code>unwatch</code> method is called on e
 packages. Finally, it deletes instance variables, contained packages and
 re-invokes the <code>setup</code> instance method to start over.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">reset: </span><span class="nf">(err) -&gt;</span>
     <span class="k">throw</span> <span class="nx">err</span> <span class="k">if</span> <span class="nx">err</span><span class="o">?</span>
-    <span class="nx">@configWatcher</span><span class="o">?</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">@configWatcher</span><span class="o">?</span>
+      <span class="nx">@configWatcher</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
+      <span class="k">delete</span> <span class="nx">@configWatcher</span>
+      <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./index&#39;</span><span class="p">).</span><span class="nx">watchers</span><span class="p">.</span><span class="nx">decr</span><span class="p">()</span>
     
     <span class="k">for</span> <span class="nx">pkg</span><span class="p">,</span> <span class="nx">i</span> <span class="k">in</span> <span class="k">this</span>
       <span class="nx">pkg</span><span class="p">.</span><span class="nx">unwatch</span><span class="p">()</span>

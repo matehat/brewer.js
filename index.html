@@ -47,7 +47,7 @@
         </div>
         <div class="span6">
 <pre class="console">
-<span class="prompt">$</span> brewer watch
+<span class="prompt">$</span> brake watch
 <span class="info">Info</span> Watching project /path/to/current/working/directory
 <span class="fn">Compiled</span> coffee/test.coffee
 <span class="fn">Compiled</span> less/index.less
@@ -117,10 +117,10 @@
         <pre><span class="prompt">$</span> npm install -g brewer</pre>
         
         <p>
-          The <code>-g</code> flag is used to make the installation global, so you get access to the <code>brewer</code>
+          The <code>-g</code> flag is used to make the installation global, so you get access to the <code>brake</code>
           executable. Then, from a project directory you wish to manage using Brewer.js
         </p>
-        <pre><span class="prompt">$</span> brewer init [&lt;template name&gt;]</pre>
+        <pre><span class="prompt">$</span> brake init [&lt;template name&gt;]</pre>
         <p>
           The <code>&lt;template name&gt;</code> part is optional. Anyway, for the moment, there is only <em>one</em> 
           template available, <strong>lesscoffee</strong>, which is also the default. This template sets up LESS and 
@@ -128,7 +128,7 @@
         </p>
         <p>
           What this does is create a <a href="#brewfile">Brewfile</a> in the current directory, according to the template
-          provided and run <code>brewer make</code> (see <a href="#CLI">CLI Usage</a>) on it.
+          provided and run <code>brake make</code> (see <a href="#CLI">CLI Usage</a>) on it.
         </p>
       </section>
       
@@ -148,7 +148,7 @@
         
         <p>Those two functions can be used interchangeably with <code>js</code> or <code>css</code> to be more concise. The 
           <code>package_name</code> is used to identify certain parts of a project, in case you would like to run 
-          <code>$ brewer make package_name</code>. A <strong>Package</strong> is a conceptual component of a project in which you 
+          <code>$ brake make package_name</code>. A <strong>Package</strong> is a conceptual component of a project in which you 
           can define <strong>bundles</strong> and in which files can <em>import</em> each other. A file contained in a package 
           can really be anywhere on the file system -- a package is not bound to a specific directory.</p>
           
@@ -188,7 +188,7 @@
           
         <script src="https://gist.github.com/1839758.js?file=rw-home.coffee"></script>
         
-        <p>If we had been running <code>brewer watch</code> while we wrote that script and saved it, we would have seen a file appear, 
+        <p>If we had been running <code>brake watch</code> while we wrote that script and saved it, we would have seen a file appear, 
           named <code>./js/home.js</code>, containing an aggregate file of jquery, chosen and our little script compiled into javascript. 
           Since we didn't provide the <code>output</code> option, a compiled javascript version of just <code>coffee/home.coffee</code> can be found 
           in <code>./_cache</code>. If we wanted it to appear somewhere more meaningful, we could set the <code>output</code> option on a source 
@@ -206,7 +206,14 @@
         
         <ul>
           <li>
-            <pre><span class="prompt">$</span> brewer make [&lt;package&gt;*]</pre>
+            <pre><span class="prompt">$</span> brake init [&lt;template_name&gt;]</pre>
+            <p>
+              This command tells brewer to make a Brewfile in the current directory, according to the template 
+              provided, and make an initial directory structure to support the project.
+            </p>
+          </li>
+          <li>
+            <pre><span class="prompt">$</span> brake [all|&lt;package&gt;*]</pre>
             <p>
               This command tells brewer to look for files to compile (coffeescript, less, etc.) into their 
               javascript or css counterparts, product bundles and compress them if necessary. This intelligently 
@@ -214,14 +221,7 @@
             </p>
           </li>
           <li>
-            <pre><span class="prompt">$</span> brewer watch [&lt;package&gt;*]</pre>
-            <p>
-              This command tells brewer to first run `brew make` on the current directory and watch for 
-              changes (file content change, new files, moved files or deleted files).
-            </p>
-          </li>
-          <li>
-            <pre><span class="prompt">$</span> brewer clean [&lt;package&gt;*]</pre>
+            <pre><span class="prompt">$</span> brake clean [&lt;package&gt;*]</pre>
             <p>
               This command tells brewer to delete files that strongly depends on source files, such as those 
               that are completely derived from the compilation of another file, bundles and their compressed 
@@ -229,14 +229,14 @@
             </p>
           </li>
           <li>
-            <pre><span class="prompt">$</span> brewer init [&lt;template_name&gt;]</pre>
+            <pre><span class="prompt">$</span> brake watch</pre>
             <p>
-              This command tells brewer to make a Brewfile in the current directory, according to the template 
-              provided, and make an initial directory structure to support the project.
+              This command tells brewer to first run `brew make` on the current directory and watch for 
+              changes (file content change, new files, moved files or deleted files).
             </p>
           </li>
           <li>
-            <pre><span class="prompt">$</span> brewer install</pre>
+            <pre><span class="prompt">$</span> brake install</pre>
             <p>
               This command tells Brewer.js to install all missing Node.js modules that it needs to work properly
               with the current project. For instance, had I put a few <code>@coffeescript</code> source directives 

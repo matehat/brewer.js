@@ -124,6 +124,7 @@ to catch the event where a file is added. It calls the given
 that is not currently listed in the cached file list.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">watch: </span><span class="nf">(reset) -&gt;</span>  
     <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@shouldWatch</span>
     <span class="nv">filelist = </span><span class="kc">null</span>
+    <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./index&#39;</span><span class="p">).</span><span class="nx">watchers</span><span class="p">.</span><span class="nx">incr</span><span class="p">()</span>
     <span class="vi">@watcher = </span><span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;fs&#39;</span><span class="p">).</span><span class="nx">watch</span> <span class="nx">@path</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span>
       <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@filelist</span><span class="o">?</span>
       <span class="nx">filelist</span> <span class="o">?=</span> <span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">relpath</span> <span class="k">for</span> <span class="nx">f</span> <span class="k">in</span> <span class="nx">@filelist</span><span class="p">)</span>
@@ -135,8 +136,12 @@ that is not currently listed in the cached file list.</p>             </td>     
       
     
   
-  </pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>This method is used to close the FSWatcher if it as been set.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">unwatch: </span><span class="o">-&gt;</span>
-    <span class="nx">@watcher</span><span class="o">?</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
+  </pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <p>This method is used to close the FSWatcher if it as been set, and
+decrements the global file watcher count</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">unwatch: </span><span class="o">-&gt;</span>
+    <span class="k">if</span> <span class="nx">@watcher</span>
+      <span class="nx">@watcher</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
+      <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./index&#39;</span><span class="p">).</span><span class="nx">watchers</span><span class="p">.</span><span class="nx">decr</span><span class="p">()</span>
+      <span class="k">delete</span> <span class="nx">@watcher</span>
   
   
 <span class="nv">exports.Source = </span><span class="nx">Source</span>
