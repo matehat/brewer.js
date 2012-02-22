@@ -25,13 +25,15 @@ class Bundler extends Source
   constructor: (@options, @project) ->
     {join} = require 'path'
     bundles = @bundles = {}
-    {@name, build} = @options
+    {@name, build, path} = @options
     for type, names of ALIASES
       bundles[type] = []
       for name in names when @options[name]?
         bundles[type] = _.union bundles[type], @options[name]
     
     @shouldCompress = @options.compress
+    build = path if path? and !build?
+    
     if _.isString build
       @build = {javascript: join(build, 'js'), stylesheet: join(build, 'css')}
     else
