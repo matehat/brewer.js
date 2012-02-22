@@ -31,7 +31,7 @@ cli = require './command'
 class Project
   constructor: (@file) -> 
     @root = '.'
-    @reqs = []
+    @vendors = []
     @vendorDir = './vendor'
     
     # *Registries for files and sources*. Those will hold all those
@@ -46,13 +46,8 @@ class Project
     
     @readBrewfile(@file) if @file?
   
-  readBrewfile: (file) ->
-    coffeescript = require 'coffee-script'
-    vm = require 'vm'
-    {DSL} = require './index'
-    
+  readBrewfile: (file) ->    
     ctx = {}
-    
     # Iterate through all package types, using their
     # type name to proxy the `package` definition function
     # above.
@@ -60,10 +55,10 @@ class Project
       return if key is 'register'
       ctx[key] = _.bind value, this
     
-    coffeescript.eval fs.readFileSync(file, 'utf-8'), 
-      sandbox: vm.createContext ctx
+    (require 'coffee-script').eval fs.readFileSync(file, 'utf-8'), 
+      sandbox: (require 'vm').createContext ctx
       filename: file
-    
+  
   
   # This method is used to register a *Source* object. The `@sources`
   # variable maps to a list of sources, by type: `@sources[type] = 
@@ -210,6 +205,8 @@ exports.DSL = DSL =
     for term in kls.aliases ? []
       this[term] = directive
   
-  require: () ->
-    
+  vendor: (project, path) -> project.vendorDir = path
+  require: (args...) ->
+    if args[0] instanceof Array
+      
   
