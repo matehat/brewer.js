@@ -373,7 +373,7 @@ class File extends EventEmitter
     return unless @exists()
     fs.unlinkSync @fullpath
   
-
+  
   # This method is used to delete the current file, as well
   # as all files that depend on it.
   destroy: ->

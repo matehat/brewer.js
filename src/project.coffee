@@ -29,20 +29,10 @@ cli = require './command'
 # the project vendor libraries and packages. Packages are inserted as
 # *array elements* in the project.
 class Project
-  constructor: (@file) -> @setup()
-  setup: ->
-    try
-      @configs = (require './brewfile').configs @file
-      _.defaults @configs,
-        root: '.'
-        reqs: []
-        packages: []
-        vendorDir: './vendor'
-    catch err
-      if @configs?
-        cli.error 'in', @file, err.message
-      else
-        throw err
+  constructor: (@file) -> 
+    @root = '.'
+    @reqs = []
+    @vendorDir = './vendor'
     
     # *Registries for files and sources*. Those will hold all those
     # objects, neatly classified by types and access path.
@@ -53,19 +43,41 @@ class Project
     @_ready = false
     @_ev = new (require 'events').EventEmitter()
     @_ev.on 'ready', => @_ready = true
+    
+    @readBrewfile(@file) if @file?
+  
+  readBrewfile: (file) ->
+    coffeescript = require 'coffee-script'
+    vm = require 'vm'
+    {DSL} = require './index'
+    
+    ctx = {}
+    
+    # Iterate through all package types, using their
+    # type name to proxy the `package` definition function
+    # above.
+    _.each DSL, (value, key) ->
+      return if key is 'register'
+      ctx[key] = _.bind value, this
+    
+    coffeescript.eval fs.readFileSync(file, 'utf-8'), 
+      sandbox: vm.createContext ctx
+      filename: file
+    
   
   # This method is used to register a *Source* object. The `@sources`
   # variable maps to a list of sources, by type: `@sources[type] = 
   # [src1, src2, ...]`. After adding the source to the register, it is told 
   # to loop spawn its set of contained files. At the end of the crawling,
   # if not other sources are pending, we emit the 'ready' event.
-  register: (src) ->
+  pushSource: (src) ->
     (@sources[src.constructor.type] ?= []).push src
     @_pendingSources++
     
     src.files null, (files) =>
       @_ev.emit 'ready' if --@_pendingSources == 0
     
+  
   
   # This method returns a *File* object that corresponds to the given
   # arguments, in terms of access path, type and optionally fullpath and
@@ -168,6 +180,7 @@ class Project
     @ready =>
       for file in @impermanents()
         file.unlinkSync()
+    
   
   
   # This method returns a list of all *impermanent* files which includes, 
@@ -183,5 +196,20 @@ class Project
     acc
   
 
-
 exports.Project = Project
+exports.DSL = DSL =
+  register: (kls) ->
+    {bind, isFunction} = require 'underscore'
+    unless isFunction(kls.directive) and kls.name?
+      throw new Error("""
+      Only classes with a `<cls>.directive()` class method and a `<cls>.term` class property 
+      can be registered as a DSL term.
+      """)
+    directive = bind kls.directive, kls
+    this[kls.term] = directive
+    for term in kls.aliases ? []
+      this[term] = directive
+  
+  require: () ->
+    
+  

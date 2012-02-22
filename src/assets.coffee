@@ -5,8 +5,8 @@ cli = require './command'
 {DSL} = require './index'
 
 ALIASES =
-  'javascript': ['js', 'javascript', 'javascripts', 'scripts']
-  'stylesheet': ['css', 'stylesheet', 'stylesheets', 'styles']
+  javascript: ['js', 'javascript', 'javascripts', 'scripts']
+  stylesheet: ['css', 'stylesheet', 'stylesheets', 'styles']
 
 COMPRESSORS = 
   stylesheet: (data, cb2) ->
@@ -25,23 +25,26 @@ class Bundler extends Source
   constructor: (@options, @project) ->
     {join} = require 'path'
     bundles = @bundles = {}
+    {@name, build} = @options
     for type, names of ALIASES
       bundles[type] = []
       for name in names when @options[name]?
         bundles[type] = _.union bundles[type], @options[name]
-    {@name, build} = @options
+    
     @shouldCompress = @options.compress
     if _.isString build
       @build = {javascript: join(build, 'js'), stylesheet: join(build, 'css')}
     else
       @build = {}
-      for alias in ALIASES[type]
-        if alias in build
-          @build[type] = build[alias]
-        if @bundles[type].length > 0 and !@build[type]?
-          throw new Error("""
-          Bundles of #{type}s are provided, but no build path was specified for this type.
-          """)
+      for type, names of ALIASES
+        for name in names
+          if name in build
+            @build[type] = build[name]
+            break
+          if @bundles[type].length > 0 and !@build[type]?
+            throw new Error("""
+            Bundles of #{type}s are provided, but no build path was specified for this type.
+            """)
   
   requiredModules: ->
     mods = []
@@ -50,17 +53,17 @@ class Bundler extends Source
     mods
   
   files: (yield, list) ->
-    if @filelist?
+    if @_filelist?
       super
     else
-      @filelist = []
-      for type in ['javascript', 'stylesheet']
+      @_filelist = []
+      for type of ALIASES
         for fpath in @bundles[type]
           file = @createFile type, util.changeext(fpath, '')
           yield file if yield?
-          @filelist.push(file) if list?
+          @_filelist.push(file) if list?
     
-      list @filelist if list?
+      list @_filelist if list?
   
   createFile: (type, fpath) ->  
     {join} = require 'path'
@@ -77,6 +80,7 @@ class Bundler extends Source
       cfile.dependOn file, _.bind(@compress, this)
       cfile.impermanent = true
   
+  
   # This method is used to produce a bundle file by aggregating all the
   # necessary imported files. It uses `file.tsortedImports` to obtain a
   # sorted list of all necessary imports, then iterate through each, creating
@@ -87,7 +91,7 @@ class Bundler extends Source
     imports = bundle.parent.tsortedImports()
     ws = bundle.writeStream()
     ws.on 'close', ->
-      finished 'Packaged', bundle.fullpath
+      cli.finished 'Packaged', bundle.fullpath
       cb()
     
     iter = ->
@@ -101,6 +105,7 @@ class Bundler extends Source
     
     iter()
   
+  
   # This method complies to the convention required by the `file.dependOn`
   # method, so it gets called whenever a dependent file in invalidated
   # and must be updated, relative to its source file. It takes an original
@@ -109,9 +114,10 @@ class Bundler extends Source
   compress: (original, dest, cb) ->
     original.project dest, COMPRESSORS[original.type], (err) ->
       cb err if err
-      finished 'Compressed', original.fullpath
+      cli.finished 'Compressed', original.fullpath
       cb()
     
   
 
 Bundler.register()
+exports.Bundler = Bundler

@@ -9,19 +9,8 @@
 
 @watchers =
   count: 0
-  incr: -> @count++
-  decr: -> @count--
-
-@DSL = {
-  register: (kls) ->
-    {bind, isFunction} = require 'underscore'
-    unless isFunction(kls.directive) and kls.name?
-      throw new Error("""
-      Only classes with a `<cls>.directive()` class method and a `<cls>.term` class property 
-      can be registered as a DSL term.
-      """)
-    this[kls.name] = bind kls.directive, kls
-}
+  incr: -> ++@count
+  decr: -> --@count
 
 {@Project} = require './project'
 {@Source} = require './source'

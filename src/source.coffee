@@ -51,7 +51,8 @@ class Source
       else
         options ?= {}
         options.path = path
-    new this options, project
+    src = new this options, project
+    project.pushSource src
   
   
   # A *Source* is initialized with an option object, which is the result of 
@@ -129,6 +130,7 @@ class Source
         file = @createFile util.changeext(fpath, '')
         yield file if yield?
         @filelist.push file
+      
       @list each, => list @filelist if list?
   
   

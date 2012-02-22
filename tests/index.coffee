@@ -27,7 +27,6 @@ runTests = (tests, cb) ->
 exports.OK = (msg) -> console.log color("  ✔", "green"), msg
 
 runTests [
-  require('./brewfile').tests
   require('./js').tests
-  require('./css').tests
+#  require('./css').tests
 ]

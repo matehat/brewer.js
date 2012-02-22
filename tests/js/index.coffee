@@ -17,20 +17,18 @@ exports.tests =
     process.chdir path.resolve __dirname
     project = new Project path.resolve __dirname, './Brewfile'
     project.clean()
-    jspackage = project[0]
-    jspackage2 = project[1]
   
   clean: -> project.clean()
   
   'Requirements': (next) ->
     assert.ok project.requiredModules().length is 3
-    OK 'The project has 2 requirements'
+    OK 'The project has 3 requirements'
     assert.ok project.missingModules().length is 0
     OK 'The project doesn\'t have missing required modules'
     next()
   
   'Packaging Coffeescript': (next) ->
-    jspackage.actualize ->
+    project.actualize ->
       test = require './js/build/test'
       assert.ok test.F is 2
       OK 'test.F is 2'
@@ -42,11 +40,9 @@ exports.tests =
       OK 'test.F == 2'
       assert.ok test.A is 1
       OK 'test.A == 1'
-      next()
     
   
   'Packaging Coffeescript + External Libraries': (next3) ->
-    jspackage2.actualize (next) ->
       jsdom.env
         html: '<html><body></body></html>'
         src: [fs.readFileSync './js/build/test2.js']
@@ -57,7 +53,6 @@ exports.tests =
           OK('window.$("body").data("id") == "hello"')
           next2()
         
-      
       next2 = ->
         jsdom.env
           html: '<html><body></body></html>'
@@ -71,6 +66,7 @@ exports.tests =
           
         
       
+  
   'Packaging IcedCoffeescript': (next) ->
       jsdom.env
         html: '<html><body></body></html>'
@@ -82,4 +78,4 @@ exports.tests =
             next()
           
         
-      
+  
