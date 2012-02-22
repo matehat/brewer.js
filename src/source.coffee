@@ -64,8 +64,11 @@ class Source
       watch: true 
       output: (require 'temp').mkdirSync('brewerjs-source')
       prefix: ''
+      requirements: []
+      optionals: []
+      main: null
     }
-    {@path, @requirements, @output, @prefix} = @options
+    {@path, @requirements, @optionals, @output, @prefix, @main} = @options
     @shouldWatch = @options.watch
     util.makedirs @path
   

@@ -83,6 +83,10 @@ Within the body of this formula definition, the following methods can be used:
     vendor library). If `prefix` was provided, like in the case above it, it specifies what file should be
     pointed to by the access path of `<project name>/<prefix>`. Otherwise, it specifies the file pointed by
     `<project name>`. Without the `prefix` option, this is equivalent to the `@main` directive.
+    
+  * `imports` and `optionals`
+  
+    These two options specify the dependency of certain files in specific directories to other local or
   
   For some really simple formulae, the `@exports` directive can be of another form, which is:
   
