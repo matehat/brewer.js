@@ -1,12 +1,14 @@
-@require
+require {
   jquery:     '1.7.X'
   backbone:   '0.9.X'
   underscore: '1.3.X'
+}
 
-@vendor 'deps'
-@bundler 'build',
+vendor 'deps'
+bundler 'build', {
   js: ['test']
   compress: true
+}
 
-@coffeescript "coffee", output: "js"
-@ics          "iced",   output: "js/iced"
+coffeescript "coffee", {output: "js"}
+ics          "iced",   {output: "js/iced"}

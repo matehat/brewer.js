@@ -1,12 +1,15 @@
-@require nib: '0.3.X'
-@require 'test'
+require {nib: '0.3.X'}
+require './test'
 
-@bundler 'css/build'
+bundler 'css/build', {
   css: ['testcss1', 'testless1', 'test1', 'test2']
   compress: true
+}
 
-@css    'css'
-@less   'less'
-@less   'less/auto', output: 'css/build-less'
-@stylus 'stylus'
-@stylus 'stylus-nib'
+css    'css'
+
+less   'less'
+less   'less/auto', {output: 'css/build-less'}
+
+stylus 'stylus'
+stylus 'stylus-nib'
