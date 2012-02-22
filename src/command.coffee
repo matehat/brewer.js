@@ -70,13 +70,11 @@ exports.run = (argv) ->
     .command('init')
     .description(" Initialize #{clr('Brewer', 'green')} in the current directory")
     .action ->
-      templ = program.template ? 'lesscoffee'
+      templ = program.template ? 'empty'
       template = path.join(__dirname, '..', 'templates', "#{templ}.coffee")
       content = fs.readFileSync template, 'utf-8'
       cli.info 'Writing Brewfile'
       fs.writeFileSync 'Brewfile', content, 'utf-8'
-      
-      cli.info 'Making initial folder structure'
       getLocalProject().prepare()
     
   
