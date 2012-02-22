@@ -29,6 +29,9 @@ cli = require './command'
 # the project vendor libraries and packages. Packages are inserted as
 # *array elements* in the project.
 class Project
+  fromFormula: (name) ->
+    
+  
   constructor: (@file) -> 
     @root = '.'
     @vendors = []
