@@ -40,7 +40,6 @@ class CoffeescriptSource extends Source
     compiled.dependOn original, _.bind(@compile, this)
     compiled.setImportedPaths original.readImportedPaths()
     compiled.impermanent = true
-    compiled.register()
     compiled
   
   

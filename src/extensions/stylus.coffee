@@ -40,7 +40,6 @@ class StylusSource extends Source
     compiled.dependOn original, _.bind(@compile, @)
     compiled.setImportedPaths original.readImportedPaths()
     compiled.impermanent = true
-    compiled.register()
     compiled
   
   # This method takes two files and continuation callback, the first

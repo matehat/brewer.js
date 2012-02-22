@@ -38,7 +38,6 @@ class LessSource extends Source
     compiled.dependOn original, (require 'underscore').bind(@compile, @)
     compiled.setImportedPaths original.readImportedPaths()
     compiled.impermanent = true
-    compiled.register()
     compiled
   
   
