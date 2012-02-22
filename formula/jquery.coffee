@@ -14,6 +14,9 @@ formula 'jquery', ->
     '1.7.1': '273e017fd0bef143258516bdee173a1e'
   
   @exports 'js', main: 'jquery.js'
+  @install (path, next) -> 
+    @stage path
+    next()
 
 formula 'jquery-dev', ->
   @homepage "http://jquery.com/"
