@@ -9,10 +9,10 @@
 # gazillion ways Brewer.js can make you more productive,
 # visit http://www.brewerjs.org
 #
-# @bundler './build',
+# bundler './build',
 #   compress: true
 #   bundles: []
 
-# @coffeescript  './coffee', output: './js'
-# @less         './less'
+# coffeescript  './coffee', output: './js'
+# less         './less'
 #
