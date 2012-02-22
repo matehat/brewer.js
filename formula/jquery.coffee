@@ -34,7 +34,7 @@ formula 'jquery-dev', ->
       "https://github.com/jquery/jquery/tarball/#{v}"
     
   @exports ->
-    @js './jquery', main: './core.js'
+    @js 'jquery', main: 'core.js'
   
   @install (path, next) ->
     @deflate path, 'tar.gz', (dirpath) ->

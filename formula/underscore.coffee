@@ -14,7 +14,7 @@ formula 'underscore', ->
     latest: 'http://underscorejs.org/underscore.js'
     '>= 0.6.0': (v) -> "https://github.com/documentcloud/underscore/tarball/#{v}"
   
-  @exports 'js', main: './underscore.js'
+  @exports 'js', main: 'underscore.js'
   @install (path, next) ->
     if @version == 'latest'
       @stage path
