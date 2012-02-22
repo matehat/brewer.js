@@ -29,4 +29,5 @@ exports.OK = (msg) -> console.log color("  ✔", "green"), msg
 runTests [
   require('./js').tests
 #  require('./css').tests
+  require('./formula').tests
 ]
