@@ -168,6 +168,8 @@ class Formula
     install: (@installer) =>
     latest: (@latest) =>
     md5: (@md5) =>
+    exports: (f, opts) ->
+      @exporter = if !_.isFunction f then (-> this[f] '.', opts) else f
     
     versions: (versions...) =>
       if versions.length is 1
@@ -190,12 +192,6 @@ class Formula
           if !@urls? or _.isFunction @urls
             @urls = {}
           @urls[version] = value
-    
-    require: (formulae...) =>
-      @requirements.push(formula) for formula in formulae when not _.include(@requirements, formula)
-    
-    optional: (formulae...) =>
-      @optionals.push(formula) for formula in formulae when not _.include(@optionals, formula)
     
   
 
