@@ -1,11 +1,9 @@
-@require
-  nib: '0.3.X'
-  test: '0.1.1'
+@require nib: '0.3.X'
+@require 'test'
 
-@bundler
+@bundler 'css/build'
   css: ['testcss1', 'testless1', 'test1', 'test2']
   compress: true
-  output: 'css/build'
 
 @css    'css'
 @less   'less'

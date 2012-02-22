@@ -1,10 +1,4 @@
 {
-  "nib": {
-    "version": "0.3.2",
-    "content": {"./nib":  {"type": "stylus"}}
-  },
-  "test": {
-    "version": "0.1.1",
-    "content": {".": {"type": "less"}}
-  }
+  "nib": {"version": "0.3.2"},
+  "test": {}
 }
