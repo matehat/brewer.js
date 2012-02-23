@@ -196,25 +196,22 @@ class File extends EventEmitter
   # object, since this source specifies the regular expression used
   # to find those directives.
   readImportedPaths: ->
-    if @source?
-      regexp = @source.constructor.header
-      
-      # Every chunk that matches the regexp pattern is concatenated
-      # and the result is assumed to be a JSON array of strings,
-      # and returned.
-      #
-      # **TODO** : Find something better than this.
-      
-      recurse = (_data) ->
-        return '' unless (match = _data.match regexp)?
-        match[1] + recurse _data[match[0].length+match.index ...]
-      
-      paths = if (json = recurse @readSync()).length > 0
-        JSON.parse json 
-      else []
-      paths = (util.changeext(p, '') for p in paths)
-    else
-      []
+    return [] unless @source? and (regexp = @source.constructor.header)?
+    
+    # Every chunk that matches the regexp pattern is concatenated
+    # and the result is assumed to be a JSON array of strings,
+    # and returned.
+    #
+    # **TODO** : Find something better than this.
+    
+    recurse = (_data) ->
+      return '' unless (match = _data.match regexp)?
+      match[1] + recurse _data[match[0].length+match.index ...]
+    
+    paths = if (json = recurse @readSync()).length > 0
+      JSON.parse json 
+    else []
+    paths = (util.changeext(p, '') for p in paths)
   
   
   # This method is used to specify what the imports of this file

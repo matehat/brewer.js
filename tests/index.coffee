@@ -30,4 +30,5 @@ runTests [
   require('./js').tests
 #  require('./css').tests
   require('./formula').tests
+  require('./templates').tests
 ]

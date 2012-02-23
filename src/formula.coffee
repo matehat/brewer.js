@@ -168,7 +168,7 @@ class Formula
     install: (@installer) =>
     latest: (@latest) =>
     md5: (@md5) =>
-    exports: (f, opts) ->
+    exports: (f, opts) =>
       @exporter = if !_.isFunction f then (-> this[f] '.', opts) else f
     
     versions: (versions...) =>
@@ -226,7 +226,7 @@ class Catalog
     if (formula = @formulae[name])?
       @formulaFromFile name, formula.file
     else
-      throw new Error("Formula (#{formula}) not available")
+      throw new Error("Formula '#{formula}' not available")
   
   formulaFiles: ->
     filelist = []
@@ -252,8 +252,8 @@ class Catalog
       entry = entries[name] = {file}
       entry[p] = formula[p] for p in [
         'name', 'homepage', 'doc'
-        'latest', 'md5', 'versions', 
-        'requirements', 'optionals']
+        'latest', 'md5', 'versions'
+      ]
       null
     entries
   

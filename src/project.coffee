@@ -7,12 +7,6 @@
 # Vendor libraries are entities that can export one or many 
 # [sources](source.html), of different types, which can be used when 
 # aggregating bundles. 
-#
-# > *TODO*: Vendor libraries are currently *not documented*, because, 
-# although they are functional, there is no easy way for someone 
-# to include them in their project. This is implemented mostly to prepare
-# for an upcoming feature : *[Homebrew](http://mxcl.github.com/homebrew)-style 
-# formulas*
 
 # Underscore, core modules and CLI utilities are loaded.
 _ = require 'underscore'
@@ -29,9 +23,6 @@ cli = require './command'
 # the project vendor libraries and packages. Packages are inserted as
 # *array elements* in the project.
 class Project
-  fromFormula: (name) ->
-    
-  
   constructor: (@file) -> 
     @root = '.'
     @vendors = []
@@ -76,6 +67,7 @@ class Project
       @_ev.emit 'ready' if --@_pendingSources == 0
     
   
+  pushVendorSource: (src) ->
   
   # This method returns a *File* object that corresponds to the given
   # arguments, in terms of access path, type and optionally fullpath and

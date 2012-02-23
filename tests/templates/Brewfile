@@ -1,0 +1,11 @@
+require
+  mustache:     '0.4.X'
+
+javascript "script1", ->
+  @options
+    build: "./js"
+    compress: false
+  
+  @bundles 'test'
+  @coffeescript "./coffee"
+  @mustache "./mustache"

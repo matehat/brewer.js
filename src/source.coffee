@@ -83,11 +83,20 @@ class Source
   # this source's extension (class variable `ext`).
   createFile: (fpath) -> 
     ctor = @constructor
+<<<<<<< HEAD
     {join} = require 'path'
     fpath = join @prefix, fpath
     fullpath = util.changeext join(@path, fpath), ctor.ext
     file = @project.file fpath, ctor.type, fullpath, @
     if (imports = @requirements?[file.relpath])?
+=======
+    fullpath = util.changeext (require 'path').join(@path, fpath), ctor.ext
+    file = @package.file fpath, ctor.type, fullpath, @
+    file.register()
+    if @requirements?
+      imports = @requirements[file.relpath] ? []
+      imports = imports.concat @requirements.all ? []
+>>>>>>> master
       file.setImportedPaths imports
     file
   
