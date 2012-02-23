@@ -67,7 +67,7 @@ class Source
   constructor: (@options, @package) ->
     (require 'underscore').defaults @options, {
       watch: true 
-      output: './_cache'
+      output: '_cache'
     }
     {@path, @requirements, @output} = @options
     @shouldWatch = @options.watch
@@ -87,7 +87,9 @@ class Source
     fullpath = util.changeext (require 'path').join(@path, fpath), ctor.ext
     file = @package.file fpath, ctor.type, fullpath, @
     file.register()
-    if (imports = @requirements?[file.relpath])?
+    if @requirements?
+      imports = @requirements[file.relpath] ? []
+      imports = imports.concat @requirements.all ? []
       file.setImportedPaths imports
     
     file

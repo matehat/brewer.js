@@ -30,4 +30,5 @@ runTests [
   require('./brewfile').tests
   require('./js').tests
   require('./css').tests
+  require('./templates').tests
 ]
