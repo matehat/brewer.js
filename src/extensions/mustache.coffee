@@ -31,7 +31,7 @@ embedPrecompTemplate = (global, json) -> """
         if (!Object.prototype.hasOwnProperty.call(obj, key)) continue; 
         p = ((_partials = this.partials) != null ? _partials : this.partials = {})[key] = obj[key];
         ((_templates = this.templates) != null ? 
-          _templates : this.templates = {})[key] = Mustache.compile(t);
+          _templates : this.templates = {})[key] = Mustache.compile(p);
       }
     }
   } : this["#{global}"]; _JST.extend(#{json}); }).call(this);
