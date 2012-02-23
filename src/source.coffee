@@ -42,6 +42,8 @@ util  = require './util'
 _ = require 'underscore'
 {debug, info} = require './command'
 
+getTempdir = -> (require 'temp').mkdirSync('brewerjs-source')
+
 class Source
   @register: -> (require './index').DSL.register this
   @directive: (project, path, options) ->
@@ -62,13 +64,13 @@ class Source
   constructor: (@options, @project) ->
     (require 'underscore').defaults @options, {
       watch: true 
-      output: (require 'temp').mkdirSync('brewerjs-source')
       prefix: ''
       requirements: []
       optionals: []
       main: null
     }
     {@path, @requirements, @optionals, @output, @prefix, @main} = @options
+    @output or= getTempdir()
     @shouldWatch = @options.watch
     util.makedirs @path
   
