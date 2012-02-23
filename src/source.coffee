@@ -41,8 +41,6 @@
 util  = require './util'
 {debug, info} = require './command'
 
-getTempdir = -> (require 'temp').mkdirSync('brewerjs-source')
-
 class Source
   # Much like for *[Package](package.html#section-3)*, a registry of subclasses
   # must be maintained to associate types (*coffeescript*, *less*, *javascript*, 
@@ -67,9 +65,10 @@ class Source
   # After setting instance variables, the path to the source directory is
   # created recursively.
   constructor: (@options, @package) ->
+    {join} = require 'path'
     (require 'underscore').defaults @options, {watch: true}
     {@path, @requirements, @output} = @options
-    @output or= getTempdir()
+    @output or= join ".cache", @path
     @shouldWatch = @options.watch
     util.makedirs @path
   
