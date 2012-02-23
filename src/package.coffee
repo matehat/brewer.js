@@ -186,7 +186,8 @@ class Package extends (require 'events').EventEmitter
         ws.end()
         return
       
-      rs = (file = imports[i++]).readStream()
+      rs = imports[i++].readStream()
+      return iter() unless rs?
       rs.pipe ws, {end: false}
       rs.on 'end', iter
     
