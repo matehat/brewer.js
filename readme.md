@@ -1,7 +1,7 @@
 ## Brewer.js
 #### Your asset management best friend.
 
-*This project is about to significant API change, making it leaner, simpler and ready for a few big improvements*
+*This project is about to have a significant API change, making it leaner, simpler and ready for a few big improvements*
 
 Brewer.js is a tool that eases all sorts of tasks related to the management of 
 stylesheets and javascript source files. From a single command, it takes care of :
