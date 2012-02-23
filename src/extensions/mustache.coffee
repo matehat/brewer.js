@@ -22,6 +22,21 @@ embedTemplate = (global, json) -> """
   }} : this["#{global}"]; _JST.__extend(#{json}); }).call(this);
 """
 
+embedPrecompTemplate = (global, json) -> """
+(function() {
+  var _JST = this["#{global}"] = this["#{global}"] == null ? {
+    extend: function(obj) {
+      var key, p, _partials, _templates;
+      for (key in obj) {
+        if (!Object.prototype.hasOwnProperty.call(obj, key)) continue; 
+        p = ((_partials = this.partials) != null ? _partials : this.partials = {})[key] = obj[key];
+        ((_templates = this.templates) != null ? 
+          _templates : this.templates = {})[key] = Mustache.compile(t);
+      }
+    }
+  } : this["#{global}"]; _JST.extend(#{json}); }).call(this);
+"""
+
 class MustacheSource extends Source
   @type = 'mustache'
   @ext = '.mustache'
@@ -32,7 +47,10 @@ class MustacheSource extends Source
   # capture it. It will be used as the javascript global object.
   constructor: (options) ->
     super
-    @global = options.global ? 'JST'
+    _.defaults options, 
+      global: 'JST'
+      precompiled: false
+    {@global, @precompiled} = options
   
   
   # This function is the glue between the embedding function above and the
@@ -41,8 +59,9 @@ class MustacheSource extends Source
     compile = (data, cb2) =>
       # We make the object
       (json = {})[original.relpath] = data
+      embedder = if @precompiled then embedPrecompTemplate else embedTemplate
       # and pass it to the embedding function
-      cb2 null, embedTemplate @global, JSON.stringify json
+      cb2 null, embedder @global, JSON.stringify json
     
     original.project compiled, compile, (err) ->
       cb err if err
