@@ -16,12 +16,10 @@ cli = require '../command'
 # automatically escape the string content. It attaches the template to the global
 # object with the key given. That's all.
 embedTemplate = (global, json) -> """
-(function() { if (this["#{global}"] == null) var _JST = this["#{global}"] = {
+(function() { var _JST = this["#{global}"] = this["#{global}"] == null ? {
   __extend: function(obj) {
-    for (var key in obj)
-      if (Object.prototype.hasOwnProperty.call(obj, key)) this[key] = obj[key];
-  }
-}; _JST.__extend(#{json}); }).call(this);
+    for (var key in obj) if (Object.prototype.hasOwnProperty.call(obj, key)) this[key] = obj[key];
+  }} : this["#{global}"]; _JST.__extend(#{json}); }).call(this);
 """
 
 class MustacheSource extends Source
