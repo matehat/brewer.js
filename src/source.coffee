@@ -67,7 +67,7 @@ class Source
   constructor: (@options, @package) ->
     {join} = require 'path'
     (require 'underscore').defaults @options, {watch: true}
-    {@path, @requirements, @output} = @options
+    {@path, @requirements, @output, @prefix} = @options
     @output or= join ".cache", @path
     @shouldWatch = @options.watch
     util.makedirs @path
@@ -82,8 +82,10 @@ class Source
   # fullpath is simply the access path, prefix with this source's path and
   # this source's extension (class variable `ext`).
   createFile: (fpath) -> 
+    {join} = require 'path'
     ctor = @constructor
-    fullpath = util.changeext (require 'path').join(@path, fpath), ctor.ext
+    fullpath = util.changeext join(@path, fpath), ctor.ext
+    fpath = join @prefix, fpath if @prefix?
     file = @package.file fpath, ctor.type, fullpath, @
     file.register()
     if @requirements?
