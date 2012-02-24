@@ -68,7 +68,11 @@ class LessSource extends Source
             error 'in', original.fullpath, ':', err.message
             cb()
           else
-            cb2 null, tree.toCSS()
+            try
+              cb2 null, tree.toCSS()
+            catch err
+              error 'in', original.fullpath, ':', err.message
+              cb()
       catch err
         error 'in', original.fullpath, ':', err.message
         cb()
