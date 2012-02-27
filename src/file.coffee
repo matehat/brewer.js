@@ -215,7 +215,7 @@ class File extends EventEmitter
       return '' unless (match = _data.match regexp)?
       match[1] + recurse _data[match[0].length+match.index ...]
     
-    paths = if (json = recurse @readSync()).length > 0
+    paths = if (json = recurse (@readSync() || '')).length > 0
       JSON.parse json 
     else []
     paths = (util.changeext(p, '') for p in paths)
