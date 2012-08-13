@@ -32,14 +32,14 @@ source files.</p></li>
 <li><p><code>@ext</code></p>
 
 <p>The file extension checked to yield appropriate files from the source.</p></li>
-</ul>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Common utilities are loaded up.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">util  = </span><span class="nx">require</span> <span class="s1">&#39;./util&#39;</span>
-<span class="p">{</span><span class="nx">debug</span><span class="p">,</span> <span class="nx">info</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./command&#39;</span>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Common utilities are loaded up.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">util  = </span><span class="nx">require</span> <span class="s">&#39;./util&#39;</span>
+<span class="p">{</span><span class="nx">debug</span><span class="p">,</span> <span class="nx">info</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&#39;./command&#39;</span>
 
 <span class="k">class</span> <span class="nx">Source</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Much like for <em><a href="package.html#section-3">Package</a></em>, a registry of subclasses
 must be maintained to associate types (<em>coffeescript</em>, <em>less</em>, <em>javascript</em>, 
 etc) to particular subclasses of <em>Source</em>. Type aliases, alternate type namings,
 are also associated to the same subclasses, so to stay flexible.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="vi">@types: </span><span class="o">-&gt;</span> 
-    <span class="p">(</span><span class="nx">type</span> <span class="k">for</span> <span class="nx">own</span> <span class="nx">type</span> <span class="k">of</span> <span class="k">this</span> <span class="k">when</span> <span class="nx">type</span> <span class="o">not</span> <span class="k">in</span> <span class="p">[</span><span class="s1">&#39;types&#39;</span><span class="p">,</span> <span class="s1">&#39;extend&#39;</span><span class="p">,</span> <span class="s1">&#39;create&#39;</span><span class="p">])</span>
+    <span class="p">(</span><span class="nx">type</span> <span class="k">for</span> <span class="nx">own</span> <span class="nx">type</span> <span class="k">of</span> <span class="k">this</span> <span class="k">when</span> <span class="nx">type</span> <span class="o">not</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;types&#39;</span><span class="p">,</span> <span class="s">&#39;extend&#39;</span><span class="p">,</span> <span class="s">&#39;create&#39;</span><span class="p">])</span>
   
   <span class="vi">@extend: </span><span class="nf">(sources...) -&gt;</span>
     <span class="k">for</span> <span class="nx">src</span> <span class="k">in</span> <span class="nx">sources</span>
@@ -47,19 +47,18 @@ are also associated to the same subclasses, so to stay flexible.</p>            
       <span class="k">for</span> <span class="nx">alias</span> <span class="k">in</span> <span class="p">(</span><span class="nx">src</span><span class="p">.</span><span class="nx">aliases</span> <span class="o">?</span> <span class="p">[])</span>
         <span class="k">this</span><span class="p">[</span><span class="nx">alias</span><span class="p">]</span> <span class="o">=</span> <span class="nx">src</span>
   
-  <span class="vi">@create: </span><span class="nf">(options, package) -&gt;</span>
-    <span class="k">throw</span> <span class="s2">&quot;Source type #{options.type} not known&quot;</span> <span class="nx">unless</span> <span class="p">(</span><span class="nv">typ = </span><span class="k">this</span><span class="p">[</span><span class="nx">options</span><span class="p">.</span><span class="nx">type</span><span class="p">])</span><span class="o">?</span>
-    <span class="k">new</span> <span class="nx">typ</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">package</span>
+  <span class="vi">@create: </span><span class="nf">(options, pkg) -&gt;</span>
+    <span class="k">throw</span> <span class="s">&quot;Source type </span><span class="si">#{</span><span class="nx">options</span><span class="p">.</span><span class="nx">type</span><span class="si">}</span><span class="s"> not known&quot;</span> <span class="nx">unless</span> <span class="p">(</span><span class="nv">typ = </span><span class="k">this</span><span class="p">[</span><span class="nx">options</span><span class="p">.</span><span class="nx">type</span><span class="p">])</span><span class="o">?</span>
+    <span class="k">new</span> <span class="nx">typ</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">pkg</span>
   
   </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>A <em>Source</em> is initialized with an option object, which is the result of 
 evaluating a <em>source directive</em> in a <a href="brewfile.html#section-5">Brewfile</a>.
 After setting instance variables, the path to the source directory is
 created recursively.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">constructor: </span><span class="nf">(@options, @package) -&gt;</span>
-    <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;underscore&#39;</span><span class="p">).</span><span class="nx">defaults</span> <span class="nx">@options</span><span class="p">,</span> <span class="p">{</span>
-      <span class="nv">watch: </span><span class="kc">true</span> 
-      <span class="nv">output: </span><span class="s1">&#39;./_cache&#39;</span>
-    <span class="p">}</span>
-    <span class="p">{</span><span class="nx">@path</span><span class="p">,</span> <span class="nx">@requirements</span><span class="p">,</span> <span class="nx">@output</span><span class="p">}</span> <span class="o">=</span> <span class="nx">@options</span>
+    <span class="p">{</span><span class="nx">join</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&#39;path&#39;</span>
+    <span class="p">(</span><span class="nx">require</span> <span class="s">&#39;underscore&#39;</span><span class="p">).</span><span class="nx">defaults</span> <span class="nx">@options</span><span class="p">,</span> <span class="p">{</span><span class="nv">watch: </span><span class="kc">true</span><span class="p">}</span>
+    <span class="p">{</span><span class="nx">@path</span><span class="p">,</span> <span class="nx">@requirements</span><span class="p">,</span> <span class="nx">@output</span><span class="p">,</span> <span class="nx">@prefix</span><span class="p">}</span> <span class="o">=</span> <span class="nx">@options</span>
+    <span class="nx">@output</span> <span class="o">or=</span> <span class="nx">join</span> <span class="s">&quot;.cache&quot;</span><span class="p">,</span> <span class="nx">@path</span>
     <span class="vi">@shouldWatch = </span><span class="nx">@options</span><span class="p">.</span><span class="nx">watch</span>
     <span class="nx">util</span><span class="p">.</span><span class="nx">makedirs</span> <span class="nx">@path</span>
   
@@ -69,11 +68,15 @@ to operate properly.</p>             </td>             <td class="code">        
 using the given access path and this source's type. It assumes the
 fullpath is simply the access path, prefix with this source's path and
 this source's extension (class variable <code>ext</code>).</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">createFile: </span><span class="nf">(fpath) -&gt;</span> 
+    <span class="p">{</span><span class="nx">join</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&#39;path&#39;</span>
     <span class="nv">ctor = </span><span class="nx">@constructor</span>
-    <span class="nv">fullpath = </span><span class="nx">util</span><span class="p">.</span><span class="nx">changeext</span> <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="nx">@path</span><span class="p">,</span> <span class="nx">fpath</span><span class="p">),</span> <span class="nx">ctor</span><span class="p">.</span><span class="nx">ext</span>
-    <span class="nv">file = </span><span class="nx">@package</span><span class="p">.</span><span class="nx">file</span> <span class="nx">fpath</span><span class="p">,</span> <span class="nx">ctor</span><span class="p">.</span><span class="nx">type</span><span class="p">,</span> <span class="nx">fullpath</span><span class="p">,</span> <span class="err">@</span>
+    <span class="nv">fullpath = </span><span class="nx">util</span><span class="p">.</span><span class="nx">changeext</span> <span class="nx">join</span><span class="p">(</span><span class="nx">@path</span><span class="p">,</span> <span class="nx">fpath</span><span class="p">),</span> <span class="nx">ctor</span><span class="p">.</span><span class="nx">ext</span>
+    <span class="nv">fpath = </span><span class="nx">join</span> <span class="nx">@prefix</span><span class="p">,</span> <span class="nx">fpath</span> <span class="k">if</span> <span class="nx">@prefix</span><span class="o">?</span>
+    <span class="nv">file = </span><span class="nx">@package</span><span class="p">.</span><span class="nx">file</span> <span class="nx">fpath</span><span class="p">,</span> <span class="nx">ctor</span><span class="p">.</span><span class="nx">type</span><span class="p">,</span> <span class="nx">fullpath</span><span class="p">,</span> <span class="nx">@</span>
     <span class="nx">file</span><span class="p">.</span><span class="nx">register</span><span class="p">()</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nv">imports = </span><span class="nx">@requirements</span><span class="o">?</span><span class="p">[</span><span class="nx">file</span><span class="p">.</span><span class="nx">relpath</span><span class="p">])</span><span class="o">?</span>
+    <span class="k">if</span> <span class="nx">@requirements</span><span class="o">?</span>
+      <span class="nv">imports = </span><span class="nx">@requirements</span><span class="p">[</span><span class="nx">file</span><span class="p">.</span><span class="nx">relpath</span><span class="p">]</span> <span class="o">?</span> <span class="p">[]</span>
+      <span class="nv">imports = </span><span class="nx">imports</span><span class="p">.</span><span class="nx">concat</span> <span class="nx">@requirements</span><span class="p">.</span><span class="nx">all</span> <span class="o">?</span> <span class="p">[]</span>
       <span class="nx">file</span><span class="p">.</span><span class="nx">setImportedPaths</span> <span class="nx">imports</span>
     
     <span class="nx">file</span>
@@ -85,17 +88,17 @@ considered a source file.</p>             </td>             <td class="code">   
   </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>This method yields a set of file paths that it can find on disk, under
 this source's path. It takes two callbacks as argument : a <code>yield</code>
 callback which is called with every single file it finds, and a 
-<code>end</code> callback, called when the directory walking is done.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">list: </span><span class="nf">(yield, end) -&gt;</span>
-    <span class="nv">walk = </span><span class="nx">require</span> <span class="s1">&#39;walker&#39;</span>
-    <span class="p">{</span><span class="nx">join</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;path&#39;</span>
+<code>end</code> callback, called when the directory walking is done.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">list: </span><span class="nf">(cb, end) -&gt;</span>
+    <span class="nv">walk = </span><span class="nx">require</span> <span class="s">&#39;walker&#39;</span>
+    <span class="p">{</span><span class="nx">join</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&#39;path&#39;</span>
     <span class="nv">filelist = </span><span class="p">[]</span>
-    <span class="nv">walker = </span><span class="k">new</span> <span class="nx">walk</span> <span class="p">(</span><span class="nv">rpath = </span><span class="nx">join</span> <span class="nx">@path</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="nv">followLinks: </span><span class="kc">true</span>
-    <span class="nx">walker</span><span class="p">.</span><span class="kc">on</span> <span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">root</span><span class="p">,</span> <span class="nx">stat</span><span class="p">)</span> <span class="o">=&gt;</span>
+    <span class="nv">walker = </span><span class="k">new</span> <span class="nx">walk</span> <span class="p">(</span><span class="nv">rpath = </span><span class="nx">join</span> <span class="nx">@path</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">),</span> <span class="nv">followLinks: </span><span class="kc">true</span>
+    <span class="nx">walker</span><span class="p">.</span><span class="kc">on</span> <span class="s">&#39;file&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">root</span><span class="p">,</span> <span class="nx">stat</span><span class="p">)</span> <span class="o">=&gt;</span>
       <span class="nv">fpath = </span><span class="nx">join</span> <span class="nx">root</span><span class="p">[</span><span class="nx">rpath</span><span class="p">.</span><span class="nx">length</span><span class="o">+</span><span class="mi">1</span><span class="p">..],</span> <span class="nx">stat</span><span class="p">.</span><span class="nx">name</span>
       <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@test</span> <span class="nx">fpath</span>
-      <span class="nx">yield</span> <span class="nx">fpath</span>
+      <span class="nx">cb</span> <span class="nx">fpath</span>
     
-    <span class="nx">walker</span><span class="p">.</span><span class="kc">on</span> <span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="nx">end</span> <span class="k">if</span> <span class="nx">end</span><span class="o">?</span>
+    <span class="nx">walker</span><span class="p">.</span><span class="kc">on</span> <span class="s">&#39;end&#39;</span><span class="p">,</span> <span class="nx">end</span> <span class="k">if</span> <span class="nx">end</span><span class="o">?</span>
   
   </pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>This method yields a set of <em>File</em> objects contained in this source.
 If the cached version of this list can be found, that list is used
@@ -104,15 +107,15 @@ method above is used to produce, for every file path found, a file
 using the <code>createFile</code> method above. Two callbacks can be given as
 arguments: a <code>yield</code> callback which is called with every <em>File</em> 
 object, and a <code>list</code> callback, called with the final list of all
-of them.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">files: </span><span class="nf">(yield, list) -&gt;</span>
+of them.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">files: </span><span class="nf">(cb, list) -&gt;</span>
     <span class="k">if</span> <span class="nx">@filelist</span><span class="o">?</span>
-      <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;underscore&#39;</span><span class="p">).</span><span class="nx">each</span> <span class="nx">@filelist</span><span class="p">,</span> <span class="nx">yield</span> <span class="k">if</span> <span class="nx">yield</span><span class="o">?</span>
+      <span class="p">(</span><span class="nx">require</span> <span class="s">&#39;underscore&#39;</span><span class="p">).</span><span class="nx">each</span> <span class="nx">@filelist</span><span class="p">,</span> <span class="nx">cb</span> <span class="k">if</span> <span class="nx">cb</span><span class="o">?</span>
       <span class="nx">list</span> <span class="nx">@filelist</span> <span class="k">if</span> <span class="nx">list</span><span class="o">?</span>
     <span class="k">else</span>
       <span class="vi">@filelist = </span><span class="p">[]</span>
       <span class="nv">each = </span><span class="p">(</span><span class="nx">fpath</span><span class="p">)</span> <span class="o">=&gt;</span>
-        <span class="nv">file = </span><span class="nx">@createFile</span> <span class="nx">util</span><span class="p">.</span><span class="nx">changeext</span><span class="p">(</span><span class="nx">fpath</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="nx">yield</span> <span class="nx">file</span> <span class="k">if</span> <span class="nx">yield</span><span class="o">?</span>
+        <span class="nv">file = </span><span class="nx">@createFile</span> <span class="nx">util</span><span class="p">.</span><span class="nx">changeext</span><span class="p">(</span><span class="nx">fpath</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="nx">cb</span> <span class="nx">file</span> <span class="k">if</span> <span class="nx">cb</span><span class="o">?</span>
         <span class="nx">@filelist</span><span class="p">.</span><span class="nx">push</span> <span class="nx">file</span>
       <span class="nx">@list</span> <span class="nx">each</span><span class="p">,</span> <span class="o">=&gt;</span> <span class="nx">list</span> <span class="nx">@filelist</span> <span class="k">if</span> <span class="nx">list</span><span class="o">?</span>
   
@@ -124,14 +127,14 @@ to catch the event where a file is added. It calls the given
 that is not currently listed in the cached file list.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">watch: </span><span class="nf">(reset) -&gt;</span>  
     <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@shouldWatch</span>
     <span class="nv">filelist = </span><span class="kc">null</span>
-    <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./index&#39;</span><span class="p">).</span><span class="nx">watchers</span><span class="p">.</span><span class="nx">incr</span><span class="p">()</span>
-    <span class="vi">@watcher = </span><span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;fs&#39;</span><span class="p">).</span><span class="nx">watch</span> <span class="nx">@path</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span>
+    <span class="nx">require</span><span class="p">(</span><span class="s">&#39;./index&#39;</span><span class="p">).</span><span class="nx">watchers</span><span class="p">.</span><span class="nx">incr</span><span class="p">()</span>
+    <span class="vi">@watcher = </span><span class="p">(</span><span class="nx">require</span> <span class="s">&#39;fs&#39;</span><span class="p">).</span><span class="nx">watch</span> <span class="nx">@path</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span>
       <span class="k">return</span> <span class="nx">unless</span> <span class="nx">@filelist</span><span class="o">?</span>
       <span class="nx">filelist</span> <span class="o">?=</span> <span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">relpath</span> <span class="k">for</span> <span class="nx">f</span> <span class="k">in</span> <span class="nx">@filelist</span><span class="p">)</span>
       <span class="nx">@list</span> <span class="nf">(fpath) -&gt;</span>
-        <span class="nv">fpath = </span><span class="nx">util</span><span class="p">.</span><span class="nx">changeext</span> <span class="nx">fpath</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+        <span class="nv">fpath = </span><span class="nx">util</span><span class="p">.</span><span class="nx">changeext</span> <span class="nx">fpath</span><span class="p">,</span> <span class="s">&#39;&#39;</span>
         <span class="k">if</span> <span class="nx">fpath</span> <span class="o">not</span> <span class="k">in</span> <span class="nx">filelist</span>
-          <span class="nx">info</span> <span class="nx">fpath</span><span class="p">,</span> <span class="s1">&#39;added&#39;</span>
+          <span class="nx">info</span> <span class="nx">fpath</span><span class="p">,</span> <span class="s">&#39;added&#39;</span>
           <span class="nx">reset</span><span class="p">()</span>
       
     
@@ -140,7 +143,7 @@ that is not currently listed in the cached file list.</p>             </td>     
 decrements the global file watcher count</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">unwatch: </span><span class="o">-&gt;</span>
     <span class="k">if</span> <span class="nx">@watcher</span>
       <span class="nx">@watcher</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
-      <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./index&#39;</span><span class="p">).</span><span class="nx">watchers</span><span class="p">.</span><span class="nx">decr</span><span class="p">()</span>
+      <span class="nx">require</span><span class="p">(</span><span class="s">&#39;./index&#39;</span><span class="p">).</span><span class="nx">watchers</span><span class="p">.</span><span class="nx">decr</span><span class="p">()</span>
       <span class="k">delete</span> <span class="nx">@watcher</span>
   
   

@@ -5,19 +5,19 @@
 
 <p>This is the module obtained when importing <code>brewer</code>. 
 It exports the main classes from <a href="project.html">project</a>, <a href="package.html">package</a>, 
-<a href="source.html">source</a> and <a href="file.html">file</a>.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">{</span><span class="nx">@Package</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./package&#39;</span>
-<span class="p">{</span><span class="nx">@Project</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./project&#39;</span>
-<span class="p">{</span><span class="nx">@Source</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./source&#39;</span>
-<span class="p">{</span><span class="nx">@File</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./file&#39;</span>
+<a href="source.html">source</a> and <a href="file.html">file</a>.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">{</span><span class="nx">@Package</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&#39;./package&#39;</span>
+<span class="p">{</span><span class="nx">@Project</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&#39;./project&#39;</span>
+<span class="p">{</span><span class="nx">@Source</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&#39;./source&#39;</span>
+<span class="p">{</span><span class="nx">@File</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&#39;./file&#39;</span>
 
 <span class="vi">@watchers = </span><span class="p">{</span>
   <span class="nv">count: </span><span class="mi">0</span>
   <span class="nv">incr: </span><span class="o">-&gt;</span> <span class="nx">@count</span><span class="o">++</span>
   <span class="nv">decr: </span><span class="o">-&gt;</span> <span class="nx">@count</span><span class="o">--</span>
 <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>It also parses the <em>extensions/</em> directory to find modules that extends <strong>brewer.js</strong>
-functionality.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">for</span> <span class="nx">file</span> <span class="k">in</span> <span class="p">(</span><span class="nx">require</span> <span class="s1">&#39;fs&#39;</span><span class="p">).</span><span class="nx">readdirSync</span><span class="p">((</span><span class="nx">require</span> <span class="s1">&#39;path&#39;</span><span class="p">).</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;./extensions&#39;</span><span class="p">))</span>
-  <span class="k">if</span> <span class="nx">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span>
-    <span class="nx">require</span> <span class="s1">&#39;./extensions/&#39;</span> <span class="o">+</span> <span class="nx">file</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <h4>MIT License</h4>
+functionality.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="k">for</span> <span class="nx">file</span> <span class="k">in</span> <span class="p">(</span><span class="nx">require</span> <span class="s">&#39;fs&#39;</span><span class="p">).</span><span class="nx">readdirSync</span><span class="p">((</span><span class="nx">require</span> <span class="s">&#39;path&#39;</span><span class="p">).</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s">&#39;./extensions&#39;</span><span class="p">))</span>
+  <span class="k">if</span> <span class="nx">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;.&#39;</span>
+    <span class="nx">require</span> <span class="s">&#39;./extensions/&#39;</span> <span class="o">+</span> <span class="nx">file</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <h4>MIT License</h4>
 
 <pre><code>Copyright (c) 2012 Mathieu D'Amours
 
