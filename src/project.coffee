@@ -37,8 +37,9 @@ testModule = (mod) ->
 # the project vendor libraries and packages. Packages are inserted as
 # *array elements* in the project.
 class Project
-  constructor: (@file) -> @setup()
+  constructor: -> @setup()
   setup: ->
+    @file = @findConfigFile()
     try
       @configs = (require './brewfile').configs @file
       _.defaults @configs,
@@ -58,6 +59,14 @@ class Project
     _.each packages, (pkg, i) =>
       this[i] = (require './package').Package.create pkg.opts, pkg.srcs, @vendorlibs
     
+  
+  # This method returns the actual name of a brewfile found in the local directory.
+  findConfigFile: ->
+    files = ['Brewfile', 'brewfile', 'brewfile.coffee', 'Brewfile.coffee']
+    for file in files
+      return file if fs.existsSync "./#{file}"
+    
+    throw "No brewfile found"
   
   
   # These two methods barely proxy methods with the same name, but invoked on all 

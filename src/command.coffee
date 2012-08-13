@@ -19,7 +19,7 @@ exports.version = getVersion = ->
 # This function returns a `Project` object from the Brewfile located
 # in the current working directory.
 getLocalProject = ->
-  new (require './index').Project './Brewfile'
+  new (require './index').Project
 
 ##### CLI utility functions
 #

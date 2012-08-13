@@ -1,3 +1,7 @@
+### 0.3.7 / 2012-08-13
+
+  * Added alternate namings for brewfile
+
 ### 0.3.6 / 2012-08-13
 
   * Fixed issue #14
