@@ -158,7 +158,7 @@ class VendorLibraries
     path.join @root, 'libraries.json'
   
   read: ->
-    if path.existsSync(stateFile = @stateFile())
+    if fs.existsSync(stateFile = @stateFile())
       JSON.parse fs.readFileSync stateFile, 'utf-8'
     else
       {}

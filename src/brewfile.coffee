@@ -90,7 +90,7 @@ _.each brewer.Source.types(), (key) ->
 
 
 # The function used to define a package object in a Brewfile.
-package = (type, name, opts, cb) ->
+createPackage = (type, name, opts, cb) ->
   # A package config object is initialized with the
   # Package prototype above, then added to the list of 
   # packages for the Brewfile.
@@ -130,7 +130,7 @@ newContext = () ->
   # above.
   _.each brewer.Package.types(), (key) ->
     ctx[key] = (name, opts, cb) ->
-      package.call ctx.project, brewer.Package[key].type, name, opts, cb
+      createPackage.call ctx.project, brewer.Package[key].type, name, opts, cb
     
   # Define DSL functions to specify properties of the project
   ctx.root = (newRoot) -> prj.root = newRoot

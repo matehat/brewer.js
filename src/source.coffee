@@ -55,9 +55,9 @@ class Source
       for alias in (src.aliases ? [])
         this[alias] = src
   
-  @create: (options, package) ->
+  @create: (options, pkg) ->
     throw "Source type #{options.type} not known" unless (typ = this[options.type])?
-    new typ options, package
+    new typ options, pkg
   
   
   # A *Source* is initialized with an option object, which is the result of 
@@ -106,7 +106,7 @@ class Source
   # this source's path. It takes two callbacks as argument : a `yield`
   # callback which is called with every single file it finds, and a 
   # `end` callback, called when the directory walking is done.
-  list: (yield, end) ->
+  list: (cb, end) ->
     walk = require 'walker'
     {join} = require 'path'
     filelist = []
@@ -114,7 +114,7 @@ class Source
     walker.on 'file', (root, stat) =>
       fpath = join root[rpath.length+1..], stat.name
       return unless @test fpath
-      yield fpath
+      cb fpath
     
     walker.on 'end', end if end?
   
@@ -127,15 +127,15 @@ class Source
   # arguments: a `yield` callback which is called with every *File* 
   # object, and a `list` callback, called with the final list of all
   # of them.
-  files: (yield, list) ->
+  files: (cb, list) ->
     if @filelist?
-      (require 'underscore').each @filelist, yield if yield?
+      (require 'underscore').each @filelist, cb if cb?
       list @filelist if list?
     else
       @filelist = []
       each = (fpath) =>
         file = @createFile util.changeext(fpath, '')
-        yield file if yield?
+        cb file if cb?
         @filelist.push file
       @list each, => list @filelist if list?
   

@@ -55,10 +55,10 @@ class Package extends (require 'events').EventEmitter
     (type for own type of this when type not in ['types', 'extend', 'create'])
   
   @extend: (packages...) ->
-    for package in packages
-      this[package.type] = package
-      for alias in (package.aliases ? [])
-        this[alias] = package
+    for pkg in packages
+      this[pkg.type] = pkg
+      for alias in (pkg.aliases ? [])
+        this[alias] = pkg
   
   @create: (options, sources, vendor) ->
     throw "Package type #{options.type} not known" unless (typ = this[options.type])?

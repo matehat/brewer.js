@@ -31,8 +31,8 @@ path = require 'path'
 @makedirs = makedirs = (fpath) ->
   fpath = path.resolve fpath
   dir = path.dirname fpath
-  makedirs dir unless path.existsSync dir
-  fs.mkdirSync fpath unless path.existsSync fpath
+  makedirs dir unless fs.existsSync dir
+  fs.mkdirSync fpath unless fs.existsSync fpath
 
 
 # This function returns whether the given filename has the given
@@ -75,8 +75,8 @@ path = require 'path'
 
 # This function is a synchronous equivalent of the above function.
 @newerSync = (file1, file2) ->
-  return false unless path.existsSync file1
-  return true unless path.existsSync file2
+  return false unless fs.existsSync file1
+  return true unless fs.existsSync file2
   time1 = fs.statSync(file1).mtime.getTime()
   time2 = fs.statSync(file2).mtime.getTime()
   return time1 > time2

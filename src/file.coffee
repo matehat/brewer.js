@@ -335,7 +335,7 @@ class File extends EventEmitter
   
   # This method returns whether or not the current file exists in
   # the file system.
-  exists: -> @attached() and path.existsSync @fullpath
+  exists: -> @attached() and fs.existsSync @fullpath
   
   # This method is used to make sure all directories leading to the
   # full path exist.
