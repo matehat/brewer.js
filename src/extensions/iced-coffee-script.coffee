@@ -9,6 +9,7 @@
 # Underscore, CLI utilities and the *Source* class are loaded
 {debug, finished, error} = require '../command'
 {Source} = require '../source'
+require './coffee-script'
 
 class CoffeescriptSource extends Source.coffeescript
   @type = 'icedcoffeescript'
