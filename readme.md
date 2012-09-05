@@ -20,6 +20,22 @@ Watching a whole project structure of Coffee-script, LESS or Stylus source files
     Packaged build/css/index.css
     Compressed build/css/index.css
 
+### Contributing
+
+If you wish to improve Brewer.js, feel free to fork the project on Github. Then, clone your fork somewhere on your computer, where you would do your own changes. If you are going to do this, you might want to `cd` to your working copy and :
+
+    $ npm link
+    
+This will turn your working copy as a global node module so you can use your version of the executable `brake` to test things out. You can always reinstall the official version using :
+
+    $ npm install -g brewer
+    
+Always update the tests (located in `tests/`) to reflect your changes and make sure they pass before submitting your changes. You can run the tests as follow :
+
+    $ cake test
+    
+When you feel your fork is awesome (that includes you've updated the tests to reflect your changes and all the tests pass), go ahead and do a **Pull Request**, explaining what awesomeness you've added. If everything is in order and the project stays consistent with its goal, we'll merge it right in!
+
 ### Installation
 
 #### Using a prepared package
