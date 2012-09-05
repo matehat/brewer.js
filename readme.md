@@ -30,7 +30,7 @@ This will turn your working copy as a global node module so you can use your ver
 
     $ npm install -g brewer
     
-Always update the tests (located in `tests/`) to reflect your changes and make sure they pass before submitting your changes. You can run the tests as follow :
+Always update the tests (located in `tests/`) to reflect your changes and make sure they pass before submitting your changes. You will need [coffee-script](https://github.com/jashkenas/coffee-script) to be installed globally to run the tests. You can run the tests as follow :
 
     $ cake test
     
