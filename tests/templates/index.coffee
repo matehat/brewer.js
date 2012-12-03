@@ -10,19 +10,19 @@ cssom = require 'cssom'
 {Project} = brewer
 {OK} = require '..'
 color = require('ansi-color').set
-project = package = null
+project = pkg = null
 
 exports.tests =
   setup: ->
     process.chdir path.resolve __dirname
     project = new Project path.resolve __dirname, './Brewfile'
     project.clean()
-    package = project[0]
+    pkg = project[0]
   
   clean: -> project.clean()
   
   'Packaging Mustache': (next) ->
-    package.actualize ->
+    pkg.actualize ->
       test = require './js/test'
       assert.ok test.JST.test1 == "Hello {{who}}!"
       OK 'bundle.JST.test1 is loaded'

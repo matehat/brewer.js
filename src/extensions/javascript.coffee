@@ -25,15 +25,27 @@ class JavascriptPackage extends Package
   # (the bundle) and destination file (the compressed counterpart) and 
   # updates the second.
   compressFile: (original, dest, cb) ->
-    compress = (data, cb) -> 
-      {parser, uglify} = require 'uglify-js'
-      {gen_code, ast_squeeze, ast_mangle} = uglify
-      cb null, gen_code ast_squeeze parser.parse data
-    
-    original.project dest, compress, (err) ->
+    compressor = if require('uglify-js').uglify? then @compressFileV1 else @compressFileV2
+    original.project dest, compressor, (err) ->
       cb err if err
       finished 'Compressed', original.fullpath
       cb()
+  
+  compressFileV1: (data, cb) ->
+    {parser, uglify} = require 'uglify-js'
+    {gen_code, ast_squeeze, ast_mangle} = uglify
+    cb null, gen_code ast_squeeze parser.parse data
+  
+  compressFileV2: (data, cb) ->
+    {minify} = require 'uglify-js'
+    fs = require 'fs'
+    require('temp').open {suffix: '.js'}, (err, info) ->
+      throw err if err?
+      fs.write info.fd, data
+      fs.close info.fd, (err) ->
+        throw err if err?
+        out = minify info.path
+        cb null, out.code
   
 
 # *Source* is subclassed by providing, again, the required

@@ -1,3 +1,7 @@
+### 0.3.8 / 2012-12-03
+
+  * Made javascript compression work with Uglify-JS 2
+
 ### 0.3.7 / 2012-08-13
 
   * Added alternate namings for brewfile
