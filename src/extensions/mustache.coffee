@@ -39,7 +39,7 @@ embedPrecompTemplate = (global, json) -> """
 
 class MustacheSource extends Source
   @type = 'mustache'
-  @ext = '.mustache'
+  @ext = ['.mustache', '.mu']
   # The header key is not needed since we don't allow importing in mustache just yet
   @header = null
   

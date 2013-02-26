@@ -245,7 +245,7 @@ class File extends EventEmitter
   # if those files were not initialized, they are still available.
   imports: ->
     unless @_imports?
-      @_imports = (@package.file(path, @type) for path in @importedPaths())
+      @_imports = (@package.file(fpath, @type) for fpath in @importedPaths())
     @_imports
   
   

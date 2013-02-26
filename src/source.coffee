@@ -40,6 +40,7 @@
 # Common utilities are loaded up.
 util  = require './util'
 {debug, info} = require './command'
+_ = require 'underscore'
 
 class Source
   # Much like for *[Package](package.html#section-3)*, a registry of subclasses
@@ -84,7 +85,8 @@ class Source
   createFile: (fpath) -> 
     {join} = require 'path'
     ctor = @constructor
-    fullpath = util.changeext join(@path, fpath), ctor.ext
+    fullpath = join @path, fpath
+    fpath = util.changeext fpath, ''
     fpath = join @prefix, fpath if @prefix?
     file = @package.file fpath, ctor.type, fullpath, @
     file.register()
@@ -99,7 +101,11 @@ class Source
   # This method returns whether or not the given filename should be
   # considered a source file.
   test: (path) ->
-    util.hasext path, @constructor.ext
+    ext = @constructor.ext
+    if _.isArray ext
+      _.any ext, (_ext) -> util.hasext path, _ext
+    else
+      util.hasext path, ext
   
   
   # This method yields a set of file paths that it can find on disk, under
@@ -134,7 +140,7 @@ class Source
     else
       @filelist = []
       each = (fpath) =>
-        file = @createFile util.changeext(fpath, '')
+        file = @createFile fpath
         cb file if cb?
         @filelist.push file
       @list each, => list @filelist if list?
