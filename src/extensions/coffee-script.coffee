@@ -17,7 +17,7 @@ class CoffeescriptSource extends Source
   @type = 'coffeescript'
   @aliases = ['coffee-script', 'cs']
   @header = /^#\s*import\s+([a-zA-Z0-9_\-\,\.\[\]\{\}\u0022/ ]+)/m
-  @ext = '.coffee'
+  @ext = ['.coffee', '.litcoffee']
   requiredModules: -> ['coffee-script']
   
   # This method overrides the `createFile` instance method to create 
@@ -52,9 +52,10 @@ class CoffeescriptSource extends Source
   # from the first file and output the result to the second file, all of
   # this using the `file.project` method.
   compile: (original, compiled, cb) ->
-    compile = (data, cb2) ->
+    literate = original.fullpath.indexOf('.litcoffee') >= 0
+    compile = (data, cb2) =>
       try
-        cb2 null, (require 'coffee-script').compile data
+        cb2 null, (require 'coffee-script').compile data, {literate}
       catch err
         # In case the compilation triggered an error, we catch it
         # and display it in the CLI, aborting the compilation, but
