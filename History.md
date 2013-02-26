@@ -1,3 +1,7 @@
+### 0.3.9 / 2013-02-26
+
+  * Added support for CoffeeScript's [new literate syntax](http://coffeescript.org/#literate)
+
 ### 0.3.8 / 2012-12-03
 
   * Made javascript compression work with Uglify-JS 2
