@@ -1,3 +1,7 @@
+### 0.3.10 / 2013-03-15
+
+  * Made ambiguous topological sorts preserve the natural order in an imported file list
+
 ### 0.3.9 / 2013-02-26
 
   * Added support for CoffeeScript's [new literate syntax](http://coffeescript.org/#literate)
