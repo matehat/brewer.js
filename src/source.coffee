@@ -113,14 +113,15 @@ class Source
   # callback which is called with every single file it finds, and a 
   # `end` callback, called when the directory walking is done.
   list: (cb, end) ->
-    walk = require 'walker'
+    walk = require 'walk'
     {join} = require 'path'
     filelist = []
-    walker = new walk (rpath = join @path, ''), followLinks: true
-    walker.on 'file', (root, stat) =>
+    walker = walk.walk (rpath = join @path, ''), followLinks: true
+    walker.on 'file', (root, stat, next) =>
       fpath = join root[rpath.length+1..], stat.name
       return unless @test fpath
       cb fpath
+      next()
     
     walker.on 'end', end if end?
   
