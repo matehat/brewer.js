@@ -306,13 +306,13 @@ class File extends EventEmitter
         edges.push file.relpath
         buildDAG n
       visited.push file.relpath
-    
+     
     buildDAG this
     S = [this]
     while S.length > 0
       n = S.shift()
       topoSortedFiles.push n
-      for m in n.imports()
+      for m in _.clone(n.imports()).reverse()
         DAG[m.relpath] = _.without DAG[m.relpath], n.relpath
         if DAG[m.relpath].length is 0
           S.push m
