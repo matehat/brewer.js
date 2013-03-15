@@ -216,7 +216,7 @@ class File extends EventEmitter
       match[1] + recurse _data[match[0].length+match.index ...]
     
     paths = if (json = recurse (@readSync() || '')).length > 0
-      JSON.parse json 
+      _.map JSON.parse(json), util.normalizePath
     else []
     paths = (util.changeext(p, '') for p in paths)
   

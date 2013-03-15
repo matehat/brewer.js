@@ -53,6 +53,8 @@ path = require 'path'
   len = filename.length
   return [filename[0...len-ext.length], ext]
 
+@normalizePath = (fpath) -> fpath.replace /\//, path.sep
+
 # This asynchronous function takes 2 files and a callback as 
 # arguments, and returns whether the first file can be considered
 # newer than the second. It first checks whether the first file 
