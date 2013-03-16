@@ -1,2 +1,2 @@
-javascript 'library', ->
+@javascript 'library', ->
   @coffeescript './src', output: './lib'

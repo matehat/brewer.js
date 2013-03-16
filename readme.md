@@ -81,10 +81,10 @@ At the top-level of the Brewfile, the following functions are available :
 ```coffeescript
 # In Brewfile
 
-stylesheets 'package_name', ->
+@stylesheets 'package_name', ->
   # package body ...
 
-javascript 'other_package_name', ->
+@javascript 'other_package_name', ->
   # package body ...
 ```
 
@@ -95,11 +95,11 @@ Package can receive options, which can be specified in one of two ways :
 ````coffeescript
 # In Brewfile
 
-javascript 'package_name', {build: './build', compress: true}, ->
+@javascript 'package_name', {build: './build', compress: true}, ->
   # package body
 
 # equivalent to
-javascript 'package_name', ->
+@javascript 'package_name', ->
   @options {build: './build', compress: true}
 ```
 
@@ -131,13 +131,13 @@ Root folder
 So there are files that ends up as javascript and those that ends up as css. Let's write a Brewfile that takes this structure into account.
 
 ```coffeescript
-javascript 'scripts', {build: './js'} ->
+@javascript 'scripts', {build: './js'} ->
     @bundles 'home', 'products'
     
     @coffeescript './coffee'
     @js './vendor'
 
-stylesheets 'styles', {build: './css'} ->
+@stylesheets 'styles', {build: './css'} ->
     @bundles 'home', 'products'
 
     @less './less'
@@ -157,13 +157,13 @@ $ -> $('select').chosen()
 If we had been running `brake watch` while we wrote that script and saved it, we would have seen a file appear, named `./js/home.js`, containing an aggregate file of jquery, chosen and our little script compiled into javascript. Since we didn't provide the `output` option, a compiled javascript version of just `coffee/home.coffee` can be found in `./_cache`. If we wanted it to appear somewhere more meaningful, we could set the `output` option on a source directive. A more complete example of the above could be :
 
 ```coffeescript
-javascript 'scripts', {build: './build/js'} ->
+@javascript 'scripts', {build: './build/js'} ->
     @bundles 'home', 'products'
     
     @coffeescript './coffee', {output: './js'}
     @js './vendor'
 
-stylesheets 'styles', {build: './build/css'} ->
+@stylesheets 'styles', {build: './build/css'} ->
     @bundles 'home', 'products'
 
     @less './less', {output: './css'}
