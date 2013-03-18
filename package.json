@@ -30,7 +30,7 @@
     "ansi-color": ">= 0.2.0",
     "semver": ">= 1.0.0",
     "request": ">= 2.9.0",
-    "coffee-script": ">= 1.1.0",
+    "coffee-script": "1.5.X",
     "temp": ">= 0.4.0"
   },
   "devDependencies": {
