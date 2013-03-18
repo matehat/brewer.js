@@ -1,6 +1,6 @@
 {
   "name" : "brewer",
-  "version" : "0.3.10",
+  "version" : "0.3.11",
   "description" : "Asset compilation/packaging/compression utility",
   "keywords": [
     "javascript", "coffeescript", "asset", "compression", 

@@ -1,3 +1,11 @@
+### 0.3.11 / 2013-03-18
+
+  * Fixed a bug that made importation not working consistenly on Windows
+  * Changed the FS walker module to [node-walk](http://github.com/coolaj86/node-walk)
+    because the previous one did not work properly on Windows
+  * Made dependency on CoffeeScript 1.5.X explicit (1.6.X carries some issues in our case 
+    for now)
+
 ### 0.3.10 / 2013-03-15
 
   * Made ambiguous topological sorts preserve the natural order in an imported file list
