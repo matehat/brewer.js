@@ -119,8 +119,8 @@ class Source
     walker = walk.walk (rpath = join @path, ''), followLinks: true
     walker.on 'file', (root, stat, next) =>
       fpath = join root[rpath.length+1..], stat.name
-      return unless @test fpath
-      cb fpath
+      if @test fpath
+        cb fpath
       next()
     
     walker.on 'end', end if end?
