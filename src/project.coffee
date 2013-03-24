@@ -132,7 +132,7 @@ class Project
         @configWatcher.on 'error', _.bind(@reset, this)
         info 'Watching', require('./index').watchers.count, 'files'
     
-    pkg.watch(_.bind(@reset, this), acc) for pkg in this
+    pkg.watch(@reset, acc) for pkg in this
   
   
   # This method is the `reset` callback invoked when any relevant change occur
@@ -140,7 +140,7 @@ class Project
   # Brewfile FSWatcher is closed, and the `unwatch` method is called on each
   # packages. Finally, it deletes instance variables, contained packages and
   # re-invokes the `setup` instance method to start over.
-  reset: (err) ->
+  reset: (err) =>
     throw err if err?
     if @configWatcher?
       @configWatcher.close()

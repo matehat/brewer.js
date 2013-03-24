@@ -253,7 +253,7 @@ class Package extends (require 'events').EventEmitter
       for type, sources of @sources
         for src in sources
           src.watch reset
-    
+        
       for type, files of @files
         for relpath, file of files
           file.watch reset

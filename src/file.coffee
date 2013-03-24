@@ -72,11 +72,12 @@ class File extends EventEmitter
     # below. It should be noticed that this is a 
     # *[depth-first](http://en.wikipedia.org/wiki/Depth-first_search)*-type 
     # algorithm.
+    
     i = 0
     iter = () =>
       if i < @dependencies.length
         [dep, act] = @dependencies[i++]
-        dep.actualize -> iter()
+        dep.actualize iter
       else end()
     
     # When all dependencies are actualized, we, again, loop through all of them
@@ -85,11 +86,11 @@ class File extends EventEmitter
     # through `dependOn(..)`. At the end of the loop, if the file is still considered
     # newest, we trigger the continuation callback, otherwise it will be called at
     # the end of the actualization.
-    end = () =>
+    end = =>
       if @dependencies.length > 0
         newest = true
         for [dep, act] in @dependencies
-          unless @newer dep
+          unless @newerThan dep
             act dep, this, (err) =>
               throw new Error err if err
               cb()
@@ -134,16 +135,20 @@ class File extends EventEmitter
       # reset in case it really did change.
       @stamp()
       require('./index').watchers.incr()
+      
       @watcher = fs.watch @fullpath, (event) =>
         if event is 'rename'
           cli.info "#{@fullpath} removed"
           for file in @liabilities
             file.destroy()
           
-          setTimeout reset, 50
+          _.defer reset
         else if @changed()
           cli.info "#{@fullpath} changed"
           reset()
+        else
+          @unwatch()
+          @watch reset
       
       @watcher.on 'error', (err) =>
         cli.debug 'error', err
@@ -162,7 +167,8 @@ class File extends EventEmitter
   
   # The stamping method used to cache a md5 checksum of the file on
   # disk.
-  stamp: -> @checksum = util.checksumSync(@fullpath)
+  stamp: ->
+    @checksum = util.checksumSync(@fullpath)
   
   # This method returns whether the file on disk should be considered
   # changed from the last `stamp()` method call. It returns false if
@@ -325,7 +331,7 @@ class File extends EventEmitter
   
   # This method returns whether or not the current file is newer
   # than the provided one.
-  newer: (other) ->
+  newerThan: (other) ->
     util.newerSync @fullpath, other.fullpath
   
   
