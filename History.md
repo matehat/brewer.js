@@ -1,3 +1,7 @@
+### 0.3.12 / 2013-03-23
+
+  * Fixed an issue that broke file watch when a save was done in certain circumstances
+
 ### 0.3.11 / 2013-03-18
 
   * Fixed a bug that made importation not working consistenly on Windows
