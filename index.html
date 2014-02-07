@@ -39,37 +39,250 @@
         <ul></ul>
       </nav>
       <section>
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+        <h2>
+<a name="brewerjs" class="anchor" href="#brewerjs"><span class="octicon octicon-link"></span></a>Brewer.js</h2>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<h4>
+<a name="your-asset-management-best-friend" class="anchor" href="#your-asset-management-best-friend"><span class="octicon octicon-link"></span></a>Your asset management best friend.</h4>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<p>Brewer.js is a tool that eases all sorts of tasks related to the management of 
+stylesheets and javascript source files. From a single command, it takes care of :</p>
+
+<ul>
+<li>Compilation of coffee-script source files to javascript</li>
+<li>Compilation of LESS or Stylus files to CSS</li>
+<li>Bundling different files (javascript or CSS) into a single file (optionally compressing it) while maintaining references and their proper ordering.</li>
+<li>Watching a directory for changes, triggering any or all of the above.</li>
+</ul><p>Watching a whole project structure of Coffee-script, LESS or Stylus source files can be as easy as :</p>
+
+<pre><code>$ brake watch
+Info Watching project /path/to/current/working/directory
+Compiled coffee/test.coffee
+Compiled less/index.less
+Packaged build/css/index.css
+Compressed build/css/index.css
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<h3>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h3>
+
+<p>If you wish to improve Brewer.js, feel free to fork the project on Github. Then, clone your fork somewhere on your computer, where you would do your own changes. If you are going to do this, you might want to <code>cd</code> to your working copy and :</p>
+
+<pre><code>$ npm link
+</code></pre>
+
+<p>This will turn your working copy as a global node module so you can use your version of the executable <code>brake</code> to test things out. You can always reinstall the official version using :</p>
+
+<pre><code>$ npm install -g brewer
+</code></pre>
+
+<p>Always update the tests (located in <code>tests/</code>) to reflect your changes and make sure they pass before submitting your changes. You will need <a href="https://github.com/jashkenas/coffee-script">coffee-script</a> to be installed globally to run the tests. You can run the tests as follow :</p>
+
+<pre><code>$ cake test
+</code></pre>
+
+<p>When you feel your fork is awesome (that includes you've updated the tests to reflect your changes and all the tests pass), go ahead and do a <strong>Pull Request</strong>, explaining what awesomeness you've added. If everything is in order and the project stays consistent with its goal, we'll merge it right in!</p>
 
 <h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h3>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<h4>
+<a name="using-a-prepared-package" class="anchor" href="#using-a-prepared-package"><span class="octicon octicon-link"></span></a>Using a prepared package</h4>
+
+<p>To setup Brewer.js, make sure you have <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">installed Node.js</a>. When this is done, enter the terminal and type.</p>
+
+<pre><code>$ npm install -g brewer
+</code></pre>
+
+<p>The <code>-g</code> flag is used to make the installation global, so you get access to the <code>brake</code> executable. Then, from a project directory you wish to manage using Brewer.js</p>
+
+<pre><code>$ brake init [&lt;template name&gt;]
+</code></pre>
+
+<p>The <code>&lt;template name&gt;</code> part is optional. Anyway, for the moment, there is only one template available, <strong>lesscoffee</strong>, which is also the default. This template sets up LESS and Coffeescript support for the current directory.</p>
+
+<p>What this does is create a Brewfile in the current directory, according to the template provided and run <code>brake make</code> on it (see Usage).</p>
+
+<h4>
+<a name="using-this-repository" class="anchor" href="#using-this-repository"><span class="octicon octicon-link"></span></a>Using this repository</h4>
+
+<p>You need Node.js, as well as coffee-script, installed globally to get the <code>cake</code> executable. You can do so by doing :</p>
+
+<pre><code>$ npm install -g coffee-script
+</code></pre>
+
+<p>Then, to get brewer.js to work locally</p>
+
+<pre><code>$ git clone git@github.com:matehat/brewer.js.git brewer
+$ cd brewer
+$ npm install
+$ cake build
+</code></pre>
+
+<p>Then, if you want the <code>brewer</code> executable, you can do</p>
+
+<pre><code>$ npm link
+</code></pre>
 
 <h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+<a name="brewfile" class="anchor" href="#brewfile"><span class="octicon octicon-link"></span></a>Brewfile</h3>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p>A <strong>Brewfile</strong> is a file that sits at the root folder of your project, named, 
+well, "Brewfile", which syntax is plain <a href="http://coffeescript.org">Coffeescript</a>. It is used to specify the structure of the project to Brewer.js, so it knows what to do when you tell it to <code>make</code>, <code>watch</code> or <code>clean</code>. </p>
+
+<h5>
+<a name="packages" class="anchor" href="#packages"><span class="octicon octicon-link"></span></a>Packages</h5>
+
+<p>At the top-level of the Brewfile, the following functions are available :</p>
+
+<div class="highlight highlight-coffeescript"><pre><span class="c1"># In Brewfile</span>
+
+<span class="nx">@stylesheets</span> <span class="s">'package_name'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="c1"># package body ...</span>
+
+<span class="nx">@javascript</span> <span class="s">'other_package_name'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="c1"># package body ...</span>
+</pre></div>
+
+<p>Those two functions can be used interchangeably with <code>js</code> or <code>css</code> to be more concise. The <code>package_name</code> is used to identify certain parts of a project, in case you would like to run <code>$ brake make package_name</code>. A <strong>Package</strong> is a conceptual component of a project in which you can define <strong>bundles</strong> and in which files can <em>import</em> each other. A file contained in a package can really be anywhere on the file system -- a package is not bound to a specific directory.</p>
+
+<p>Package can receive options, which can be specified in one of two ways :</p>
+
+<div class="highlight highlight-coffeescript"><pre><span class="c1"># In Brewfile</span>
+
+<span class="nx">@javascript</span> <span class="s">'package_name'</span><span class="p">,</span> <span class="p">{</span><span class="nv">build: </span><span class="s">'./build'</span><span class="p">,</span> <span class="nv">compress: </span><span class="kc">true</span><span class="p">},</span> <span class="nf">-&gt;</span>
+  <span class="c1"># package body</span>
+
+<span class="c1"># equivalent to</span>
+<span class="nx">@javascript</span> <span class="s">'package_name'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="nx">@options</span> <span class="p">{</span><span class="nv">build: </span><span class="s">'./build'</span><span class="p">,</span> <span class="nv">compress: </span><span class="kc">true</span><span class="p">}</span>
+</pre></div>
+
+<p>The <code>build</code> option specifies where to put bundles aggregated from source files, and <code>compress</code> … well, I think you can guess that one. </p>
+
+<p><code>@options</code> is a method available in the package definition body, that specifies additional options for the package. Another such method is <code>@bundles(bundle1, bundle2, ...)</code> which specifies file names for bundles in the package (see <strong>Bundles</strong> below). These two methods are prefixed with a <code>@</code>, meaning that they are members of the package body context. Other methods of this kind are available, such as those to define <strong>sources</strong> in a package. </p>
+
+<h5>
+<a name="sources" class="anchor" href="#sources"><span class="octicon octicon-link"></span></a>Sources</h5>
+
+<p>Sources represent a folder on the file system, where files can be found. One or many can exist within a package, providing it with files to compile, bundle and compress. A source can be of one of many available types : <em>coffeescript</em>, <em>javascript</em>, <em>css</em>, <em>less</em> or <em>stylus</em>. One restriction about this source type is that a package can only contain sources that are either of its own type, or that can be compiled into its own type (remember a package also have a type).</p>
+
+<p>Now for a real-world example, so we don't get lost too quickly. Say we want to make a cool looking website using jQuery, Bootstrap and Chosen. Each of these libraries have their own source files, of different types and we want to manage all of that neatly. Here is the directory structure :</p>
+
+<pre><code>Root folder
+|-- js
+|-- coffee
+|-- css
+|-- less
+|-- vendor
+    |-- bootstrap
+    |   |- less
+    |   |- js
+    |
+    |-- chosen
+    |-- jquery.js
+</code></pre>
+
+<p>So there are files that ends up as javascript and those that ends up as css. Let's write a Brewfile that takes this structure into account.</p>
+
+<div class="highlight highlight-coffeescript"><pre><span class="nx">@javascript</span> <span class="s">'scripts'</span><span class="p">,</span> <span class="p">{</span><span class="nv">build: </span><span class="s">'./js'</span><span class="p">}</span> <span class="nf">-&gt;</span>
+    <span class="nx">@bundles</span> <span class="s">'home'</span><span class="p">,</span> <span class="s">'products'</span>
+
+    <span class="nx">@coffeescript</span> <span class="s">'./coffee'</span>
+    <span class="nx">@js</span> <span class="s">'./vendor'</span>
+
+<span class="nx">@stylesheets</span> <span class="s">'styles'</span><span class="p">,</span> <span class="p">{</span><span class="nv">build: </span><span class="s">'./css'</span><span class="p">}</span> <span class="nf">-&gt;</span>
+    <span class="nx">@bundles</span> <span class="s">'home'</span><span class="p">,</span> <span class="s">'products'</span>
+
+    <span class="nx">@less</span> <span class="s">'./less'</span>
+    <span class="nx">@less</span> <span class="s">'./vendor/bootstrap/less'</span>
+    <span class="nx">@css</span> <span class="s">'./vendor'</span>
+</pre></div>
+
+<p>So what we're looking at now is a package for javascripts that looks for coffeescript files in <code>./coffee</code>, as well as for javascript files in <code>./vendor</code>, <code>./vendor/chosen</code> and <code>./vendor/bootstrap/js</code>. Now let's look at what a bundle would look like :</p>
+
+<div class="highlight highlight-coffeescript"><pre><span class="c1"># in coffee/home.coffee</span>
+<span class="c1"># import ["jquery", "chosen/chosen.jquery.js"]</span>
+
+<span class="nx">$</span> <span class="nf">-&gt;</span> <span class="nx">$</span><span class="p">(</span><span class="s">'select'</span><span class="p">).</span><span class="nx">chosen</span><span class="p">()</span>
+</pre></div>
+
+<p>If we had been running <code>brake watch</code> while we wrote that script and saved it, we would have seen a file appear, named <code>./js/home.js</code>, containing an aggregate file of jquery, chosen and our little script compiled into javascript. Since we didn't provide the <code>output</code> option, a compiled javascript version of just <code>coffee/home.coffee</code> can be found in <code>./_cache</code>. If we wanted it to appear somewhere more meaningful, we could set the <code>output</code> option on a source directive. A more complete example of the above could be :</p>
+
+<div class="highlight highlight-coffeescript"><pre><span class="nx">@javascript</span> <span class="s">'scripts'</span><span class="p">,</span> <span class="p">{</span><span class="nv">build: </span><span class="s">'./build/js'</span><span class="p">}</span> <span class="nf">-&gt;</span>
+    <span class="nx">@bundles</span> <span class="s">'home'</span><span class="p">,</span> <span class="s">'products'</span>
+
+    <span class="nx">@coffeescript</span> <span class="s">'./coffee'</span><span class="p">,</span> <span class="p">{</span><span class="nv">output: </span><span class="s">'./js'</span><span class="p">}</span>
+    <span class="nx">@js</span> <span class="s">'./vendor'</span>
+
+<span class="nx">@stylesheets</span> <span class="s">'styles'</span><span class="p">,</span> <span class="p">{</span><span class="nv">build: </span><span class="s">'./build/css'</span><span class="p">}</span> <span class="nf">-&gt;</span>
+    <span class="nx">@bundles</span> <span class="s">'home'</span><span class="p">,</span> <span class="s">'products'</span>
+
+    <span class="nx">@less</span> <span class="s">'./less'</span><span class="p">,</span> <span class="p">{</span><span class="nv">output: </span><span class="s">'./css'</span><span class="p">}</span>
+    <span class="nx">@css</span> <span class="s">'./vendor'</span>
+</pre></div>
+
+<p>This dedicates a directory <code>./build</code>, to contain files that would be deployed, and all source files in separate directories. You may have noticed we used <code>@css</code> and <code>@js</code> names to mean stylesheets and javascript respectively. As we said earlier, those are drop-in replacements.</p>
 
 <h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h3>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>The command-line interface for brewer provides a few methods to manage the asset project. </p>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+<ul>
+<li>
+<p><code>brake init &lt;template_name&gt;</code></p>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>This command tells brewer to make a Brewfile in the current directory, according to the template provided, and make an initial directory structure to support the project.</p>
+</li>
+<li>
+<p><code>brake [all|&lt;package&gt;*]</code></p>
+
+<p>This command tells brewer to look for files to compile (coffeescript, less, etc.) into their javascript or css counterparts, product bundles and compress them if necessary. This intelligently selects only the tasks that needs to be done, skipping files that haven't change.</p>
+</li>
+<li>
+<p><code>brake clean [&lt;package&gt;*]</code></p>
+
+<p>This command tells brewer to delete files that strongly depends on source files, such as those that are completely derived from the compilation of another file, bundles and their compressed counterparts.</p>
+</li>
+<li>
+<p><code>brake watch</code></p>
+
+<p>This command tells brewer to first run <code>brake make</code> on the current directory and watch for changes (file content change, new files, moved files or deleted files).</p>
+</li>
+<li>
+<p><code>brake install</code></p>
+
+<p>This command tells Brewer.js to install all missing Node.js modules that it needs to work properly
+with the current project. For instance, had I put a few <code>@coffeescript</code> source directives in the project's 
+Brewfile, Brewer.js will make sure the coffee-script module is available, installing it under its own 
+project directory if not.</p>
+</li>
+</ul><h3>
+<a name="mit-license" class="anchor" href="#mit-license"><span class="octicon octicon-link"></span></a>MIT License</h3>
+
+<p>Copyright © 2012 Mathieu D'Amours</p>
+
+<p>Permission is hereby granted, free of charge, to any person 
+obtaining a copy of this software and associated documentation 
+files (the "Software"), to deal in the Software without 
+restriction, including without limitation the rights to use, 
+copy, modify, merge, publish, distribute, sublicense, 
+and/or sell copies of the Software, and to permit persons to 
+whom the Software is furnished to do so, subject to the 
+following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be 
+included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+OTHER DEALINGS IN THE SOFTWARE.</p>
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/matehat">matehat</a></p>
