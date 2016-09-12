@@ -1,3 +1,5 @@
+_This repository is no longer maintained_. Similar functionality can be obtained from tools with more maturity and users, like Grunt, Gulp or Brunch.
+
 ## Brewer.js
 #### Your asset management best friend.
 
